@@ -32,6 +32,8 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <a href="/student/dashboard.php" class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
             <a href="/student/check-eligibility.php" class="<?= $currentPage === 'check-eligibility' ? 'active' : '' ?>">Check Eligibility</a>
             <a href="/student/results.php" class="<?= $currentPage === 'results' ? 'active' : '' ?>">My Results</a>
+            <a href="/student/upload-documents.php" class="<?= $currentPage === 'upload-documents' ? 'active' : '' ?>">My Documents</a>
+            <a href="/student/my-profile.php" class="<?= $currentPage === 'my-profile' ? 'active' : '' ?>">My Profile</a>
         </div>
         <div class="navbar-right">
             <span class="navbar-user"><strong><?= htmlspecialchars($currentUser['full_name']) ?></strong></span>
