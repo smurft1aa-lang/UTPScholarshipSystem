@@ -283,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="split-layout">
         <!-- Left Panel containing the form -->
         <div class="left-panel">
-            <a href="/landing.html" class="brand">
+            <a href="/landing.php" class="brand">
                 <span class="brand-icon"></span>
                 UTP
             </a>
@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <!-- Optional: kept for backwards compatibility if they had a back link -->
                 <div class="back-link">
-                    <a href="/landing.html">&larr; Go back to landing page</a>
+                    <a href="/landing.php">&larr; Go back to landing page</a>
                 </div>
             </div>
         </div>

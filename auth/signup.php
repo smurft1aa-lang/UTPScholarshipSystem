@@ -309,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <!-- Right Panel containing the pattern illustration (Moved visually to the left) -->
         <div class="right-panel">
-            <a href="/landing.html" class="brand">
+            <a href="/landing.php" class="brand">
                 <span class="brand-icon"></span>
                 UTP
             </a>
