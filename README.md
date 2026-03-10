@@ -21,6 +21,17 @@ A robust, AI-powered scholarship and course eligibility recommendation system bu
    ```bash
    git clone https://github.com/smurft1aa-lang/UTPScholarshipSystem.git
    ```
+
+### Option A: Docker Compose Deployment (Recommended)
+You can boot the entire system automatically mapping the LAMP stack.
+1. Make sure Docker is running.
+2. Build and start the container orchestration context:
+   ```bash
+   make up
+   ```
+3. The system is active on `http://localhost:8080`.
+
+### Option B: Manual Host Deployment
 2. **Configure Environment:**
    Copy `.env.example` to `.env` and fill in your database and application details.
    ```bash
@@ -31,7 +42,13 @@ A robust, AI-powered scholarship and course eligibility recommendation system bu
    Run the setup script in your browser to seed the database schemas and sample data:
    `http://yourdomain.com/setup_db.php`
 4. **Permissions:**
-   Ensure the `uploads/documents` folder has write permissions for the web server.
+   Ensure the `uploads/documents` and `logs` folders have write permissions for the web server.
+
+## Telemetry & Monitoring (Sentry)
+This system utilizes Sentry for native tracking of silent exceptions, slow database queries (>200ms) and AI evaluation bottlenecks (>500ms).
+1. Add your DSN to `.env`: `SENTRY_DSN=https://your-dsn@sentry.io/project`
+2. Run `composer install` to load the `sentry/sentry` PHP SDK.
+3. Ensure `APP_ENV=production` is set to enable breadcrumbs and error capture natively.
 
 ## Admin Credentials
 After running the setup script, a default super-admin account is generated:

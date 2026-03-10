@@ -5,58 +5,18 @@
  */
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/GradeMapper.php';
 
 class AIEngine {
-
-    // Grade-to-points mapping for SPM
-    private static $spmGradePoints = [
-        'A+' => 10, 'A' => 9, 'A-' => 8,
-        'B+' => 7, 'B' => 6, 'B-' => 5,
-        'C+' => 4, 'C' => 3,
-        'D' => 2, 'E' => 1, 'G' => 0, 'F' => 0
-    ];
-
-    // Grade-to-points mapping for O-Level / IGCSE
-    private static $olevelGradePoints = [
-        'A*' => 10, 'A' => 9, 'B' => 7, 'C' => 5,
-        'D' => 3, 'E' => 2, 'F' => 1, 'G' => 0, 'U' => 0
-    ];
-
-    // Minimum passing grade points
-    private static $minPassSPM = 3;   // C
-    private static $minPassOLevel = 5; // C
-
-    /**
-     * Convert a grade string to numeric points
-     */
-    public static function gradeToPoints($grade, $qualType) {
-        $grade = strtoupper(trim($grade));
-        if ($qualType === 'SPM') {
-            return self::$spmGradePoints[$grade] ?? 0;
-        }
-        return self::$olevelGradePoints[$grade] ?? 0;
-    }
-
-    /**
-     * Get the minimum pass points by qual type
-     */
-    public static function getMinPassPoints($qualType) {
-        return ($qualType === 'SPM') ? self::$minPassSPM : self::$minPassOLevel;
-    }
-
-    /**
-     * Get the maximum points by qual type
-     */
-    public static function getMaxPoints($qualType) {
-        return 10; // A+ or A*
-    }
 
     /**
      * Run full eligibility check for a student
      * Returns array of programme results sorted by fit percentage
      */
     public static function checkEligibility($qualificationId) {
-        $db = getDB();
+        startTimer('ai_eligibility');
+        try {
+            $db = getDB();
 
         // Get qualification info
         $stmt = $db->prepare("SELECT * FROM qualifications WHERE id = ?");
@@ -99,7 +59,17 @@ class AIEngine {
             return $b['fit_percentage'] - $a['fit_percentage'];
         });
 
+        $time = endTimer('ai_eligibility');
+        if ($time > 500) {
+            trackEvent('Slow AI Calculation', ['time_ms' => $time, 'qualification_id' => $qualificationId], 'WARNING');
+        }
+
         return $results;
+        
+        } catch (Exception $e) {
+            trackEvent('AI Engine Check Failed', ['exception' => $e, 'qualification_id' => $qualificationId], 'ERROR');
+            return [];
+        }
     }
 
     /**
@@ -111,13 +81,13 @@ class AIEngine {
         $allMet = true;
         $subjectResults = [];
         $gaps = [];
-        $minPassPoints = self::getMinPassPoints($qualType);
-        $maxPoints = self::getMaxPoints($qualType);
+        $minPassPoints = GradeMapper::getMinPassPoints($qualType);
+        $maxPoints = GradeMapper::getMaxPoints($qualType);
 
         foreach ($requirements as $req) {
             $subjectKey = strtolower(trim($req['subject']));
             $weight = floatval($req['weight']);
-            $minGradePoints = self::gradeToPoints($req['min_grade'], $qualType);
+            $minGradePoints = GradeMapper::gradeToPoints($req['min_grade'], $qualType);
 
             // Check if student has this subject, handling "Other Subject" generics
             $studentGradeStr = null;
@@ -131,7 +101,7 @@ class AIEngine {
             $maxWeightedScore += $maxPoints * $weight;
 
             if ($studentGradeStr !== null) {
-                $studentPoints = self::gradeToPoints($studentGradeStr, $qualType);
+                $studentPoints = GradeMapper::gradeToPoints($studentGradeStr, $qualType);
                 $totalWeightedScore += $studentPoints * $weight;
                 $met = $studentPoints >= $minGradePoints;
 
@@ -192,8 +162,8 @@ class AIEngine {
             $physicsGradeStr = $studentGrades['physics'] ?? '';
             $chemistryGradeStr = $studentGrades['chemistry'] ?? '';
             
-            $physicsPoints = self::gradeToPoints($physicsGradeStr, $qualType);
-            $chemistryPoints = self::gradeToPoints($chemistryGradeStr, $qualType);
+            $physicsPoints = GradeMapper::gradeToPoints($physicsGradeStr, $qualType);
+            $chemistryPoints = GradeMapper::gradeToPoints($chemistryGradeStr, $qualType);
             
             if ($physicsPoints >= 9 && $chemistryPoints >= 9) {
                 // Increase fit percentage by 5%, capped at 100%

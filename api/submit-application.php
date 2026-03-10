@@ -74,6 +74,7 @@ try {
     exit;
 
 } catch (Exception $e) {
+    trackEvent('Application Submission Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     $_SESSION['error'] = 'An error occurred. Please try again.';
     header('Location: /student/results.php');
     exit;

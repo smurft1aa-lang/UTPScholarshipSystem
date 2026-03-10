@@ -1,0 +1,14 @@
+.git/
+.env
+.env.*
+node_modules/
+tests/
+phpunit.xml
+coverage/
+log/
+logs/
+uploads/documents/*
+!uploads/documents/.htaccess
+Dockerfile
+docker-compose.yml
+Makefile
