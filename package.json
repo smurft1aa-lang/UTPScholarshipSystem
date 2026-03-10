@@ -1,0 +1,11 @@
+{
+  "name": "utp-scholarship-system",
+  "version": "1.0.0",
+  "description": "UTP Scholarship & Course Eligibility System",
+  "scripts": {
+    "dev": "nodemon -e php,css,js --watch . --exec \"C:\\xampp\\php\\php.exe -S localhost:8000 -t .\""
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

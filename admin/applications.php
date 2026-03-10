@@ -1,0 +1,191 @@
+<?php
+/**
+ * Admin Applications Management
+ * View, filter, approve/reject student applications
+ */
+require_once __DIR__ . '/admin_header.php';
+require_once __DIR__ . '/../includes/security.php';
+
+$db = getDB();
+$statusFilter = $_GET['status'] ?? '';
+$search = sanitize($_GET['search'] ?? '');
+
+// Handle status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if (validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $appId = intval($_POST['app_id'] ?? 0);
+        $action = sanitize($_POST['action']);
+        $notes = sanitize($_POST['admin_notes'] ?? '');
+
+        if (in_array($action, ['processing', 'approved', 'rejected']) && $appId > 0) {
+            $stmt = $db->prepare("UPDATE applications SET status = ?, admin_notes = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
+        }
+    }
+    header('Location: /admin/applications.php' . ($statusFilter ? '?status=' . $statusFilter : ''));
+    exit;
+}
+
+// Build query
+$where = [];
+$params = [];
+
+if ($statusFilter && in_array($statusFilter, ['submitted', 'processing', 'approved', 'rejected'])) {
+    $where[] = "a.status = ?";
+    $params[] = $statusFilter;
+}
+if ($search) {
+    $where[] = "(u.full_name LIKE ? OR u.email LIKE ?)";
+    $params[] = "%{$search}%";
+    $params[] = "%{$search}%";
+}
+
+$whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
+$stmt = $db->prepare("
+    SELECT a.*, u.full_name, u.email, u.ic_number, q.qual_type,
+           p1.name as prog1_name, p2.name as prog2_name, p3.name as prog3_name, s.name as schol_name,
+           (SELECT COUNT(*) FROM eligibility_results er WHERE er.application_id = a.id AND er.eligible = 1) as eligible_count
+    FROM applications a
+    JOIN users u ON a.user_id = u.id
+    JOIN qualifications q ON a.qualification_id = q.id
+    LEFT JOIN programmes p1 ON a.programme_id_1 = p1.id
+    LEFT JOIN programmes p2 ON a.programme_id_2 = p2.id
+    LEFT JOIN programmes p3 ON a.programme_id_3 = p3.id
+    LEFT JOIN scholarships s ON a.scholarship_id = s.id
+    {$whereClause}
+    ORDER BY a.created_at DESC
+");
+$stmt->execute($params);
+$applications = $stmt->fetchAll();
+?>
+
+<div class="page-header">
+    <h1>Applications</h1>
+    <p>Manage student applications and update their status.</p>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4" style="padding:16px 20px;">
+    <form method="GET" class="flex" style="gap:12px; align-items:center; flex-wrap:wrap;">
+        <select name="status" class="form-select" style="width:auto; min-width:160px;" onchange="this.form.submit()">
+            <option value="">All Status</option>
+            <option value="submitted" <?= $statusFilter === 'submitted' ? 'selected' : '' ?>>Submitted</option>
+            <option value="processing" <?= $statusFilter === 'processing' ? 'selected' : '' ?>>Processing</option>
+            <option value="approved" <?= $statusFilter === 'approved' ? 'selected' : '' ?>>Approved</option>
+            <option value="rejected" <?= $statusFilter === 'rejected' ? 'selected' : '' ?>>Rejected</option>
+        </select>
+        <input type="text" name="search" class="form-input admin-focus" style="width:auto; min-width:240px;" placeholder="Search by name or email..." value="<?= htmlspecialchars($search) ?>">
+        <button type="submit" class="btn btn-purple btn-sm">Search</button>
+        <?php if ($statusFilter || $search): ?>
+            <a href="/admin/applications.php" class="btn btn-outline btn-sm">Clear</a>
+        <?php endif; ?>
+    </form>
+</div>
+
+<!-- Applications Table -->
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>IC Number</th>
+                <th>Qualification</th>
+                <th>Choice</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($applications)): ?>
+                <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No applications found.</td></tr>
+            <?php else: ?>
+                <?php foreach ($applications as $app): ?>
+                <tr>
+                    <td>#<?= $app['id'] ?></td>
+                    <td>
+                        <strong><?= htmlspecialchars($app['full_name']) ?></strong><br>
+                        <span style="font-size:0.8rem; color:var(--text-muted);"><?= htmlspecialchars($app['email']) ?></span>
+                    </td>
+                    <td><?= htmlspecialchars($app['ic_number']) ?></td>
+                    <td><?= htmlspecialchars($app['qual_type']) ?><br><small><?= $app['eligible_count'] ?> eligible</small></td>
+                    <td>
+                        <?php if ($app['prog1_name']): ?>
+                            <div style="font-size:0.85rem; line-height:1.4;">
+                                <strong>1.</strong> <?= htmlspecialchars($app['prog1_name']) ?><br>
+                                <strong>2.</strong> <?= htmlspecialchars($app['prog2_name']) ?><br>
+                                <strong>3.</strong> <?= htmlspecialchars($app['prog3_name']) ?>
+                            </div>
+                            <?= $app['schol_name'] ? '<span style="font-size:0.8rem; color:var(--purple); display:block; margin-top:4px;">+ ' . htmlspecialchars($app['schol_name']) . '</span>' : '' ?>
+                        <?php else: ?>
+                            <span style="color:var(--text-muted); font-style:italic;">Not Selected</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <span class="badge badge-<?= $app['status'] === 'approved' ? 'green' : ($app['status'] === 'rejected' ? 'red' : ($app['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
+                            <?= ucfirst($app['status']) ?>
+                        </span>
+                    </td>
+                    <td><?= date('d M Y', strtotime($app['created_at'])) ?></td>
+                    <td>
+                        <button onclick="openModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Review</button>
+                    </td>
+                </tr>
+
+                <!-- Review Modal -->
+                <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
+                    <div class="modal">
+                        <h2>Review Application #<?= $app['id'] ?></h2>
+                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
+                        <p><strong>Qualification:</strong> <?= htmlspecialchars($app['qual_type']) ?> (Eligible for <?= $app['eligible_count'] ?> programmes)</p>
+                        
+                        <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border); margin:12px 0;">
+                            <?php if ($app['prog1_name']): ?>
+                                <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br>
+                                    1. <?= htmlspecialchars($app['prog1_name']) ?><br>
+                                    2. <?= htmlspecialchars($app['prog2_name']) ?><br>
+                                    3. <?= htmlspecialchars($app['prog3_name']) ?>
+                                </p>
+                            <?php else: ?>
+                                <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br> <span style="color:var(--text-muted); font-style:italic;">Pending Selection</span></p>
+                            <?php endif; ?>
+                            <?php if ($app['schol_name']): ?>
+                                <p><strong>Preferred Scholarship:</strong><br> <?= htmlspecialchars($app['schol_name']) ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
+                        <?php if ($app['admin_notes']): ?>
+                            <p><strong>Previous Notes:</strong> <?= htmlspecialchars($app['admin_notes']) ?></p>
+                        <?php endif; ?>
+
+                        <form method="POST" style="margin-top:20px;">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
+                            <div class="form-group">
+                                <label class="form-label">Admin Notes</label>
+                                <textarea name="admin_notes" class="form-input admin-focus" rows="3" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Update Status</label>
+                                <div class="flex gap-3">
+                                    <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
+                                    <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
+                                    <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-actions">
+                            <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Close</button>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php require_once __DIR__ . '/admin_footer.php'; ?>
