@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Universiti Teknologi PETRONAS (UTP) — Apply for foundation programmes, scholarships, and more.">
+    <title>UTP Student Application Portal — Universiti Teknologi PETRONAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #1a1a2e;
+            background: #f0f1f5;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; font-weight: 900; line-height: 1.25; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; }
+        .highlight { color: #f26522; }
+
+        /* ── Page Card Wrapper ── */
+        .page-wrapper {
+            max-width: 820px;
+            margin: 24px auto;
+            background: #ffffff;
+            border-radius: 22px;
+            box-shadow: 0 8px 40px rgba(26, 26, 46, 0.08);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.35rem;
+            color: #1a1a2e;
+        }
+        .nav-logo .flame {
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #f26522, #ff8c4b);
+            border-radius: 10px;
+            color: #fff;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            list-style: none;
+        }
+        .nav-links a {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: color 0.2s;
+            position: relative;
+        }
+        .nav-links a:hover { color: #f26522; }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #f26522;
+            border-radius: 2px;
+            transition: width 0.25s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 22px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            gap: 6px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #e5e7eb;
+            color: #1a1a2e;
+        }
+        .btn-outline:hover {
+            border-color: #f26522;
+            color: #f26522;
+            background: #fff4ee;
+        }
+        .btn-orange {
+            background: linear-gradient(135deg, #f26522, #ff8c4b);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(242, 101, 34, 0.3);
+        }
+        .btn-orange:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(242, 101, 34, 0.4);
+        }
+        .btn-white {
+            background: #fff;
+            color: #f26522;
+            font-weight: 700;
+        }
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .btn-sm { padding: 7px 16px; font-size: 0.78rem; }
+        .btn-lg { padding: 13px 32px; font-size: 0.9rem; border-radius: 12px; }
+
+        /* ── Hamburger ── */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2.5px;
+            background: #1a1a2e;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* ── Sections ── */
+        section { padding: 56px 32px; }
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #f26522;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+        }
+        .section-subtitle {
+            color: #6b7280;
+            font-size: 0.88rem;
+            max-width: 520px;
+            margin: 0 auto 36px;
+        }
+        .text-center { text-align: center; }
+
+        /* ── Hero ── */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            padding: 64px 32px 48px;
+            min-height: 420px;
+        }
+        .hero-text { flex: 1; }
+        .hero-text h1 {
+            font-size: 2.15rem;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .hero-text p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+            max-width: 380px;
+        }
+        .hero-text .hero-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+        .hero-text .explore-link {
+            font-size: 0.8rem;
+            color: #f26522;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .hero-text .explore-link:hover { opacity: 0.7; }
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 260px;
+        }
+        .hero-illus {
+            font-size: 4rem;
+            position: absolute;
+        }
+        .hero-illus.one {
+            top: 10%;
+            left: 12%;
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        .hero-illus.two {
+            bottom: 8%;
+            right: 8%;
+            animation: heroFloat 4s ease-in-out infinite 1.5s;
+        }
+        .dot-accent {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #f26522;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        .dot-accent.d1 { top: 5%; right: 20%; width: 10px; height: 10px; opacity: 0.35; }
+        .dot-accent.d2 { bottom: 20%; left: 5%; width: 18px; height: 18px; opacity: 0.25; }
+        .dot-accent.d3 { top: 50%; right: 5%; width: 8px; height: 8px; opacity: 0.4; }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
+        }
+
+        /* ── Services / What We Offer ── */
+        .services { background: #fff; }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .service-card {
+            background: #fff;
+            border: 1px solid #f0f1f5;
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
+            border-color: transparent;
+        }
+        .service-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 14px;
+        }
+        .service-icon.yellow { background: #fef3c7; }
+        .service-icon.green { background: #d1fae5; }
+        .service-icon.orange { background: #fff4ee; }
+        .service-icon.pink { background: #fce7f3; }
+        .service-card h3 {
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        .service-card p {
+            font-size: 0.76rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* ── How to Apply ── */
+        .how-to-apply {
+            background: #fff4ee;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        .how-visual {
+            flex: 0 0 36%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .how-illus {
+            font-size: 5rem;
+            animation: heroFloat 5s ease-in-out infinite;
+        }
+        .how-content {
+            flex: 1;
+        }
+        .how-content h2 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+        }
+        .how-content > p {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+            max-width: 380px;
+        }
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .step-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f26522, #ff8c4b);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .step-item span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .how-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        /* ── About UTP ── */
+        .about {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+        }
+        .about-text { flex: 1; }
+        .about-text h2 { font-size: 1.6rem; margin-bottom: 14px; }
+        .about-text p {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+        .about-visual {
+            flex: 0 0 36%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .about-illus {
+            font-size: 5rem;
+            animation: heroFloat 5.5s ease-in-out infinite 0.5s;
+        }
+
+        /* ── CTA Banner ── */
+        .cta-banner {
+            margin: 0 32px 48px;
+            background: linear-gradient(135deg, #f26522 0%, #ff8c4b 100%);
+            border-radius: 18px;
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .cta-banner h3 {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+        .cta-banner p {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 48px 32px 24px;
+            border-radius: 0 0 22px 22px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+        }
+        .footer-brand .flame {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #f26522, #ff8c4b);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+        .footer-desc {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+        .social-icons {
+            display: flex;
+            gap: 10px;
+        }
+        .social-icons a {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            transition: all 0.25s;
+        }
+        .social-icons a:hover {
+            background: #f26522;
+            color: #fff;
+        }
+        .footer-col h4 {
+            font-size: 0.82rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.5);
+            transition: color 0.2s;
+        }
+        .footer-col a:hover { color: #f26522; }
+        .footer-copy {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.55);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 20px;
+            padding: 36px 32px;
+            width: 92%;
+            max-width: 420px;
+            position: relative;
+            transform: translateY(24px) scale(0.96);
+            transition: transform 0.35s ease;
+            box-shadow: 0 20px 60px rgba(26, 26, 46, 0.18);
+        }
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f0f1f5;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #fee2e2; color: #ef4444; }
+        .modal h2 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .modal .modal-subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.82rem;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            background: #fafafa;
+            transition: all 0.2s;
+            outline: none;
+            color: #1a1a2e;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #f26522;
+            box-shadow: 0 0 0 3px rgba(242, 101, 34, 0.12);
+            background: #fff;
+        }
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        .form-error {
+            font-size: 0.72rem;
+            color: #ef4444;
+            margin-top: 4px;
+            min-height: 16px;
+        }
+        .modal .btn-orange {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.88rem;
+            margin-top: 4px;
+        }
+        .modal-switch {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        .modal-switch a {
+            color: #f26522;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-switch a:hover { text-decoration: underline; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 768px) {
+            .page-wrapper { margin: 12px; border-radius: 16px; }
+            section { padding: 40px 20px; }
+            .navbar { padding: 0 20px; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                padding: 16px 20px;
+                border-bottom: 1px solid #f0f1f5;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+                gap: 12px;
+            }
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .hero { flex-direction: column; text-align: center; padding: 40px 20px 32px; }
+            .hero-text .hero-actions { align-items: center; }
+            .hero-text p { margin-left: auto; margin-right: auto; }
+            .hero-text h1 { font-size: 1.7rem; }
+            .hero-visual { min-height: 160px; width: 100%; }
+            .how-to-apply { flex-direction: column; }
+            .how-visual { flex: unset; width: 100%; min-height: 120px; }
+            .about { flex-direction: column; text-align: center; }
+            .about-visual { flex: unset; }
+            .about-text p { margin-left: auto; margin-right: auto; }
+            .services-grid { grid-template-columns: 1fr 1fr; }
+            .cta-banner { flex-direction: column; text-align: center; margin: 0 20px 32px; padding: 28px 24px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+            .section-title { font-size: 1.4rem; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════ PAGE CARD ═══════════════════ -->
+<div class="page-wrapper">
+
+    <!-- ── Navbar ── -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">
+            <span class="flame">🔥</span> UTP
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#services">About</a></li>
+            <li><a href="#services">Programmes</a></li>
+            <li><a href="#about">Contact</a></li>
+            <li><a href="#about">Blog</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn btn-outline btn-sm" onclick="openModal('login')">Login</button>
+            <button class="btn btn-orange btn-sm" onclick="openModal('signup')">Sign Up</button>
+        </div>
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <section class="hero" id="hero">
+        <div class="hero-text">
+            <h1>We Guide Your<br>Journey into <span class="highlight">UTP</span></h1>
+            <p>Discover and apply for world-class foundation programmes at Universiti Teknologi PETRONAS. Your future in engineering, technology, and science starts here.</p>
+            <div class="hero-actions">
+                <button class="btn btn-orange btn-lg" onclick="openModal('signup')">Apply Now</button>
+                <a class="explore-link" onclick="openModal('signup')">Explore more ▾</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <span class="hero-illus one">🧑‍💻</span>
+            <span class="hero-illus two">👩‍🎓</span>
+            <span class="dot-accent d1"></span>
+            <span class="dot-accent d2"></span>
+            <span class="dot-accent d3"></span>
+        </div>
+    </section>
+
+    <!-- ── What We Offer ── -->
+    <section class="services text-center" id="services">
+        <p class="section-label">Our Services</p>
+        <h2 class="section-title">We Provide The Best <span class="highlight">Programmes</span></h2>
+        <p class="section-subtitle">UTP offers a range of world-renowned foundation and undergraduate programmes backed by PETRONAS — preparing you for a global career.</p>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon yellow">🎓</div>
+                <h3>Foundation</h3>
+                <p>A strong academic foundation in science, engineering, and technology to kickstart your university journey.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon green">⚗️</div>
+                <h3>Engineering</h3>
+                <p>Top-tier chemical, mechanical, civil, and electrical engineering programmes recognised globally.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon orange">💻</div>
+                <h3>Computing & CS</h3>
+                <p>Cutting-edge computer science and information technology programmes for the digital age.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon pink">🔬</div>
+                <h3>Science & Mgmt</h3>
+                <p>Applied sciences, geosciences, and business management — blending research with real-world skills.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How to Apply ── -->
+    <section class="how-to-apply" id="how">
+        <div class="how-visual">
+            <span class="how-illus">🧑‍💻</span>
+        </div>
+        <div class="how-content">
+            <p class="section-label">Simple Solutions</p>
+            <h2>Simple Application <span class="highlight">Steps!</span></h2>
+            <p>Our streamlined application process makes it easy to apply for your desired programme in just a few steps.</p>
+            <div class="steps-list">
+                <div class="step-item">
+                    <span class="step-num">1</span>
+                    <span>Choose Your Programme</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">2</span>
+                    <span>Prepare Your Documents</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">3</span>
+                    <span>Submit Online Application</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">4</span>
+                    <span>Await Your Offer Letter</span>
+                </div>
+            </div>
+            <div class="how-actions">
+                <button class="btn btn-orange" onclick="openModal('signup')">Apply Now</button>
+                <button class="btn btn-outline">Read More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── About UTP ── -->
+    <section class="about" id="about">
+        <div class="about-text">
+            <p class="section-label">Our Agency</p>
+            <h2>Our <span class="highlight">University</span></h2>
+            <p>Universiti Teknologi PETRONAS, established in 1997, is a leading private university in Malaysia. Backed by PETRONAS, it offers world-class research facilities, internationally recognised academic programmes, and strong industry partnerships — producing graduates who are future-ready leaders in engineering, science, and technology.</p>
+            <button class="btn btn-orange" onclick="openModal('signup')">Read More</button>
+        </div>
+        <div class="about-visual">
+            <span class="about-illus">📊</span>
+        </div>
+    </section>
+
+    <!-- ── CTA Banner ── -->
+    <div class="cta-banner">
+        <div>
+            <h3>Ready to start your application?</h3>
+            <p>Join thousands of students already studying at UTP.</p>
+        </div>
+        <button class="btn btn-white btn-lg" onclick="openModal('signup')">Apply Now</button>
+    </div>
+
+    <!-- ── Footer ── -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">
+                    <span class="flame">🔥</span> UTP
+                </div>
+                <p class="footer-desc">Universiti Teknologi PETRONAS — nurturing future leaders in engineering, science, and technology since 1997.</p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook">f</a>
+                    <a href="#" aria-label="Twitter">𝕏</a>
+                    <a href="#" aria-label="Instagram">📷</a>
+                    <a href="#" aria-label="LinkedIn">in</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Admission</h4>
+                <ul>
+                    <li><a href="#">Foundation</a></li>
+                    <li><a href="#">Undergraduate</a></li>
+                    <li><a href="#">Postgraduate</a></li>
+                    <li><a href="#">International</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Academic</h4>
+                <ul>
+                    <li><a href="#">Engineering</a></li>
+                    <li><a href="#">Computer Science</a></li>
+                    <li><a href="#">Science</a></li>
+                    <li><a href="#">Management</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Student Portal</a></li>
+                    <li><a href="#">Scholarships</a></li>
+                    <li><a href="#">Campus Life</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copy">
+            &copy; Universiti Teknologi PETRONAS. All Rights Reserved.
+        </div>
+    </footer>
+</div>
+
+<!-- ═══════════════════ LOGIN MODAL ═══════════════════ -->
+<div class="modal-overlay" id="loginModal" onclick="handleOverlayClick(event, 'loginModal')">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+        <h2>Welcome Back</h2>
+        <p class="modal-subtitle">Log in to your UTP student account</p>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                <div class="form-error" id="loginEmailError"></div>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                <div class="form-error" id="loginPasswordError"></div>
+            </div>
+            <button type="submit" class="btn btn-orange">Login</button>
+        </form>
+        <p class="modal-switch">Don't have an account? <a onclick="switchModal('loginModal','signupModal')">Sign Up</a></p>
+    </div>
+</div>
+
+<!-- ═══════════════════ SIGNUP MODAL ═══════════════════ -->
+<div class="modal-overlay" id="signupModal" onclick="handleOverlayClick(event, 'signupModal')">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
+        <h2>Create Account</h2>
+        <p class="modal-subtitle">Sign up to apply for UTP programmes</p>
+        <form id="signupForm" onsubmit="return handleSignup(event)">
+            <div class="form-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" placeholder="As per IC" required>
+                <div class="form-error" id="signupNameError"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="your@email.com" required>
+                    <div class="form-error" id="signupEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupIC">IC / Passport No.</label>
+                    <input type="text" id="signupIC" placeholder="XXXXXX-XX-XXXX" required>
+                    <div class="form-error" id="signupICError"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Min 8 characters" required>
+                    <div class="form-error" id="signupPasswordError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirm">Confirm Password</label>
+                    <input type="password" id="signupConfirm" placeholder="Re-enter password" required>
+                    <div class="form-error" id="signupConfirmError"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="signupProgramme">Programme Interest</label>
+                <select id="signupProgramme" required>
+                    <option value="" disabled selected>Select programme level</option>
+                    <option value="foundation">Foundation</option>
+                    <option value="undergraduate">Undergraduate</option>
+                    <option value="postgraduate">Postgraduate</option>
+                </select>
+                <div class="form-error" id="signupProgrammeError"></div>
+            </div>
+            <button type="submit" class="btn btn-orange">Create Account</button>
+        </form>
+        <p class="modal-switch">Already have an account? <a onclick="switchModal('signupModal','loginModal')">Login</a></p>
+    </div>
+</div>
+
+<script>
+    /* ── System URL — your live app ── */
+    const SYSTEM_LOGIN_URL = '/login.php';
+    const SYSTEM_SIGNUP_URL = '/signup.php';
+
+    /* ── Modal Logic ── */
+    function openModal(type) {
+        const id = type === 'login' ? 'loginModal' : 'signupModal';
+        document.getElementById(id).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+        document.body.style.overflow = '';
+        clearErrors(id);
+    }
+    function switchModal(fromId, toId) {
+        document.getElementById(fromId).classList.remove('active');
+        clearErrors(fromId);
+        setTimeout(() => {
+            document.getElementById(toId).classList.add('active');
+        }, 80);
+    }
+    function handleOverlayClick(e, id) {
+        if (e.target === e.currentTarget) closeModal(id);
+    }
+    function clearErrors(modalId) {
+        document.querySelectorAll('#' + modalId + ' .form-error').forEach(el => el.textContent = '');
+        document.querySelectorAll('#' + modalId + ' .error').forEach(el => el.classList.remove('error'));
+    }
+
+    /* ── Validation ── */
+    function setError(inputId, errorId, msg) {
+        document.getElementById(inputId).classList.add('error');
+        document.getElementById(errorId).textContent = msg;
+    }
+    function clearError(inputId, errorId) {
+        document.getElementById(inputId).classList.remove('error');
+        document.getElementById(errorId).textContent = '';
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        let valid = true;
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        clearError('loginEmail', 'loginEmailError');
+        clearError('loginPassword', 'loginPasswordError');
+
+        if (!email) { setError('loginEmail', 'loginEmailError', 'Email is required.'); valid = false; }
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('loginEmail', 'loginEmailError', 'Enter a valid email.'); valid = false; }
+        if (!password) { setError('loginPassword', 'loginPasswordError', 'Password is required.'); valid = false; }
+
+        if (valid) window.location.href = SYSTEM_LOGIN_URL;
+        return false;
+    }
+
+    function handleSignup(e) {
+        e.preventDefault();
+        let valid = true;
+        const fields = {
+            name: document.getElementById('signupName').value.trim(),
+            email: document.getElementById('signupEmail').value.trim(),
+            ic: document.getElementById('signupIC').value.trim(),
+            password: document.getElementById('signupPassword').value,
+            confirm: document.getElementById('signupConfirm').value,
+            programme: document.getElementById('signupProgramme').value,
+        };
+
+        /* Clear */
+        ['signupName','signupEmail','signupIC','signupPassword','signupConfirm','signupProgramme'].forEach(id => {
+            clearError(id, id + 'Error');
+        });
+
+        if (!fields.name) { setError('signupName', 'signupNameError', 'Full name is required.'); valid = false; }
+        if (!fields.email) { setError('signupEmail', 'signupEmailError', 'Email is required.'); valid = false; }
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) { setError('signupEmail', 'signupEmailError', 'Enter a valid email.'); valid = false; }
+        if (!fields.ic) { setError('signupIC', 'signupICError', 'IC / Passport is required.'); valid = false; }
+        if (!fields.password) { setError('signupPassword', 'signupPasswordError', 'Password is required.'); valid = false; }
+        else if (fields.password.length < 8) { setError('signupPassword', 'signupPasswordError', 'Min 8 characters.'); valid = false; }
+        if (!fields.confirm) { setError('signupConfirm', 'signupConfirmError', 'Confirm your password.'); valid = false; }
+        else if (fields.password !== fields.confirm) { setError('signupConfirm', 'signupConfirmError', 'Passwords do not match.'); valid = false; }
+        if (!fields.programme) { setError('signupProgramme', 'signupProgrammeError', 'Please select a programme.'); valid = false; }
+
+        if (valid) window.location.href = SYSTEM_SIGNUP_URL;
+        return false;
+    }
+
+    /* ── Mobile Nav ── */
+    function toggleNav() {
+        document.getElementById('navLinks').classList.toggle('open');
+    }
+
+    /* ── Close nav on link click ── */
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.addEventListener('click', () => {
+            document.getElementById('navLinks').classList.remove('open');
+        });
+    });
+
+    /* ── Escape key closes modals ── */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeModal('loginModal');
+            closeModal('signupModal');
+        }
+    });
+</script>
+</body>
+</html>
