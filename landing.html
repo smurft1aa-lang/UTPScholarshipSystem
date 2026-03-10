@@ -1074,15 +1074,15 @@
 
 <script>
     /* ── System URL — your live app ── */
-    const SYSTEM_LOGIN_URL = '/login.php';
-    const SYSTEM_SIGNUP_URL = '/signup.php';
+    const SYSTEM_LOGIN_URL = '/auth/login.php';
+    const SYSTEM_SIGNUP_URL = '/auth/signup.php';
 
     /* ── Modal Logic ── */
     function openModal(type) {
         if (type === 'login') {
-            window.location.href = 'http://localhost:8000/login.php';
-        } else {
-            window.location.href = 'http://localhost:8000/signup.php'; // or '/signup.php' depending on the app structure, but forcing localhost:8000 to match user's explicit request
+            window.location.href = 'http://localhost:8000/auth/login.php';
+        } else if (type === 'signup') {
+            window.location.href = 'http://localhost:8000/auth/signup.php'; // or '/signup.php' depending on the app structure, but forcing localhost:8000 to match user's explicit request
         }
     }
     function closeModal(id) {

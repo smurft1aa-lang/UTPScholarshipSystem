@@ -2,8 +2,8 @@
 /**
  * Sign Up Page
  */
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 setSecurityHeaders();
 initSession();
@@ -372,7 +372,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
 
                 <div class="auth-footer">
-                    Already have an account? <a href="/login.php">Log In</a>
+                    Already have an account? <a href="/auth/login.php">Log In</a>
                 </div>
             </div>
         </div>

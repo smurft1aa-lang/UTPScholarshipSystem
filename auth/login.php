@@ -2,8 +2,8 @@
 /**
  * Login Page
  */
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 setSecurityHeaders();
 initSession();
@@ -311,11 +311,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <button type="submit" class="btn-submit">Log In</button>
                     
-                    <a href="/forgot-password.php" class="forgot-password">Forgot password?</a>
+                    <a href="/auth/forgot-password.php" class="forgot-password">Forgot password?</a>
                 </form>
 
                 <div class="auth-footer">
-                    Don't have an account? <a href="/signup.php">Sign Up</a>
+                    Don't have an account? <a href="/auth/signup.php">Sign Up</a>
                 </div>
                 <!-- Optional: kept for backwards compatibility if they had a back link -->
                 <div class="back-link">

@@ -65,7 +65,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
             <strong>Email Verification Required:</strong> Please verify your email to submit applications or check eligibility.
         </div>
-        <form method="POST" action="/resend-verification.php" style="margin:0;">
+        <form method="POST" action="/auth/resend-verification.php" style="margin:0;">
             <?= csrfField() ?>
             <button type="submit" class="btn btn-orange btn-sm">Resend verification email</button>
         </form>

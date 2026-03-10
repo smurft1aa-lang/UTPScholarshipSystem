@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 setSecurityHeaders();
 initSession();
@@ -40,14 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $appUrl = getenv('APP_URL') ?: 'http://localhost';
                 $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
-                $resetLink = rtrim($appUrl, '/') . "/reset-password.php?token=" . urlencode($token);
+                $resetLink = rtrim($appUrl, '/') . "/auth/reset-password.php?token=" . urlencode($token);
                 
                 $subject = "Reset Your Password - UTP System";
                 $message = "Hello {$user['full_name']},\n\nYou requested a password reset. Click the link below to set a new password:\n\n$resetLink\n\nThis link will expire in 1 hour.";
                 $headers = "From: $mailFrom\r\nReply-To: $mailFrom";
                 @mail($email, $subject, $message, $headers);
                 
-                require_once __DIR__ . '/includes/audit.php';
+                require_once __DIR__ . '/../includes/audit.php';
                 logAudit($user['id'], 'Password Reset Requested');
             }
             // Always show success to prevent email enumeration
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-orange btn-block btn-lg">Send Reset Link</button>
             </form>
             <p class="auth-footer" style="text-align:center; margin-top:16px;">
-                <a href="/login.php">Back to Login</a>
+                <a href="/auth/login.php">Back to Login</a>
             </p>
         </div>
     </div>

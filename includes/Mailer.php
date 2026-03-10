@@ -13,7 +13,7 @@ function sendVerificationEmail($userId, $email, $fullName) {
 
     $appUrl = getenv('APP_URL') ?: 'http://localhost';
     $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
-    $verifyLink = rtrim($appUrl, '/') . "/verify-email.php?token=" . urlencode($token);
+    $verifyLink = rtrim($appUrl, '/') . "/auth/verify-email.php?token=" . urlencode($token);
     
     $subject = "Verify Your UTP Application Account";
     $message = "Hello $fullName,\n\nPlease verify your email address by clicking the link below:\n\n$verifyLink\n\nThis link will expire in 24 hours.\n\nThank you.";

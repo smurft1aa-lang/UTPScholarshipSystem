@@ -34,8 +34,8 @@ if (isLoggedIn()) {
                 UTP System
             </a>
             <div class="navbar-right">
-                <a href="/login.php" class="btn btn-outline btn-sm">Log In</a>
-                <a href="/signup.php" class="btn btn-orange btn-sm">Sign Up</a>
+                <a href="/auth/login.php" class="btn btn-outline btn-sm">Log In</a>
+                <a href="/auth/signup.php" class="btn btn-orange btn-sm">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -44,8 +44,8 @@ if (isLoggedIn()) {
         <h1>Find Your Perfect Programme & Scholarship</h1>
         <p>Enter your SPM, O-Level, or IGCSE results and instantly discover which UTP foundation programmes you qualify for, along with matching scholarships and sponsorships.</p>
         <div class="hero-actions">
-            <a href="/signup.php" class="btn btn-orange btn-lg">Get Started</a>
-            <a href="/login.php" class="btn btn-outline btn-lg">Log In</a>
+            <a href="/auth/signup.php" class="btn btn-orange btn-lg">Get Started</a>
+            <a href="/auth/login.php" class="btn btn-outline btn-lg">Log In</a>
         </div>
     </section>
 

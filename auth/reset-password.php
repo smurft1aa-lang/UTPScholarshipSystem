@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 setSecurityHeaders();
 initSession();
@@ -18,7 +18,7 @@ $record = $stmt->fetch();
 
 if (!$record) {
     $_SESSION['error'] = "Invalid or expired password reset link.";
-    header("Location: /forgot-password.php");
+    header("Location: /auth/forgot-password.php");
     exit;
 }
 
@@ -41,11 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$hash, $record['user_id']]);
             $db->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$record['user_id']]);
             
-            require_once __DIR__ . '/includes/audit.php';
+            require_once __DIR__ . '/../includes/audit.php';
             logAudit($record['user_id'], 'Password Reset Successful');
             
             $_SESSION['success'] = "Password reset successfully. You can now log in.";
-            header("Location: /login.php");
+            header("Location: /auth/login.php");
             exit;
         }
     }
