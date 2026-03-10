@@ -6,6 +6,23 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/security.php';
 
+function sendVerificationEmail($userId, $email, $fullName) {
+    $db = getDB();
+    $db->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
+
+    $token = bin2hex(random_bytes(32));
+    $db->prepare("INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))")->execute([$userId, $token]);
+
+    $appUrl = getenv('APP_URL') ?: 'http://localhost';
+    $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
+    $verifyLink = rtrim($appUrl, '/') . "/verify-email.php?token=" . urlencode($token);
+    
+    $subject = "Verify Your UTP Application Account";
+    $message = "Hello $fullName,\n\nPlease verify your email address by clicking the link below:\n\n$verifyLink\n\nThis link will expire in 24 hours.\n\nThank you.";
+    $headers = "From: $mailFrom\r\nReply-To: $mailFrom";
+    @mail($email, $subject, $message, $headers);
+}
+
 function initSession() {
     if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.cookie_lifetime', 0);
@@ -45,16 +62,22 @@ function registerUser($fullName, $email, $password, $icNumber, $phone) {
 
     $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 
-    $stmt = $db->prepare("INSERT INTO users (full_name, email, password_hash, ic_number, phone, role) VALUES (?, ?, ?, ?, ?, 'student')");
+    $stmt = $db->prepare("INSERT INTO users (full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (?, ?, ?, ?, ?, 'student', 0)");
     $stmt->execute([$fullName, $email, $hash, $icNumber, $phone]);
 
     $userId = $db->lastInsertId();
+
+    require_once __DIR__ . '/audit.php';
+    logAudit($userId, 'User Registered', 'User', $userId, "Email: $email");
+
+    sendVerificationEmail($userId, $email, $fullName);
 
     initSession();
     session_regenerate_id(true);
     $_SESSION['user_id'] = $userId;
     $_SESSION['role'] = 'student';
     $_SESSION['full_name'] = $fullName;
+    $_SESSION['email_verified'] = 0;
 
     return ['success' => true, 'user_id' => $userId];
 }
@@ -67,7 +90,7 @@ function loginUser($email, $password) {
         return ['success' => false, 'error' => 'Too many login attempts. Please try again later.'];
     }
 
-    $stmt = $db->prepare("SELECT id, full_name, email, password_hash, role FROM users WHERE email = ?");
+    $stmt = $db->prepare("SELECT id, full_name, email, password_hash, role, email_verified FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
@@ -83,12 +106,20 @@ function loginUser($email, $password) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['role'] = $user['role'];
     $_SESSION['full_name'] = $user['full_name'];
+    $_SESSION['email_verified'] = $user['email_verified'];
+
+    require_once __DIR__ . '/audit.php';
+    logAudit($user['id'], 'User Logged In');
 
     return ['success' => true, 'role' => $user['role']];
 }
 
 function logoutUser() {
     initSession();
+    if (isset($_SESSION['user_id'])) {
+        require_once __DIR__ . '/audit.php';
+        logAudit($_SESSION['user_id'], 'User Logged Out');
+    }
     $_SESSION = [];
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
@@ -143,6 +174,20 @@ function requireStudent() {
     requireLogin();
     if (!isStudent()) {
         header('Location: /admin/dashboard.php');
+        exit;
+    }
+}
+
+function isVerified() {
+    initSession();
+    return isset($_SESSION['email_verified']) && (int)$_SESSION['email_verified'] === 1;
+}
+
+function requireVerified() {
+    requireStudent();
+    if (!isVerified()) {
+        $_SESSION['error'] = 'Please verify your email to access this page.';
+        header('Location: /student/dashboard.php');
         exit;
     }
 }

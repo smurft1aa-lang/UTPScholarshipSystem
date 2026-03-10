@@ -1,0 +1,93 @@
+<?php
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/security.php';
+
+setSecurityHeaders();
+initSession();
+
+if (isLoggedIn()) {
+    header('Location: /student/dashboard.php');
+    exit;
+}
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Invalid form submission.';
+    } else {
+        $email = sanitize($_POST['email'] ?? '');
+        $ip = getClientIP();
+        
+        // Rate limit resets (3 per hour)
+        if (!checkRateLimit($ip . '_reset', 3, 60)) {
+            $error = "Too many reset requests. Please try again later.";
+        } else {
+            recordLoginAttempt($ip . '_reset');
+            
+            $db = getDB();
+            $stmt = $db->prepare("SELECT id, full_name FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            
+            if ($user) {
+                // Delete existing tokens
+                $db->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$user['id']]);
+                
+                $token = bin2hex(random_bytes(32));
+                $db->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))")->execute([$user['id'], $token]);
+                
+                $appUrl = getenv('APP_URL') ?: 'http://localhost';
+                $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
+                $resetLink = rtrim($appUrl, '/') . "/reset-password.php?token=" . urlencode($token);
+                
+                $subject = "Reset Your Password - UTP System";
+                $message = "Hello {$user['full_name']},\n\nYou requested a password reset. Click the link below to set a new password:\n\n$resetLink\n\nThis link will expire in 1 hour.";
+                $headers = "From: $mailFrom\r\nReply-To: $mailFrom";
+                @mail($email, $subject, $message, $headers);
+                
+                require_once __DIR__ . '/includes/audit.php';
+                logAudit($user['id'], 'Password Reset Requested');
+            }
+            // Always show success to prevent email enumeration
+            $success = "If your email is registered, you will receive a reset link shortly.";
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-card">
+            <a href="/" class="navbar-brand flex-center mb-6">
+                <span class="brand-icon">U</span>
+                UTP System
+            </a>
+            <h1>Forgot Password</h1>
+            <p class="subtitle">Enter your email to receive a reset link</p>
+            <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+            <?php if ($success): ?><div class="alert alert-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+            
+            <form method="POST">
+                <?= csrfField() ?>
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-orange btn-block btn-lg">Send Reset Link</button>
+            </form>
+            <p class="auth-footer" style="text-align:center; margin-top:16px;">
+                <a href="/login.php">Back to Login</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

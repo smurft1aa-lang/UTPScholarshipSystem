@@ -74,6 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
                     <div class="form-error" id="password_error"></div>
                 </div>
+                <div style="text-align: right; margin-bottom: 16px;">
+                    <a href="/forgot-password.php" style="font-size: 0.85rem; color: var(--text-secondary);">Forgot password?</a>
+                </div>
                 <button type="submit" class="btn btn-orange btn-block btn-lg">Log In</button>
             </form>
 

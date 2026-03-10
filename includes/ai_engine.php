@@ -187,6 +187,33 @@ class AIEngine {
             ? round(($totalWeightedScore / $maxWeightedScore) * 100, 1)
             : 0;
 
+        // Apply Materials Engineering specific weight boost
+        if (strtolower($programme['name']) === 'materials engineering') {
+            $physicsGradeStr = $studentGrades['physics'] ?? '';
+            $chemistryGradeStr = $studentGrades['chemistry'] ?? '';
+            
+            $physicsPoints = self::gradeToPoints($physicsGradeStr, $qualType);
+            $chemistryPoints = self::gradeToPoints($chemistryGradeStr, $qualType);
+            
+            if ($physicsPoints >= 9 && $chemistryPoints >= 9) {
+                // Increase fit percentage by 5%, capped at 100%
+                $fitPercentage = min(100, $fitPercentage + 5.0);
+            }
+        }
+
+        // Add confidence label
+        if ($fitPercentage >= 90) {
+            $confidenceLabel = "Excellent Match";
+        } elseif ($fitPercentage >= 75) {
+            $confidenceLabel = "Strong Match";
+        } elseif ($fitPercentage >= 60) {
+            $confidenceLabel = "Good Match";
+        } elseif ($fitPercentage >= 40) {
+            $confidenceLabel = "Possible Match";
+        } else {
+            $confidenceLabel = "Not Recommended";
+        }
+
         // Generate recommendation text
         $recommendation = self::generateRecommendation($programme['name'], $allMet, $fitPercentage, $gaps);
 
@@ -197,6 +224,7 @@ class AIEngine {
             'description' => $programme['description'],
             'eligible' => $allMet,
             'fit_percentage' => $fitPercentage,
+            'confidence_label' => $confidenceLabel,
             'subject_results' => $subjectResults,
             'gaps' => $gaps,
             'recommendation' => $recommendation

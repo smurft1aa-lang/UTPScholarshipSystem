@@ -1,0 +1,15 @@
+# Block PHP execution in uploads directory
+<FilesMatch "\.(php|php[34578]|phtml|phar)$">
+    Require all denied
+</FilesMatch>
+
+# Fallback: Deny execution via apache php_flag
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>

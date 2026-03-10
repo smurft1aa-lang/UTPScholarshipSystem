@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     ic_number VARCHAR(20) NOT NULL UNIQUE,
     phone VARCHAR(20) NOT NULL,
     role ENUM('student', 'admin') NOT NULL DEFAULT 'student',
+    email_verified TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -120,6 +121,47 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     INDEX idx_ip_time (ip_address, attempted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS email_verifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    doc_type ENUM('ic', 'certificate', 'photo') NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    file_size INT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    target_type VARCHAR(50),
+    target_id INT,
+    details TEXT,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Academic fees reference table
 CREATE TABLE IF NOT EXISTS fee_structure (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -133,10 +175,10 @@ CREATE TABLE IF NOT EXISTS fee_structure (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================
--- SEED: Default admin (password: Admin@1234, hash generated at setup)
+-- SEED: Default admin (password generated at runtime in setup_db.php)
 -- =====================================================
-INSERT INTO users (full_name, email, password_hash, ic_number, phone, role)
-VALUES ('System Admin', 'admin@utp.edu.my', '$2y$12$PLACEHOLDER_HASH_REPLACED_AT_SETUP', '000000000000', '0000000000', 'admin');
+INSERT INTO users (full_name, email, password_hash, ic_number, phone, role, email_verified)
+VALUES ('System Admin', 'admin@utp.edu.my', 'PLACEHOLDER_HASH_REPLACED_AT_SETUP', '000000000000', '0000000000', 'admin', 1);
 
 -- =====================================================
 -- SEED: Programmes with ACTUAL UTP fees
@@ -177,6 +219,11 @@ INSERT INTO programmes (name, category, description, duration, foundation_fee, u
 -- Geoscience
 INSERT INTO programmes (name, category, description, duration, foundation_fee, undergraduate_fee) VALUES
 ('Geoscience', 'Engineering & Science', 'Foundation programme in geoscience at UTP.', '3 Years 4 Months', 21000.00, 95200.00);
+
+-- New additions
+INSERT INTO programmes (name, category, description, duration, foundation_fee, undergraduate_fee) VALUES
+('Materials Engineering', 'Engineering & Science', 'Foundation programme leading to materials engineering studies at UTP.', '4 Years', 21000.00, 110000.00),
+('Industrial Physics', 'Engineering & Science', 'Foundation programme leading to industrial physics studies at UTP.', '3 Years 4 Months', 21000.00, 82500.00);
 
 -- =====================================================
 -- ENTRY REQUIREMENTS - SPM (Pass with minimum Grade C)
@@ -297,6 +344,24 @@ INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, wei
 (14, 'SPM', 'Physics', 'C', 1.00),
 (14, 'SPM', 'Chemistry', 'C', 1.00);
 
+-- Materials Engineering (SPM) - same as Engineering group 2
+INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
+(15, 'SPM', 'Bahasa Melayu', 'C', 0.80),
+(15, 'SPM', 'English', 'C', 0.90),
+(15, 'SPM', 'Mathematics', 'C', 1.00),
+(15, 'SPM', 'Additional Mathematics', 'C', 1.00),
+(15, 'SPM', 'Physics', 'C', 1.00),
+(15, 'SPM', 'Chemistry', 'C', 1.00);
+
+-- Industrial Physics (SPM) - same as Engineering group 2
+INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
+(16, 'SPM', 'Bahasa Melayu', 'C', 0.80),
+(16, 'SPM', 'English', 'C', 0.90),
+(16, 'SPM', 'Mathematics', 'C', 1.00),
+(16, 'SPM', 'Additional Mathematics', 'C', 1.00),
+(16, 'SPM', 'Physics', 'C', 1.00),
+(16, 'SPM', 'Chemistry', 'C', 1.00);
+
 -- =====================================================
 -- ENTRY REQUIREMENTS - O-Level / IGCSE (Pass with minimum Grade C)
 -- =====================================================
@@ -402,6 +467,22 @@ INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, wei
 (14, 'O-Level', 'Chemistry', 'C', 1.00),
 (14, 'O-Level', 'Additional Mathematics', 'C', 1.00),
 (14, 'O-Level', 'Other Subject I', 'C', 0.80);
+
+-- Materials Engineering (O-Level)
+INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
+(15, 'O-Level', 'Mathematics', 'C', 1.00),
+(15, 'O-Level', 'Physics', 'C', 1.00),
+(15, 'O-Level', 'Chemistry', 'C', 1.00),
+(15, 'O-Level', 'Additional Mathematics', 'C', 1.00),
+(15, 'O-Level', 'Other Subject I', 'C', 0.80);
+
+-- Industrial Physics (O-Level)
+INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
+(16, 'O-Level', 'Mathematics', 'C', 1.00),
+(16, 'O-Level', 'Physics', 'C', 1.00),
+(16, 'O-Level', 'Chemistry', 'C', 1.00),
+(16, 'O-Level', 'Additional Mathematics', 'C', 1.00),
+(16, 'O-Level', 'Other Subject I', 'C', 0.80);
 
 -- Copy O-Level requirements to IGCSE (identical requirements)
 INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight)
@@ -523,6 +604,14 @@ WHERE s.name = 'Halliburton Energy Sdn Bhd' AND p.name IN ('Petroleum Engineerin
 INSERT INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Schlumberger WTA (M) Sdn Bhd' AND p.category = 'Engineering & Science';
+
+-- Link new programmes to specific scholarships requested
+-- (PETRONAS, PTPTN, JPA, MARA, PNB are already linked by earlier query since they select all programmes, same for TAZU etc.)
+-- Link Baker Hughes, Schlumberger, Halliburton to new programmes (15, 16)
+INSERT INTO scholarship_programme (scholarship_id, programme_id)
+SELECT s.id, p.id FROM scholarships s, programmes p
+WHERE s.name IN ('Baker Hughes', 'Schlumberger WTA (M) Sdn Bhd', 'Halliburton Energy Sdn Bhd', 'Yayasan Sime Darby') 
+AND p.id IN (15, 16);
 
 -- Murata Electronics - EE/Computer Engineering
 INSERT INTO scholarship_programme (scholarship_id, programme_id)

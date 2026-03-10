@@ -50,15 +50,37 @@ if ($application) {
     if (!empty($eligibleIds)) {
         $placeholders = str_repeat('?,', count($eligibleIds) - 1) . '?';
         $stmt = $db->prepare("
-            SELECT DISTINCT s.*
+            SELECT DISTINCT s.*, GROUP_CONCAT(sp.programme_id) as programme_ids
             FROM scholarships s
             JOIN scholarship_programme sp ON s.id = sp.scholarship_id
             WHERE sp.programme_id IN ({$placeholders})
             AND s.is_active = 1 AND (s.end_date IS NULL OR s.end_date >= CURDATE())
+            GROUP BY s.id
         ");
         $stmt->execute($eligibleIds);
         $scholarships = $stmt->fetchAll();
     }
+    
+    // Supplement with full AI run to get gaps and confidence labels
+    require_once __DIR__ . '/../includes/ai_engine.php';
+    $aiResultsRaw = AIEngine::checkEligibility($application['qualification_id']);
+    $aiMap = [];
+    foreach ($aiResultsRaw as $air) {
+        $aiMap[$air['programme_id']] = $air;
+    }
+    
+    foreach ($results as &$r) {
+        if (isset($aiMap[$r['programme_id']])) {
+            $r['confidence_label'] = $aiMap[$r['programme_id']]['confidence_label'];
+            $r['gaps'] = $aiMap[$r['programme_id']]['gaps'];
+            // Overwrite fit_percentage to include the optional bonus if it wasn't captured when DB saved
+            $r['fit_percentage'] = $aiMap[$r['programme_id']]['fit_percentage'];
+        } else {
+            $r['confidence_label'] = 'Unknown';
+            $r['gaps'] = [];
+        }
+    }
+    unset($r); // safe unset
 }
 
 require_once __DIR__ . '/../includes/header.php';
@@ -111,8 +133,16 @@ require_once __DIR__ . '/../includes/header.php';
             ?>
             <div class="result-card">
                 <div class="result-card-header">
-                    <span class="badge badge-<?= $badgeColor ?>"><?= htmlspecialchars($r['category']) ?></span>
-                    <span class="fit-score <?= $fitClass ?>">Fit: <?= $r['fit_percentage'] ?>%</span>
+                    <div>
+                        <span class="badge badge-<?= $badgeColor ?>"><?= htmlspecialchars($r['category']) ?></span>
+                        <?php 
+                        $confClass = 'gray';
+                        if ($r['confidence_label'] === 'Excellent Match' || $r['confidence_label'] === 'Strong Match') $confClass = 'green';
+                        elseif ($r['confidence_label'] === 'Good Match' || $r['confidence_label'] === 'Possible Match') $confClass = 'yellow';
+                        elseif ($r['confidence_label'] === 'Not Recommended') $confClass = 'red';
+                        ?>
+                        <span class="badge badge-<?= $confClass ?>" style="margin-left:8px;"><?= $r['confidence_label'] ?></span>
+                    </div>
                 </div>
                 <h3><?= htmlspecialchars($r['programme_name']) ?></h3>
                 <p><?= htmlspecialchars($r['programme_desc']) ?></p>
@@ -121,9 +151,45 @@ require_once __DIR__ . '/../includes/header.php';
                         <?= htmlspecialchars($r['recommendation_text']) ?>
                     </p>
                 <?php endif; ?>
-                <div class="progress-bar">
+                
+                <div class="progress-bar mb-4" style="margin-top:12px;">
                     <div class="progress-fill <?= $fitClass === 'high' ? 'green' : ($fitClass === 'medium' ? 'yellow' : 'red') ?>" style="width:<?= $r['fit_percentage'] ?>%"></div>
+                    <div style="font-size:0.85rem; font-weight:bold; margin-top:4px; text-align:right;">Fit: <?= $r['fit_percentage'] ?>%</div>
                 </div>
+
+                <?php if (!empty($r['gaps'])): ?>
+                <details style="margin-bottom:12px; background:#fefefe; border:1px solid #eee; padding:8px; border-radius:4px;">
+                    <summary style="font-size:0.85rem; cursor:pointer; color:var(--text-secondary); font-weight:bold;">Gap Analysis (<?= count($r['gaps']) ?> gaps)</summary>
+                    <ul style="margin-top:8px; font-size:0.8rem; color:var(--text-muted); padding-left:20px;">
+                        <?php foreach($r['gaps'] as $g): ?>
+                            <li><strong><?= htmlspecialchars($g['subject']) ?>:</strong> <?= htmlspecialchars($g['message']) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </details>
+                <?php endif; ?>
+
+                <?php
+                $progSchols = array_filter($scholarships, function($s) use ($r) {
+                    $pids = explode(',', $s['programme_ids'] ?? '');
+                    return in_array($r['programme_id'], $pids);
+                });
+                if (!empty($progSchols)):
+                ?>
+                <div class="mt-4" style="border-top:1px solid var(--border); padding-top:12px; margin-bottom:12px;">
+                    <strong style="font-size:0.85rem; color:var(--text-secondary);">Matching Scholarships:</strong>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+                        <?php foreach (array_slice($progSchols, 0, 3) as $ps): ?>
+                            <span class="badge badge-outline" style="font-size:0.75rem;" title="<?= htmlspecialchars($ps['name']) ?>">
+                                <?= htmlspecialchars(strlen($ps['name']) > 25 ? substr($ps['name'], 0, 22).'...' : $ps['name']) ?>
+                            </span>
+                        <?php endforeach; ?>
+                        <?php if (count($progSchols) > 3): ?>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">+<?= count($progSchols)-3 ?> more</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <div class="result-card-footer">
                     <span>Foundation: RM <?= number_format($r['foundation_fee']) ?></span>
                     <span>Undergraduate: RM <?= number_format($r['undergraduate_fee']) ?></span>
@@ -161,31 +227,7 @@ require_once __DIR__ . '/../includes/header.php';
         </details>
         <?php endif; ?>
 
-        <!-- Matching Scholarships -->
-        <?php if (!empty($scholarships)): ?>
-        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Matching Scholarships & Sponsorships</h2>
-        <div class="grid-auto mb-6">
-            <?php foreach ($scholarships as $s): ?>
-            <?php
-                $typeLabels = ['scholarship' => 'Scholarship', 'loan' => 'Loan', 'sponsorship' => 'Sponsorship', 'financial_aid' => 'Financial Aid'];
-                $typeColors = ['scholarship' => 'green', 'loan' => 'blue', 'sponsorship' => 'purple', 'financial_aid' => 'yellow'];
-                $tLabel = $typeLabels[$s['type'] ?? 'scholarship'] ?? 'Scholarship';
-                $tColor = $typeColors[$s['type'] ?? 'scholarship'] ?? 'green';
-            ?>
-            <div class="result-card">
-                <div class="result-card-header">
-                    <span class="badge badge-<?= $tColor ?>"><?= $tLabel ?></span>
-                </div>
-                <h3><?= htmlspecialchars($s['name']) ?></h3>
-                <p><?= htmlspecialchars($s['description']) ?></p>
-                <div class="result-card-footer">
-                    <span>RM <?= number_format($s['budget_min']) ?> - RM <?= number_format($s['budget_max']) ?></span>
-                    <span><?= date('d/m/Y', strtotime($s['start_date'])) ?> - <?= date('d/m/Y', strtotime($s['end_date'])) ?></span>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
+        <!-- Scholarships section removed as they are now grouped under each programme -->
 
         <!-- Application Submission Form -->
         <?php if (empty($application['programme_id_1'])): ?>

@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if (in_array($action, ['processing', 'approved', 'rejected']) && $appId > 0) {
             $stmt = $db->prepare("UPDATE applications SET status = ?, admin_notes = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?");
             $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
+            require_once __DIR__ . '/../includes/audit.php';
+            logAudit($_SESSION['user_id'], 'Application Status Changed', 'Application', $appId, "Status: $action");
         }
     }
     header('Location: /admin/applications.php' . ($statusFilter ? '?status=' . $statusFilter : ''));
@@ -42,10 +44,24 @@ if ($search) {
 
 $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-$stmt = $db->prepare("
+// Validation for pagination
+$page = max(1, intval($_GET['page'] ?? 1));
+$perPage = 10;
+$offset = ($page - 1) * $perPage;
+
+// Count total records for pagination
+$countQuery = "SELECT COUNT(*) FROM applications a JOIN users u ON a.user_id = u.id {$whereClause}";
+$stmt = $db->prepare($countQuery);
+$stmt->execute($params);
+$totalRecords = $stmt->fetchColumn();
+$totalPages = ceil($totalRecords / $perPage);
+
+// Data query
+$query = "
     SELECT a.*, u.full_name, u.email, u.ic_number, q.qual_type,
            p1.name as prog1_name, p2.name as prog2_name, p3.name as prog3_name, s.name as schol_name,
-           (SELECT COUNT(*) FROM eligibility_results er WHERE er.application_id = a.id AND er.eligible = 1) as eligible_count
+           (SELECT COUNT(*) FROM eligibility_results er WHERE er.application_id = a.id AND er.eligible = 1) as eligible_count,
+           (SELECT COUNT(*) FROM documents d WHERE d.user_id = a.user_id) as doc_count
     FROM applications a
     JOIN users u ON a.user_id = u.id
     JOIN qualifications q ON a.qualification_id = q.id
@@ -55,8 +71,18 @@ $stmt = $db->prepare("
     LEFT JOIN scholarships s ON a.scholarship_id = s.id
     {$whereClause}
     ORDER BY a.created_at DESC
-");
-$stmt->execute($params);
+    LIMIT ? OFFSET ?
+";
+
+$stmt = $db->prepare($query);
+// Bind params dynamically
+$paramIndex = 1;
+foreach ($params as $param) {
+    $stmt->bindValue($paramIndex++, $param);
+}
+$stmt->bindValue($paramIndex++, $perPage, PDO::PARAM_INT);
+$stmt->bindValue($paramIndex, $offset, PDO::PARAM_INT);
+$stmt->execute();
 $applications = $stmt->fetchAll();
 ?>
 
@@ -110,8 +136,14 @@ $applications = $stmt->fetchAll();
                         <span style="font-size:0.8rem; color:var(--text-muted);"><?= htmlspecialchars($app['email']) ?></span>
                     </td>
                     <td><?= htmlspecialchars($app['ic_number']) ?></td>
-                    <td><?= htmlspecialchars($app['qual_type']) ?><br><small><?= $app['eligible_count'] ?> eligible</small></td>
                     <td>
+                        <?= htmlspecialchars($app['qual_type']) ?><br>
+                        <small style="color:var(--text-muted);"><?= $app['eligible_count'] ?> eligible</small>
+                    </td>
+                    <td>
+                        <div style="font-size:0.8rem; margin-bottom:4px;">
+                            Docs: <span class="badge badge-<?= $app['doc_count'] >= 3 ? 'green' : 'red' ?>"><?= $app['doc_count'] ?>/3</span>
+                        </div>
                         <?php if ($app['prog1_name']): ?>
                             <div style="font-size:0.85rem; line-height:1.4;">
                                 <strong>1.</strong> <?= htmlspecialchars($app['prog1_name']) ?><br>
@@ -138,8 +170,9 @@ $applications = $stmt->fetchAll();
                 <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
                     <div class="modal">
                         <h2>Review Application #<?= $app['id'] ?></h2>
-                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
+                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?> (<?= htmlspecialchars($app['ic_number']) ?>)</p>
                         <p><strong>Qualification:</strong> <?= htmlspecialchars($app['qual_type']) ?> (Eligible for <?= $app['eligible_count'] ?> programmes)</p>
+                        <p><strong>Documents:</strong> <?= $app['doc_count'] ?> out of 3 uploaded</p>
                         
                         <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border); margin:12px 0;">
                             <?php if ($app['prog1_name']): ?>
@@ -187,5 +220,26 @@ $applications = $stmt->fetchAll();
         </tbody>
     </table>
 </div>
+
+<!-- Pagination -->
+<?php if ($totalPages > 1): ?>
+<div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px;">
+    <?php
+    $queryString = '';
+    if ($statusFilter) $queryString .= '&status=' . urlencode($statusFilter);
+    if ($search) $queryString .= '&search=' . urlencode($search);
+    ?>
+    
+    <?php if ($page > 1): ?>
+        <a href="?page=<?= $page - 1 . $queryString ?>" class="btn btn-outline btn-sm">Previous</a>
+    <?php endif; ?>
+    
+    <span style="font-size:0.9rem; color:var(--text-secondary);">Page <?= $page ?> of <?= $totalPages ?></span>
+    
+    <?php if ($page < $totalPages): ?>
+        <a href="?page=<?= $page + 1 . $queryString ?>" class="btn btn-outline btn-sm">Next</a>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/admin_footer.php'; ?>

@@ -7,11 +7,28 @@ require_once __DIR__ . '/admin_header.php';
 
 $db = getDB();
 
+// Handle quick status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once __DIR__ . '/../includes/security.php';
+    if (validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $appId = intval($_POST['app_id'] ?? 0);
+        $action = sanitize($_POST['action']);
+        $notes = sanitize($_POST['admin_notes'] ?? '');
+        if (in_array($action, ['processing', 'approved', 'rejected']) && $appId > 0) {
+            $stmt = $db->prepare("UPDATE applications SET status = ?, admin_notes = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
+            require_once __DIR__ . '/../includes/audit.php';
+            logAudit($_SESSION['user_id'], 'Application Status Changed', 'Application', $appId, "Status: $action");
+        }
+    }
+    header('Location: /admin/dashboard.php');
+    exit;
+}
+
 // Stats
-$totalProgrammes = $db->query("SELECT COUNT(*) FROM programmes WHERE is_active = 1")->fetchColumn();
+$totalStudents = $db->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
 $totalApplications = $db->query("SELECT COUNT(*) FROM applications")->fetchColumn();
-$pendingApproval = $db->query("SELECT COUNT(*) FROM applications WHERE status = 'submitted' OR status = 'processing'")->fetchColumn();
-$activeScholarships = $db->query("SELECT COUNT(*) FROM scholarships WHERE is_active = 1 AND (end_date IS NULL OR end_date >= CURDATE())")->fetchColumn();
+$pendingReview = $db->query("SELECT COUNT(*) FROM applications WHERE status = 'submitted' OR status = 'processing'")->fetchColumn();
 
 // Status counts
 $statusCounts = [];
@@ -23,10 +40,21 @@ $approved = $statusCounts['approved'] ?? 0;
 $processing = $statusCounts['processing'] ?? 0;
 $submitted = $statusCounts['submitted'] ?? 0;
 $rejected = $statusCounts['rejected'] ?? 0;
-$maxStatus = max(1, $approved, $processing, $submitted, $rejected);
 
-// Recent applications
-$stmt = $db->query("SELECT a.*, u.full_name, u.email, q.qual_type FROM applications a JOIN users u ON a.user_id = u.id JOIN qualifications q ON a.qualification_id = q.id ORDER BY a.created_at DESC LIMIT 5");
+// Recent applications (last 10)
+$stmt = $db->query("
+    SELECT a.*, u.full_name, u.email, q.qual_type,
+           p1.name as prog1_name, p2.name as prog2_name, p3.name as prog3_name, s.name as schol_name
+    FROM applications a 
+    JOIN users u ON a.user_id = u.id 
+    JOIN qualifications q ON a.qualification_id = q.id 
+    LEFT JOIN programmes p1 ON a.programme_id_1 = p1.id
+    LEFT JOIN programmes p2 ON a.programme_id_2 = p2.id
+    LEFT JOIN programmes p3 ON a.programme_id_3 = p3.id
+    LEFT JOIN scholarships s ON a.scholarship_id = s.id
+    ORDER BY a.created_at DESC 
+    LIMIT 10
+");
 $recentApps = $stmt->fetchAll();
 
 // Calendar data
@@ -46,24 +74,26 @@ $today = date('j');
 </div>
 
 <!-- Stat Cards -->
-<div class="stats-grid">
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
     <div class="stat-card purple">
-        <div class="stat-label">Total Programmes</div>
-        <div class="stat-value"><?= $totalProgrammes ?></div>
-        <div class="stat-detail"><?= $totalProgrammes ?> active</div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value"><?= $totalStudents ?></div>
     </div>
     <div class="stat-card blue">
         <div class="stat-label">Total Applications</div>
         <div class="stat-value"><?= $totalApplications ?></div>
     </div>
     <div class="stat-card orange">
-        <div class="stat-label">Pending Approval</div>
-        <div class="stat-value"><?= $pendingApproval ?></div>
-        <div class="stat-detail" style="color:var(--orange);">Review</div>
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-value"><?= $pendingReview ?></div>
     </div>
     <div class="stat-card green">
-        <div class="stat-label">Active Scholarships</div>
-        <div class="stat-value"><?= $activeScholarships ?></div>
+        <div class="stat-label">Approved</div>
+        <div class="stat-value"><?= $approved ?></div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-label">Rejected</div>
+        <div class="stat-value"><?= $rejected ?></div>
     </div>
 </div>
 
@@ -140,9 +170,10 @@ $today = date('j');
             <thead>
                 <tr>
                     <th>Student</th>
-                    <th>Qualification</th>
+                    <th>Programmes & Scholarship</th>
                     <th>Status</th>
                     <th>Date</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -152,14 +183,59 @@ $today = date('j');
                         <strong><?= htmlspecialchars($app['full_name']) ?></strong><br>
                         <span style="font-size:0.8rem; color:var(--text-muted);"><?= htmlspecialchars($app['email']) ?></span>
                     </td>
-                    <td><?= htmlspecialchars($app['qual_type']) ?></td>
+                    <td>
+                        <?php if ($app['prog1_name']): ?>
+                            <div style="font-size:0.85rem;">
+                                1. <?= htmlspecialchars($app['prog1_name']) ?><br>
+                                2. <?= htmlspecialchars($app['prog2_name']) ?><br>
+                                3. <?= htmlspecialchars($app['prog3_name']) ?>
+                            </div>
+                            <?php if ($app['schol_name']): ?>
+                                <span style="font-size:0.8rem; color:var(--purple);">+ <?= htmlspecialchars($app['schol_name']) ?></span>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span style="color:var(--text-muted); font-style:italic;">Pending Selection</span>
+                        <?php endif; ?>
+                    </td>
                     <td>
                         <span class="badge badge-<?= $app['status'] === 'approved' ? 'green' : ($app['status'] === 'rejected' ? 'red' : ($app['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
                             <?= ucfirst($app['status']) ?>
                         </span>
                     </td>
                     <td><?= date('d M Y', strtotime($app['created_at'])) ?></td>
+                    <td>
+                        <button onclick="openModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Review</button>
+                    </td>
                 </tr>
+
+                <!-- Review Modal Inline -->
+                <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
+                    <div class="modal">
+                        <h2>Quick Review #<?= $app['id'] ?></h2>
+                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
+                        <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
+                        <form method="POST" style="margin-top:20px;">
+                            <?php require_once __DIR__ . '/../includes/security.php'; ?>
+                            <?= csrfField() ?>
+                            <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
+                            <div class="form-group">
+                                <label class="form-label">Admin Notes</label>
+                                <textarea name="admin_notes" class="form-input" rows="2" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Update Status</label>
+                                <div class="flex gap-3">
+                                    <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
+                                    <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
+                                    <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-actions">
+                            <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Cancel</button>
+                        </div>
+                    </div>
+                </div>
                 <?php endforeach; ?>
             </tbody>
         </table>

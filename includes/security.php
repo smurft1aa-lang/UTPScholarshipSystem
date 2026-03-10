@@ -114,8 +114,10 @@ function setSecurityHeaders() {
 }
 
 function getClientIP() {
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+    $trustedProxy = getenv('TRUSTED_PROXY');
+    $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    if ($trustedProxy && $remoteAddr === $trustedProxy && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
     }
-    return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    return $remoteAddr;
 }

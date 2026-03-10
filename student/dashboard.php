@@ -38,6 +38,19 @@ if ($latestApp) {
     $eligibleCount = $stmt->fetchColumn();
 }
 
+// Get document upload status
+$stmt = $db->prepare("SELECT doc_type FROM documents WHERE user_id = ?");
+$stmt->execute([$userId]);
+$uploadedDocs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+$requiredDocs = [
+    'ic' => 'IC/Passport Scan',
+    'certificate' => 'Academic Certificate',
+    'photo' => 'Passport Photo'
+];
+
+$missingCount = count($requiredDocs) - count($uploadedDocs);
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -46,6 +59,18 @@ require_once __DIR__ . '/../includes/header.php';
         <h1>Welcome, <?= htmlspecialchars($currentUser['full_name']) ?></h1>
         <p>Check your eligibility for UTP foundation programmes and scholarships.</p>
     </div>
+
+    <?php if (!isVerified()): ?>
+    <div class="alert mb-6" style="background:#fff3cd; color:#856404; border:1px solid #ffeeba; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <strong>Email Verification Required:</strong> Please verify your email to submit applications or check eligibility.
+        </div>
+        <form method="POST" action="/resend-verification.php" style="margin:0;">
+            <?= csrfField() ?>
+            <button type="submit" class="btn btn-orange btn-sm">Resend verification email</button>
+        </form>
+    </div>
+    <?php endif; ?>
 
     <div class="stats-grid">
         <div class="stat-card orange">
@@ -70,11 +95,11 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <div class="grid-2">
+    <div class="grid-3 mb-6">
         <div class="card">
             <h3 style="margin-bottom:10px; font-size:1.05rem;">Check Eligibility</h3>
             <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:18px;">
-                Enter your SPM, O-Level, or IGCSE results to find out which foundation programmes and scholarships you qualify for.
+                Enter your results to find out which foundation programmes and scholarships you qualify for.
             </p>
             <a href="/student/check-eligibility.php" class="btn btn-orange">Check Now</a>
         </div>
@@ -84,6 +109,16 @@ require_once __DIR__ . '/../includes/header.php';
                 View your eligibility results, recommended programmes, and matching scholarships.
             </p>
             <a href="/student/results.php" class="btn btn-outline">View Results</a>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:10px; font-size:1.05rem;">My Documents</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:18px;">
+                Required Docs: <?= count($uploadedDocs) ?> / <?= count($requiredDocs) ?> uploaded.
+                <?php if ($missingCount > 0): ?>
+                    <span style="color:red; font-weight:bold;">(<?= $missingCount ?> Missing)</span>
+                <?php endif; ?>
+            </p>
+            <a href="/student/upload-documents.php" class="btn btn-<?= $missingCount > 0 ? 'orange' : 'outline' ?>">Manage Documents</a>
         </div>
     </div>
 

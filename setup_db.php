@@ -64,8 +64,9 @@ foreach ($statements as $stmt) {
     }
 }
 
-echo "Executed {$count} statements successfully.\n";
+echo "Executed {$count} SQL preparation statements successfully.\n";
 echo "\nDatabase 'utp_scholarship' is ready.\n";
-echo "Admin login: admin@utp.edu.my (password set during setup)\n";
+echo "Admin login: admin@utp.edu.my\n";
+echo "⚠️ Default admin password is Admin@1234 — change this immediately after first login.\n";
 echo "\nYou can now access the system at http://localhost/\n";
 echo "(Make sure Apache is running and DocumentRoot points to this project)\n";

@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 
 initSession();
-requireLogin();
+requireVerified();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /student/dashboard.php');
@@ -48,6 +48,20 @@ try {
     if (!$stmt->fetch()) {
         $_SESSION['error'] = 'Application not found.';
         header("Location: /student/dashboard.php");
+        exit;
+    }
+
+    // Verify all 3 programmes are eligible
+    $stmt = $db->prepare("
+        SELECT COUNT(*) FROM eligibility_results 
+        WHERE application_id = ? 
+        AND programme_id IN (?, ?, ?) 
+        AND eligible = 1
+    ");
+    $stmt->execute([$appId, $prog1, $prog2, $prog3]);
+    if ($stmt->fetchColumn() != 3) {
+        $_SESSION['error'] = 'One or more selected programmes do not match your eligibility results.';
+        header("Location: /student/results.php");
         exit;
     }
 
