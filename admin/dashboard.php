@@ -41,6 +41,8 @@ $processing = $statusCounts['processing'] ?? 0;
 $submitted = $statusCounts['submitted'] ?? 0;
 $rejected = $statusCounts['rejected'] ?? 0;
 
+$maxStatus = max(1, $approved, $processing, $submitted, $rejected);
+
 // Recent applications (last 10)
 $stmt = $db->query("
     SELECT a.*, u.full_name, u.email, q.qual_type,

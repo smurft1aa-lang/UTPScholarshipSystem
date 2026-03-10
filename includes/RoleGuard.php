@@ -43,7 +43,16 @@ function requireStudent() {
 
 function isVerified() {
     initSession();
-    return isset($_SESSION['email_verified']) && (int)$_SESSION['email_verified'] === 1;
+    if (!isset($_SESSION['user_id'])) return false;
+    
+    // Check DB directly to avoid session desync loops
+    $db = require __DIR__ . '/../config/database.php';
+    if (!function_exists('getDB')) return false;
+    
+    $conn = getDB();
+    $stmt = $conn->prepare("SELECT email_verified FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    return (int)$stmt->fetchColumn() === 1;
 }
 
 function requireVerified() {
