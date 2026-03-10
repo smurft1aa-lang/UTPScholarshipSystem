@@ -783,12 +783,12 @@ $csrfToken = generateCSRFToken();
             <li><a href="#about">Blog</a></li>
         </ul>
         <div class="nav-actions">
-            <button class="btn btn-outline" onclick="openModal('login')">
+            <a href="/auth/login.php" class="btn btn-outline">
                 <i class="ph-bold ph-sign-in"></i> Login
-            </button>
-            <button class="btn btn-white" onclick="openModal('signup')">
+            </a>
+            <a href="/auth/signup.php" class="btn btn-white">
                 <i class="ph-bold ph-user-plus"></i> Sign Up
-            </button>
+            </a>
         </div>
         <button class="hamburger" id="hamburgerBtn" onclick="toggleNav()" aria-label="Menu">
             <i class="ph-bold ph-list"></i>
@@ -808,9 +808,9 @@ $csrfToken = generateCSRFToken();
                 <h1>We Guide Your<br>Journey into <span class="highlight">UTP</span></h1>
                 <p>Discover and apply for world-class foundation programmes at Universiti Teknologi PETRONAS. Your future in engineering, technology, and science starts here.</p>
                 <div class="hero-actions">
-                    <button class="btn btn-white" onclick="openModal('signup')" style="padding: 14px 32px; font-size: 1rem;">
+                    <a href="/auth/signup.php" class="btn btn-white" style="padding: 14px 32px; font-size: 1rem;">
                         Apply Now <i class="ph-bold ph-arrow-right"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -900,9 +900,9 @@ $csrfToken = generateCSRFToken();
                 </div>
                 
                 <div class="how-actions">
-                    <button class="btn btn-white" onclick="openModal('signup')">
+                    <a href="/auth/signup.php" class="btn btn-white">
                         Apply Now <i class="ph-bold ph-arrow-right"></i>
-                    </button>
+                    </a>
                     <button class="btn btn-outline" style="padding: 10px 24px;">Read More</button>
                 </div>
             </div>
@@ -957,9 +957,9 @@ $csrfToken = generateCSRFToken();
             <h3><i class="ph-bold ph-rocket-launch cta-icon"></i> Ready to start your journey?</h3>
             <p>Join thousands of students building their future at Universiti Teknologi PETRONAS.</p>
         </div>
-        <button class="btn btn-white" onclick="openModal('signup')" style="padding: 14px 36px; font-size: 1rem;">
+        <a href="/auth/signup.php" class="btn btn-white" style="padding: 14px 36px; font-size: 1rem;">
             Create Account
-        </button>
+        </a>
     </div>
 
     <!-- ── Footer ── -->
@@ -1012,174 +1012,9 @@ $csrfToken = generateCSRFToken();
     </footer>
 </div>
 
-<!-- ═══════════════════ LOGIN MODAL ═══════════════════ -->
-<div class="modal-overlay" id="loginModal" onclick="handleOverlayClick(event, 'loginModal')">
-    <div class="modal">
-        <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
-        <h2>Welcome Back</h2>
-        <p class="modal-subtitle">Log in to your UTP student account</p>
-        <form id="loginForm" onsubmit="return handleLogin(event)">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-            <div class="form-group">
-                <label for="loginEmail">Email Address</label>
-                <input type="email" id="loginEmail" placeholder="your@email.com" required>
-                <div class="form-error" id="loginEmailError"></div>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                <div class="form-error" id="loginPasswordError"></div>
-            </div>
-            <button type="submit" class="btn btn-orange">Login</button>
-        </form>
-        <p class="modal-switch">Don't have an account? <a onclick="switchModal('loginModal','signupModal')">Sign Up</a></p>
-    </div>
-</div>
 
-<!-- ═══════════════════ SIGNUP MODAL ═══════════════════ -->
-<div class="modal-overlay" id="signupModal" onclick="handleOverlayClick(event, 'signupModal')">
-    <div class="modal">
-        <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
-        <h2>Create Account</h2>
-        <p class="modal-subtitle">Sign up to apply for UTP programmes</p>
-        <form id="signupForm" onsubmit="return handleSignup(event)">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-            <div class="form-group">
-                <label for="signupName">Full Name</label>
-                <input type="text" id="signupName" placeholder="As per IC" required>
-                <div class="form-error" id="signupNameError"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" placeholder="your@email.com" required>
-                    <div class="form-error" id="signupEmailError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="signupIC">IC / Passport No.</label>
-                    <input type="text" id="signupIC" placeholder="XXXXXX-XX-XXXX" required>
-                    <div class="form-error" id="signupICError"></div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" placeholder="Min 8 characters" required>
-                    <div class="form-error" id="signupPasswordError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="signupConfirm">Confirm Password</label>
-                    <input type="password" id="signupConfirm" placeholder="Re-enter password" required>
-                    <div class="form-error" id="signupConfirmError"></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signupProgramme">Programme Interest</label>
-                <select id="signupProgramme" required>
-                    <option value="" disabled selected>Select programme level</option>
-                    <option value="foundation">Foundation</option>
-                    <option value="undergraduate">Undergraduate</option>
-                    <option value="postgraduate">Postgraduate</option>
-                </select>
-                <div class="form-error" id="signupProgrammeError"></div>
-            </div>
-            <button type="submit" class="btn btn-orange">Create Account</button>
-        </form>
-        <p class="modal-switch">Already have an account? <a onclick="switchModal('signupModal','loginModal')">Login</a></p>
-    </div>
-</div>
 
 <script>
-    /* ── System URL — your live app ── */
-    const SYSTEM_LOGIN_URL = '/auth/login.php';
-    const SYSTEM_SIGNUP_URL = '/auth/signup.php';
-
-    /* ── Modal Logic ── */
-    function openModal(type) {
-        if (type === 'login') {
-            window.location.href = 'http://localhost:8000/auth/login.php';
-        } else if (type === 'signup') {
-            window.location.href = 'http://localhost:8000/auth/signup.php'; // or '/signup.php' depending on the app structure, but forcing localhost:8000 to match user's explicit request
-        }
-    }
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-        document.body.style.overflow = '';
-        clearErrors(id);
-    }
-    function switchModal(fromId, toId) {
-        document.getElementById(fromId).classList.remove('active');
-        clearErrors(fromId);
-        setTimeout(() => {
-            document.getElementById(toId).classList.add('active');
-        }, 80);
-    }
-    function handleOverlayClick(e, id) {
-        if (e.target === e.currentTarget) closeModal(id);
-    }
-    function clearErrors(modalId) {
-        document.querySelectorAll('#' + modalId + ' .form-error').forEach(el => el.textContent = '');
-        document.querySelectorAll('#' + modalId + ' .error').forEach(el => el.classList.remove('error'));
-    }
-
-    /* ── Validation ── */
-    function setError(inputId, errorId, msg) {
-        document.getElementById(inputId).classList.add('error');
-        document.getElementById(errorId).textContent = msg;
-    }
-    function clearError(inputId, errorId) {
-        document.getElementById(inputId).classList.remove('error');
-        document.getElementById(errorId).textContent = '';
-    }
-
-    function handleLogin(e) {
-        e.preventDefault();
-        let valid = true;
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-
-        clearError('loginEmail', 'loginEmailError');
-        clearError('loginPassword', 'loginPasswordError');
-
-        if (!email) { setError('loginEmail', 'loginEmailError', 'Email is required.'); valid = false; }
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('loginEmail', 'loginEmailError', 'Enter a valid email.'); valid = false; }
-        if (!password) { setError('loginPassword', 'loginPasswordError', 'Password is required.'); valid = false; }
-
-        if (valid) window.location.href = SYSTEM_LOGIN_URL;
-        return false;
-    }
-
-    function handleSignup(e) {
-        e.preventDefault();
-        let valid = true;
-        const fields = {
-            name: document.getElementById('signupName').value.trim(),
-            email: document.getElementById('signupEmail').value.trim(),
-            ic: document.getElementById('signupIC').value.trim(),
-            password: document.getElementById('signupPassword').value,
-            confirm: document.getElementById('signupConfirm').value,
-            programme: document.getElementById('signupProgramme').value,
-        };
-
-        /* Clear */
-        ['signupName','signupEmail','signupIC','signupPassword','signupConfirm','signupProgramme'].forEach(id => {
-            clearError(id, id + 'Error');
-        });
-
-        if (!fields.name) { setError('signupName', 'signupNameError', 'Full name is required.'); valid = false; }
-        if (!fields.email) { setError('signupEmail', 'signupEmailError', 'Email is required.'); valid = false; }
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) { setError('signupEmail', 'signupEmailError', 'Enter a valid email.'); valid = false; }
-        if (!fields.ic) { setError('signupIC', 'signupICError', 'IC / Passport is required.'); valid = false; }
-        if (!fields.password) { setError('signupPassword', 'signupPasswordError', 'Password is required.'); valid = false; }
-        else if (fields.password.length < 8) { setError('signupPassword', 'signupPasswordError', 'Min 8 characters.'); valid = false; }
-        if (!fields.confirm) { setError('signupConfirm', 'signupConfirmError', 'Confirm your password.'); valid = false; }
-        else if (fields.password !== fields.confirm) { setError('signupConfirm', 'signupConfirmError', 'Passwords do not match.'); valid = false; }
-        if (!fields.programme) { setError('signupProgramme', 'signupProgrammeError', 'Please select a programme.'); valid = false; }
-
-        if (valid) window.location.href = SYSTEM_SIGNUP_URL;
-        return false;
-    }
-
     /* ── Mobile Nav ── */
     function toggleNav() {
         document.getElementById('navLinks').classList.toggle('open');
@@ -1190,14 +1025,6 @@ $csrfToken = generateCSRFToken();
         a.addEventListener('click', () => {
             document.getElementById('navLinks').classList.remove('open');
         });
-    });
-
-    /* ── Escape key closes modals ── */
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            closeModal('loginModal');
-            closeModal('signupModal');
-        }
     });
 
     /* ── Interactive Parallax Animation ── */
