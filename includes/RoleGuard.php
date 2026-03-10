@@ -45,14 +45,18 @@ function isVerified() {
     initSession();
     if (!isset($_SESSION['user_id'])) return false;
     
-    // Check DB directly to avoid session desync loops
-    $db = require __DIR__ . '/../config/database.php';
-    if (!function_exists('getDB')) return false;
+    static $verified = null;
+    if ($verified !== null) return $verified;
     
-    $conn = getDB();
-    $stmt = $conn->prepare("SELECT email_verified FROM users WHERE id = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    return (int)$stmt->fetchColumn() === 1;
+    try {
+        $conn = getDB();
+        $stmt = $conn->prepare("SELECT email_verified FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $verified = (int)$stmt->fetchColumn() === 1;
+        return $verified;
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
 function requireVerified() {

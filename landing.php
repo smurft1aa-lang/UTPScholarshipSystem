@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/security.php';
+
+setSecurityHeaders();
+initSession();
+
+// Redirect already logged-in users to their dashboard
+if (isLoggedIn()) {
+    header('Location: ' . (isAdmin() ? '/admin/dashboard.php' : '/student/dashboard.php'));
+    exit;
+}
+
+$csrfToken = generateCSRFToken();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

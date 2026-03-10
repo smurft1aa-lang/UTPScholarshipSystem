@@ -45,13 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $subject = "Reset Your Password - UTP System";
                 $message = "Hello {$user['full_name']},\n\nYou requested a password reset. Click the link below to set a new password:\n\n$resetLink\n\nThis link will expire in 1 hour.";
                 $headers = "From: $mailFrom\r\nReply-To: $mailFrom";
-                @mail($email, $subject, $message, $headers);
-                
-                require_once __DIR__ . '/../includes/audit.php';
-                logAudit($user['id'], 'Password Reset Requested');
+                $mailSent = @mail($email, $subject, $message, $headers);
+
+                if (!$mailSent) {
+                    require_once __DIR__ . '/../includes/telemetry.php';
+                    trackEvent('Password Reset Email Failed', ['email' => $email], 'WARNING');
+                }
+
+                $appEnv = getenv('APP_ENV') ?: 'production';
+                if (in_array($appEnv, ['local', 'development'])) {
+                    $success = "DEV MODE — Reset link (email not sent): <a href='" . htmlspecialchars($resetLink) . "' style='color:#f26522;font-weight:600;'>Click here to reset password</a>";
+                } else {
+                    $success = "If your email is registered, you will receive a reset link shortly.";
+                }
             }
             // Always show success to prevent email enumeration
-            $success = "If your email is registered, you will receive a reset link shortly.";
+            if (empty($success)) {
+                $success = "If your email is registered, you will receive a reset link shortly.";
+            }
         }
     }
 }

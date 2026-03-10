@@ -29,7 +29,7 @@ You can boot the entire system automatically mapping the LAMP stack.
    ```bash
    make up
    ```
-3. The system is active on `http://localhost:8080`.
+3. Open your browser and navigate to `http://localhost:8000/landing.php` or `http://localhost:8000/auth/login.php`
 
 ### Option B: Manual Host Deployment
 2. **Configure Environment:**
