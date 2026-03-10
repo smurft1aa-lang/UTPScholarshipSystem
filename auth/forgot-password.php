@@ -85,7 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>Forgot Password</h1>
             <p class="subtitle">Enter your email to receive a reset link</p>
             <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-            <?php if ($success): ?><div class="alert alert-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
+            <?php if ($success): ?>
+                <div class="alert alert-success">
+                    <?php if (str_contains($success, '<a ')) { echo $success; } else { echo htmlspecialchars($success); } ?>
+                </div>
+            <?php endif; ?>
             
             <form method="POST">
                 <?= csrfField() ?>

@@ -1019,6 +1019,7 @@ $csrfToken = generateCSRFToken();
         <h2>Welcome Back</h2>
         <p class="modal-subtitle">Log in to your UTP student account</p>
         <form id="loginForm" onsubmit="return handleLogin(event)">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <div class="form-group">
                 <label for="loginEmail">Email Address</label>
                 <input type="email" id="loginEmail" placeholder="your@email.com" required>
@@ -1042,6 +1043,7 @@ $csrfToken = generateCSRFToken();
         <h2>Create Account</h2>
         <p class="modal-subtitle">Sign up to apply for UTP programmes</p>
         <form id="signupForm" onsubmit="return handleSignup(event)">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <div class="form-group">
                 <label for="signupName">Full Name</label>
                 <input type="text" id="signupName" placeholder="As per IC" required>

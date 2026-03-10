@@ -10,7 +10,7 @@ initSession();
 
 if (isLoggedIn()) {
     if (isAdmin()) {
-        header('Location: /landing.php');
+        header('Location: /admin/dashboard.php');
     } else {
         header('Location: /student/dashboard.php');
     }
