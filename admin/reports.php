@@ -3,7 +3,8 @@
  * Admin Structured Performance Reports
  * Application stats, programme popularity, scholarship distribution, grade trends
  */
-require_once __DIR__ . '/admin_header.php';
+require_once __DIR__ . '/../includes/auth.php';
+requireAdmin();
 
 $db = getDB();
 
@@ -149,6 +150,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fclose($out);
     exit;
 }
+
+// ---------------------------------------------------------
+// HTML RENDER BLOCK
+// ---------------------------------------------------------
+
+require_once __DIR__ . '/admin_header.php';
 ?>
 
 <div class="flex-between mb-6 no-print">
