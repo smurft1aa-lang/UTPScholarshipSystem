@@ -555,9 +555,9 @@ $csrfToken = generateCSRFToken();
         <div class="nav-actions">
             <a href="/auth/login.php" class="btn btn-outline-dark">Login</a>
             <a href="/auth/signup.php" class="btn btn-orange">Sign Up</a>
-        </div>
-        <button class="hamburger" id="hamburgerBtn" onclick="toggleNav()" aria-label="Menu">
-            <span></span><span></span><span></span>
+            <!-- Mobile Hamburger -->
+            <button class="hamburger" id="mobileNavToggle" aria-label="Toggle Menu">
+                <span></span><span></span><span></span>
         </button>
     </nav>
 
@@ -733,8 +733,13 @@ $csrfToken = generateCSRFToken();
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
     /* ── Mobile Nav ── */
-    function toggleNav() {
-        document.getElementById('navLinks').classList.toggle('open');
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const navLinksList = document.getElementById('navLinks');
+    
+    if (mobileNavToggle && navLinksList) {
+        mobileNavToggle.addEventListener('click', () => {
+            navLinksList.classList.toggle('open');
+        });
     }
 
     /* ── Close nav on link click ── */
