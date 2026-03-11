@@ -1,7 +1,10 @@
-.PHONY: up down logs test setup
+.PHONY: up down logs test setup dev
 
 up:
 	docker-compose up -d --build
+
+dev:
+	docker-compose --profile debug up -d --build
 
 down:
 	docker-compose down -v

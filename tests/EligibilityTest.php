@@ -131,4 +131,48 @@ class EligibilityTest extends TestCase {
         
         $this->assertEquals('Not Recommended', $prog1['confidence_label']);
     }
+
+    public function test_confidence_label_possible_match_at_exactly_40_percent() {
+        // C+ = 4. 4*2 = 8. 8/20 = 40%
+        $qualId = $this->createQualAndGrades(['Mathematics' => 'C+', 'Physics' => 'C+']);
+        $results = AIEngine::checkEligibility($qualId);
+        $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
+        $prog1 = reset($filtered);
+        
+        $this->assertEquals(40.0, $prog1['fit_percentage']);
+        $this->assertEquals('Possible Match', $prog1['confidence_label']);
+    }
+
+    public function test_confidence_label_good_match_at_exactly_60_percent() {
+        // B = 6. 6*2 = 12. 12/20 = 60%
+        $qualId = $this->createQualAndGrades(['Mathematics' => 'B', 'Physics' => 'B']);
+        $results = AIEngine::checkEligibility($qualId);
+        $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
+        $prog1 = reset($filtered);
+        
+        $this->assertEquals(60.0, $prog1['fit_percentage']);
+        $this->assertEquals('Good Match', $prog1['confidence_label']);
+    }
+
+    public function test_confidence_label_strong_match_at_exactly_75_percent() {
+        // A- = 8, B+ = 7. 8+7 = 15. 15/20 = 75%
+        $qualId = $this->createQualAndGrades(['Mathematics' => 'A-', 'Physics' => 'B+']);
+        $results = AIEngine::checkEligibility($qualId);
+        $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
+        $prog1 = reset($filtered);
+        
+        $this->assertEquals(75.0, $prog1['fit_percentage']);
+        $this->assertEquals('Strong Match', $prog1['confidence_label']);
+    }
+
+    public function test_confidence_label_excellent_match_at_exactly_90_percent() {
+        // A = 9. 9*2 = 18. 18/20 = 90%
+        $qualId = $this->createQualAndGrades(['Mathematics' => 'A', 'Physics' => 'A']);
+        $results = AIEngine::checkEligibility($qualId);
+        $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
+        $prog1 = reset($filtered);
+        
+        $this->assertEquals(90.0, $prog1['fit_percentage']);
+        $this->assertEquals('Excellent Match', $prog1['confidence_label']);
+    }
 }

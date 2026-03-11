@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+    <style nonce="<?= $GLOBALS['csp_nonce'] ?>">
         * {
             box-sizing: border-box;
             margin: 0;
@@ -104,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Left Panel - Form (now visually on right) */
         .left-panel {
             flex: 1;
-            width: 50%;
             background-color: #ffffff;
             display: flex;
             align-items: center;
@@ -117,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Right Panel - Illustration (now visually on left) */
         .right-panel {
             flex: 1;
-            width: 50%;
             background-color: #111111;
             /* Dense grid pattern of abstract human figures */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath fill='%230a0a0a' d='M20 16c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6zm-8 10c-2.2 0-4 1.8-4 4v18h4v8h6v-14h4v14h6v-8h4V30c0-2.2-1.8-4-4-4H12z'%3E%3C/path%3E%3Cpath fill='%23050505' d='M60 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4zm-6 8c-1.7 0-3 1.3-3 3v12h3v18h4V34h3v17h4V33h3v-9c0-1.7-1.3-3-3-3H54zM8 8c0-1.7 1.8-3 4-3s4 1.3 4 3-1.8 3-4 3-4-1.3-4-3zM3 15c-1.7 0-3 1.3-3 3v9h3v18h3V28h3v17h3V26h3v-8c0-1.7-1.3-3-3-3H3z'%3E%3C/path%3E%3Cpath fill='%23080808' d='M40 30c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm-6 8c-1.7 0-3 1.3-3 3v14h3v15h4V52h4v18h4V55h3V41c0-1.7-1.3-3-3-3H34z'%3E%3C/path%3E%3C/svg%3E");
@@ -135,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 1rem; /* Prevent overflowing to edges on smaller screens */
         }
 
         /* Brand / Header */
@@ -151,6 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-decoration: none;
             letter-spacing: -0.02em;
             z-index: 10;
+        }
+        .brand-mobile {
+            display: none; /* hidden on desktop */
         }
         .brand:hover {
             opacity: 0.9;
@@ -285,17 +285,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             .left-panel {
                 padding: 1.5rem;
-                padding-top: 6rem; /* extra space for absolute brand */
                 animation: none;
             }
             .brand {
                 position: absolute;
                 top: 1.5rem;
                 left: 1.5rem;
-                color: #111111; /* Switch back to black on mobile since right panel is hidden */
+                color: #111111;
+            }
+            .brand-mobile {
+                display: flex; /* show on mobile */
             }
             .login-container {
-                margin-top: 2rem;
+                margin-top: 5rem;
             }
             .form-row {
                 flex-direction: column;
@@ -317,6 +319,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Left Panel containing the form (Moved visually to the right) -->
         <div class="left-panel">
+            <a href="/landing.php" class="brand brand-mobile">
+                <span class="brand-icon"></span>
+                UTP
+            </a>
             <div class="login-container">
                 <h1>Create Account</h1>
                 <p class="subtitle">Sign up to check your eligibility for UTP programmes</p>
@@ -377,6 +383,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    <script src="/assets/js/main.js"></script>
+    <script nonce="<?= $GLOBALS['csp_nonce'] ?>" src="/assets/js/main.js"></script>
 </body>
 </html>

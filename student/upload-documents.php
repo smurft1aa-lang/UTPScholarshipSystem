@@ -117,40 +117,42 @@ require_once __DIR__ . '/../includes/header.php';
 
     <div class="card">
         <h3 style="margin-bottom:16px;">Uploaded Documents Status</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Requirement</th>
-                    <th>Status</th>
-                    <th>Filename</th>
-                    <th>Uploaded At</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $types = [
-                    'ic' => 'IC/Passport Scan',
-                    'certificate' => 'Academic Certificate (SPM/O-Level/etc)',
-                    'photo' => 'Passport Photo'
-                ];
-                foreach ($types as $key => $label):
-                    $isUploaded = isset($docs[$key]);
-                ?>
-                <tr>
-                    <td><strong><?= $label ?></strong></td>
-                    <td>
-                        <?php if ($isUploaded): ?>
-                            <span class="badge badge-green">Uploaded</span>
-                        <?php else: ?>
-                            <span class="badge badge-red">Missing</span>
-                        <?php endif; ?>
-                    </td>
-                    <td><?= $isUploaded ? htmlspecialchars($docs[$key]['original_name']) : '-' ?></td>
-                    <td><?= $isUploaded ? date('d M Y, h:i A', strtotime($docs[$key]['uploaded_at'])) : '-' ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table" style="width: 100%; min-width: 600px; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 12px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg-page);">Requirement</th>
+                        <th style="text-align: left; padding: 12px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg-page);">Status</th>
+                        <th style="text-align: left; padding: 12px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg-page);">Filename</th>
+                        <th style="text-align: left; padding: 12px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg-page);">Uploaded At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $types = [
+                        'ic' => 'IC/Passport Scan',
+                        'certificate' => 'Academic Certificate (SPM/O-Level/etc)',
+                        'photo' => 'Passport Photo'
+                    ];
+                    foreach ($types as $key => $label):
+                        $isUploaded = isset($docs[$key]);
+                    ?>
+                    <tr>
+                        <td style="padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-light);"><strong><?= $label ?></strong></td>
+                        <td style="padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-light);">
+                            <?php if ($isUploaded): ?>
+                                <span class="badge badge-green">Uploaded</span>
+                            <?php else: ?>
+                                <span class="badge badge-red">Missing</span>
+                            <?php endif; ?>
+                        </td>
+                        <td style="padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-light);"><?= $isUploaded ? htmlspecialchars($docs[$key]['original_name']) : '-' ?></td>
+                        <td style="padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-light);"><?= $isUploaded ? date('d M Y, h:i A', strtotime($docs[$key]['uploaded_at'])) : '-' ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

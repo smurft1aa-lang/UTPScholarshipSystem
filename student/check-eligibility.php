@@ -85,7 +85,7 @@ require_once __DIR__ . '/../includes/header.php';
     </form>
 </div>
 
-<script>
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
 // Show submit button when grades are visible
 var observer = new MutationObserver(function() {
     var step2 = document.getElementById('step2');

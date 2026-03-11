@@ -157,8 +157,8 @@ class AIEngine {
             ? round(($totalWeightedScore / $maxWeightedScore) * 100, 1)
             : 0;
 
-        // Apply Materials Engineering specific weight boost
-        if (strtolower($programme['name']) === 'materials engineering') {
+        // Apply STEM specific weight boost based on DB flag
+        if (!empty($programme['stem_bonus'])) {
             $physicsGradeStr = $studentGrades['physics'] ?? '';
             $chemistryGradeStr = $studentGrades['chemistry'] ?? '';
             

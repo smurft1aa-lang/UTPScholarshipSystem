@@ -28,18 +28,35 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <span class="brand-icon">U</span>
             UTP System
         </a>
-        <div class="navbar-links">
+        <div class="navbar-links" id="navLinks">
+            <div class="mobile-user-info">
+                <strong><?= htmlspecialchars($currentUser['full_name']) ?></strong>
+            </div>
             <a href="/student/dashboard.php" class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
             <a href="/student/check-eligibility.php" class="<?= $currentPage === 'check-eligibility' ? 'active' : '' ?>">Check Eligibility</a>
             <a href="/student/results.php" class="<?= $currentPage === 'results' ? 'active' : '' ?>">My Results</a>
             <a href="/student/upload-documents.php" class="<?= $currentPage === 'upload-documents' ? 'active' : '' ?>">My Documents</a>
             <a href="/student/my-profile.php" class="<?= $currentPage === 'my-profile' ? 'active' : '' ?>">My Profile</a>
+            <a href="/api/logout.php" class="mobile-signout">Sign Out</a>
         </div>
         <div class="navbar-right">
-            <span class="navbar-user"><strong><?= htmlspecialchars($currentUser['full_name']) ?></strong></span>
-            <a href="/api/logout.php" class="btn btn-signout">Sign Out</a>
+            <span class="navbar-user desktop-only"><strong><?= htmlspecialchars($currentUser['full_name']) ?></strong></span>
+            <a href="/api/logout.php" class="btn btn-signout desktop-only">Sign Out</a>
+            <button class="hamburger-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </div>
 </nav>
+
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    if (mobileBtn && navLinks) {
+        mobileBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-open');
+        });
+    }
+</script>
 <?php endif; ?>
 <main>

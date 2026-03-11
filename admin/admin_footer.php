@@ -1,7 +1,7 @@
     </div><!-- .admin-main -->
 </div><!-- .admin-layout -->
-<script src="/assets/js/main.js"></script>
-<script>
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>" src="/assets/js/main.js"></script>
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
     function openModal(id) {
         document.getElementById(id).classList.add('active');
         document.body.style.overflow = 'hidden';

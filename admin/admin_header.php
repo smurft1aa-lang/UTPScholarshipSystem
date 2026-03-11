@@ -22,7 +22,22 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
 </head>
 <body>
 <div class="admin-layout">
-    <aside class="sidebar">
+    
+    <!-- Admin Mobile Header -->
+    <div class="admin-mobile-header">
+        <div class="sidebar-brand" style="border:none; padding:0; height:auto;">
+            <span class="brand-icon">U</span>
+            UTP Admin
+        </div>
+        <button class="hamburger-btn admin-hamburger" id="adminMenuBtn" aria-label="Toggle Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="adminSidebar">
         <div class="sidebar-brand">
             <span class="brand-icon">U</span>
             UTP Admin
@@ -65,3 +80,21 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
         </div>
     </aside>
     <div class="admin-main">
+
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
+    // Admin Sidebar Toggle Logic
+    const adminMenuBtn = document.getElementById('adminMenuBtn');
+    const adminSidebar = document.getElementById('adminSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (adminMenuBtn && adminSidebar && sidebarOverlay) {
+        function toggleSidebar() {
+            adminSidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = adminSidebar.classList.contains('open') ? 'hidden' : '';
+        }
+
+        adminMenuBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+    }
+</script>

@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS programmes (
     duration VARCHAR(50),
     foundation_fee DECIMAL(12,2) DEFAULT 0,
     undergraduate_fee DECIMAL(12,2) DEFAULT 0,
+    stem_bonus TINYINT(1) DEFAULT 0,
     is_active TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -221,9 +222,9 @@ INSERT INTO programmes (name, category, description, duration, foundation_fee, u
 ('Geoscience', 'Engineering & Science', 'Foundation programme in geoscience at UTP.', '3 Years 4 Months', 21000.00, 95200.00);
 
 -- New additions
-INSERT INTO programmes (name, category, description, duration, foundation_fee, undergraduate_fee) VALUES
-('Materials Engineering', 'Engineering & Science', 'Foundation programme leading to materials engineering studies at UTP.', '4 Years', 21000.00, 110000.00),
-('Industrial Physics', 'Engineering & Science', 'Foundation programme leading to industrial physics studies at UTP.', '3 Years 4 Months', 21000.00, 82500.00);
+INSERT INTO programmes (name, category, description, duration, foundation_fee, undergraduate_fee, stem_bonus) VALUES
+('Materials Engineering', 'Engineering & Science', 'Foundation programme leading to materials engineering studies at UTP.', '4 Years', 21000.00, 110000.00, 1),
+('Industrial Physics', 'Engineering & Science', 'Foundation programme leading to industrial physics studies at UTP.', '3 Years 4 Months', 21000.00, 82500.00, 0);
 
 -- =====================================================
 -- ENTRY REQUIREMENTS - SPM (Pass with minimum Grade C)

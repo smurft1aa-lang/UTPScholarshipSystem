@@ -22,99 +22,36 @@ $csrfToken = generateCSRFToken();
     <title>UTP Student Application Portal — Universiti Teknologi PETRONAS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style nonce="<?= $GLOBALS['csp_nonce'] ?>">
         /* ── Reset & Base ── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
-            color: #ffffff;
-            background: linear-gradient(135deg, #f26522 0%, #ff8c00 40%, #ff4500 100%);
+            color: #1a1a2e;
+            background: #ffffff;
             line-height: 1.7;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            position: relative;
         }
-        
-        /* Halftone Dot Overlay */
-        body::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px);
-            background-size: 14px 14px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
         h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; font-weight: 900; line-height: 1.25; }
         a { text-decoration: none; color: inherit; }
-        img { max-width: 100%; }
-        .highlight { color: #FFD700; }
-
-        /* ── Page Card Wrapper (Removed card, now full canvas) ── */
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-        }
-
-        /* ── CSS Blob Shapes ── */
-        .blob {
-            position: absolute;
-            background: rgba(255, 180, 50, 0.22);
-            filter: blur(3px);
-            animation: blobFloat 6s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes blobFloat {
-            0%,100% { border-radius: 70% 30% 60% 40% / 50% 60% 40% 50%; transform: translateY(0px); }
-            50% { border-radius: 40% 60% 30% 70% / 60% 40% 50% 50%; transform: translateY(-14px); }
-        }
-
-        /* ── Decorative Elements ── */
-        .deco-diamond {
-            width: 10px; height: 10px;
-            border: 2px solid rgba(255, 215, 0, 0.55);
-            transform: rotate(45deg);
-            position: absolute;
-            z-index: 0;
-        }
-        .deco-cross::before { 
-            content: '×'; 
-            color: rgba(255,215,0,0.5); 
-            font-size: 1.4rem; 
-            position: absolute;
-            z-index: 0; 
-        }
-        .deco-dots {
-            width: 60px; height: 60px;
-            background-image: radial-gradient(rgba(255,215,0,0.4) 1.5px, transparent 1.5px);
-            background-size: 10px 10px;
-            position: absolute;
-            z-index: 0;
-        }
-        .deco-line {
-            width: 40px; height: 3px;
-            background: rgba(255,215,0,0.5);
-            transform: rotate(-30deg);
-            position: absolute;
-            z-index: 0;
-        }
+        img { max-width: 100%; display: block; }
 
         /* ── Navbar ── */
         .navbar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: transparent;
-            padding: 24px 48px;
+            background: #ffffff;
+            padding: 0 48px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
         }
         .nav-logo {
             display: flex;
@@ -122,11 +59,14 @@ $csrfToken = generateCSRFToken();
             gap: 10px;
             font-family: 'Nunito', sans-serif;
             font-weight: 900;
-            font-size: 1.5rem;
-            color: #ffffff;
+            font-size: 1.4rem;
+            color: #1a1a2e;
         }
-        .nav-logo .ph-fire {
-            font-size: 1.8rem;
+        .brand-icon {
+            width: 14px;
+            height: 14px;
+            background-color: #f26522;
+            display: inline-block;
         }
         .nav-links {
             display: flex;
@@ -137,11 +77,11 @@ $csrfToken = generateCSRFToken();
         .nav-links a {
             font-size: 0.9rem;
             font-weight: 500;
-            color: rgba(255,255,255,0.85);
+            color: #555;
             transition: color 0.2s;
             position: relative;
         }
-        .nav-links a:hover { color: #ffffff; }
+        .nav-links a:hover { color: #f26522; }
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -149,13 +89,14 @@ $csrfToken = generateCSRFToken();
             left: 0;
             width: 0;
             height: 2px;
-            background: #FFD700;
+            background: #f26522;
             border-radius: 2px;
             transition: width 0.3s;
         }
         .nav-links a:hover::after { width: 100%; }
-        
-        .nav-actions { display: flex; gap: 14px; align-items: center; }
+
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -171,24 +112,37 @@ $csrfToken = generateCSRFToken();
             gap: 8px;
             text-decoration: none;
         }
-        .btn-outline {
+        .btn-outline-dark {
             background: transparent;
-            border: 2px solid rgba(255,255,255,0.8);
+            border: 2px solid #1a1a2e;
+            color: #1a1a2e;
+        }
+        .btn-outline-dark:hover {
+            background: #1a1a2e;
             color: #ffffff;
         }
-        .btn-outline:hover {
-            border-color: #ffffff;
-            background: rgba(255,255,255,0.1);
+        .btn-orange {
+            background: #f26522;
+            color: #ffffff;
+            border: 2px solid #f26522;
         }
-        .btn-white {
-            background: #ffffff;
+        .btn-orange:hover {
+            background: #d9551a;
+            border-color: #d9551a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(242,101,34,0.25);
+        }
+        .btn-orange-outline {
+            background: transparent;
+            border: 2px solid #f26522;
             color: #f26522;
         }
-        .btn-white:hover {
+        .btn-orange-outline:hover {
+            background: #f26522;
+            color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
         }
-        
+
         .hamburger {
             display: none;
             flex-direction: column;
@@ -197,344 +151,250 @@ $csrfToken = generateCSRFToken();
             padding: 4px;
             background: none;
             border: none;
-            color: #fff;
-            font-size: 1.8rem;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+        }
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: #1a1a2e;
+            transition: all 0.3s;
         }
 
-        /* ── Sections Wrapper ── */
+        /* ── Section Utilities ── */
         .section-inner {
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
-            z-index: 2;
         }
-        
         section { padding: 80px 48px; position: relative; }
-        .section-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #FFD700;
-            margin-bottom: 12px;
-        }
-        .section-title {
-            font-size: 2.2rem;
-            margin-bottom: 16px;
-            color: #ffffff;
-        }
-        .section-subtitle {
-            color: rgba(255,255,255,0.8);
-            font-size: 1rem;
-            max-width: 600px;
-            margin: 0 auto 48px;
-        }
-        .text-center { text-align: center; }
 
         /* ── Hero ── */
         .hero {
-            display: flex;
-            align-items: center;
-            min-height: 85vh;
-            padding-top: 20px;
+            background: #fef9f4;
+            padding: 60px 48px 80px;
         }
         .hero .section-inner {
             display: flex;
             align-items: center;
             gap: 48px;
-            width: 100%;
         }
-        .hero-text { flex: 1; position: relative; }
-        .hero-accent-line {
-            width: 60px;
-            height: 4px;
-            background: #FFD700;
-            border-radius: 2px;
-            margin-bottom: 24px;
+        .hero-text {
+            flex: 1;
         }
         .hero-text h1 {
-            font-size: 3.5rem;
-            margin-bottom: 24px;
-            line-height: 1.1;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.15;
+            color: #1a1a2e;
+        }
+        .hero-text h1 .highlight {
+            color: #f26522;
         }
         .hero-text p {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            max-width: 480px;
-            line-height: 1.8;
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 32px;
+            max-width: 440px;
+            line-height: 1.7;
         }
-        
         .hero-visual {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            min-height: 400px;
         }
-        .hero-visual .blob-large {
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.15);
-            top: 50%;
-            left: 50%;
-            margin-top: -200px;
-            margin-left: -200px;
+        .hero-visual img {
+            max-width: 480px;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
         }
 
-        /* ── What We Offer (Why UTP) ── */
-        .services-grid {
+        /* ── Testimonials ── */
+        .testimonials {
+            background: #ffffff;
+            padding: 80px 48px;
+        }
+        .testimonials .section-inner > h2 {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: #1a1a2e;
+        }
+        .testimonials-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 24px;
         }
-        .service-card {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 24px;
-            padding: 32px 24px;
-            text-align: center;
+        .testimonial-card {
+            background: #fff8f2;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #fde8d8;
             transition: all 0.3s ease;
         }
-        .service-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(242,101,34,0.1);
         }
-        .service-card:hover .service-icon {
-            background: rgba(255,255,255,0.35);
-        }
-        .service-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: #ffffff;
-            margin-bottom: 20px;
-            transition: background 0.3s ease;
-        }
-        .service-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            color: #ffffff;
-        }
-        .service-card p {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.8);
-            line-height: 1.6;
-        }
-
-        /* ── How to Apply ── */
-        .how-to-apply .section-inner {
+        .testi-header {
             display: flex;
             align-items: center;
-            gap: 60px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
-        .how-visual {
-            flex: 1;
-            position: relative;
-            min-height: 400px;
-        }
-        .how-visual .blob-med {
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 215, 0, 0.15);
-            top: 50%;
-            left: 50%;
-            margin-top: -150px;
-            margin-left: -150px;
-        }
-        .how-content {
-            flex: 1;
-        }
-        .how-content h2 {
-            font-size: 2.2rem;
-            margin-bottom: 16px;
-        }
-        .how-content > p {
-            color: rgba(255,255,255,0.8);
-            font-size: 1rem;
-            margin-bottom: 32px;
-            max-width: 440px;
-        }
-        .steps-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            background: rgba(255,255,255,0.1);
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-        .step-num {
+        .testi-avatar {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: #ffffff;
-            color: #f26522;
+            background: linear-gradient(135deg, #f26522, #ff8c00);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Nunito', sans-serif;
             font-weight: 900;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .step-text {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .step-item-title {
-            font-size: 1rem;
+        .testi-info h4 {
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #1a1a2e;
+            margin-bottom: 2px;
         }
-        .step-icon {
-            color: #FFD700;
-            font-size: 1.2rem;
+        .testi-info p {
+            font-size: 0.75rem;
+            color: #888;
+            margin: 0;
         }
-        .step-item-desc {
+        .testi-text {
             font-size: 0.85rem;
-            color: rgba(255,255,255,0.7);
+            color: #555;
+            line-height: 1.6;
         }
-        
-        .how-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 
-        /* ── About UTP / Testimonials ── */
-        .about .section-inner {
+        /* ── Explore Courses ── */
+        .explore-courses {
+            background: #fef9f4;
+            padding: 80px 48px;
+        }
+        .explore-courses .section-inner {
             display: flex;
             align-items: center;
             gap: 60px;
         }
-        .about-text { flex: 1; }
-        .about-text h2 { font-size: 2.2rem; margin-bottom: 20px; }
-        .about-text p {
-            color: rgba(255,255,255,0.8);
-            font-size: 1rem;
-            margin-bottom: 32px;
-            line-height: 1.8;
-        }
-        .about-visual {
+        .explore-visual {
             flex: 1;
-            position: relative;
-        }
-        
-        /* Testimonial Card Style */
-        .testimonial-card {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 20px;
-            padding: 32px;
-            position: relative;
-            z-index: 2;
-        }
-        .testi-stars {
-            color: #FFD700;
-            font-size: 1.2rem;
-            display: flex;
-            gap: 4px;
-            margin-bottom: 16px;
-        }
-        .testi-quote {
-            font-size: 1.05rem;
-            font-style: italic;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-        .testi-author {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .testi-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #ffffff;
-            color: #f26522;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: 1.4rem;
         }
-        .testi-info h4 {
-            font-size: 1rem;
-            margin-bottom: 2px;
+        .explore-visual img {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 16px;
         }
-        .testi-info p {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.7);
-            margin: 0;
+        .explore-content {
+            flex: 1;
+        }
+        .explore-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+        .explore-content p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+            line-height: 1.7;
         }
 
-        /* ── CTA Banner ── */
-        .cta-banner {
-            max-width: 1100px;
-            margin: 40px auto 80px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 24px;
-            padding: 48px 56px;
+        /* ── Student Success Stories ── */
+        .success-stories {
+            background: #ffffff;
+            padding: 80px 48px;
+        }
+        .success-stories .section-inner {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 32px;
-            position: relative;
-            z-index: 2;
+            gap: 60px;
         }
-        .cta-text { flex: 1; }
-        .cta-banner h3 {
-            color: #ffffff;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .success-content {
+            flex: 1;
         }
-        .cta-icon {
-            color: #FFD700;
+        .success-content h2 {
             font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            line-height: 1.2;
         }
-        .cta-banner p {
-            color: rgba(255,255,255,0.85);
-            font-size: 1rem;
-            margin-top: 8px;
+        .success-content p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+        .success-visual {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-visual img {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 16px;
+        }
+
+        /* ── Join Community ── */
+        .community {
+            background: #fef9f4;
+            padding: 80px 48px;
+        }
+        .community .section-inner {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+        .community-visual {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .community-visual img {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 16px;
+        }
+        .community-content {
+            flex: 1;
+        }
+        .community-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+        .community-content p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+            line-height: 1.7;
         }
 
         /* ── Footer ── */
         footer {
-            background: rgba(0,0,0,0.25);
+            background: #1a1a2e;
             color: #fff;
-            padding: 80px 48px 32px;
-            position: relative;
-            z-index: 2;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 60px 48px 32px;
         }
         .footer-grid {
             max-width: 1200px;
-            margin: 0 auto 48px;
+            margin: 0 auto 40px;
             display: grid;
             grid-template-columns: 1.5fr 1fr 1fr 1fr;
             gap: 40px;
@@ -545,235 +405,145 @@ $csrfToken = generateCSRFToken();
             gap: 10px;
             font-family: 'Nunito', sans-serif;
             font-weight: 900;
-            font-size: 1.4rem;
-            margin-bottom: 16px;
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+            color: #ffffff;
         }
-        .footer-brand .ph-fire { font-size: 1.6rem; color: #FFD700; }
-        
+        .footer-brand .brand-icon-footer {
+            width: 14px;
+            height: 14px;
+            background-color: #f26522;
+            display: inline-block;
+        }
         .footer-desc {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
             line-height: 1.7;
-            max-width: 320px;
+            max-width: 300px;
         }
         .social-icons {
             display: flex;
-            gap: 12px;
+            gap: 14px;
         }
         .social-icons a {
-            display: inline-flex;
-            font-size: 1.5rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #ffffff;
-            transition: color 0.2s, transform 0.2s;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
         .social-icons a:hover {
-            color: #FFD700;
+            background: #f26522;
             transform: translateY(-3px);
         }
         .footer-col h4 {
-            font-size: 1rem;
-            margin-bottom: 20px;
+            font-size: 0.95rem;
+            margin-bottom: 18px;
             color: #ffffff;
+            font-weight: 700;
         }
         .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 12px; }
+        .footer-col li { margin-bottom: 10px; }
         .footer-col a {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
             transition: color 0.2s;
         }
-        .footer-col a:hover { color: #FFD700; }
+        .footer-col a:hover { color: #f26522; }
         .footer-copy {
             text-align: center;
-            padding-top: 32px;
+            padding-top: 28px;
             border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* ── Modal (Dark mode / Glassmorphism over Gradient) ── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* ── Animations ── */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-on-scroll {
             opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .modal-overlay.active {
+        .animate-on-scroll.visible {
             opacity: 1;
-            visibility: visible;
+            transform: translateY(0);
         }
-        .modal {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 40px;
-            width: 92%;
-            max-width: 460px;
-            position: relative;
-            transform: translateY(24px) scale(0.96);
-            transition: transform 0.35s ease;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.3);
-            color: #111111; /* Modals are white internally for readability */
-        }
-        .modal-overlay.active .modal {
-            transform: translateY(0) scale(1);
-        }
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            font-size: 1.4rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-            transition: all 0.2s;
-        }
-        .modal-close:hover { background: #fee2e2; color: #ef4444; }
-        .modal h2 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            text-align: center;
-            color: #111111;
-        }
-        .modal .modal-subtitle {
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 28px;
-        }
-        .form-group { margin-bottom: 18px; }
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #111111;
-            margin-bottom: 8px;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            background: #ffffff;
-            transition: all 0.2s;
-            outline: none;
-            color: #111111;
-        }
-        .form-group input:focus, .form-group select:focus {
-            border-color: #f26522;
-            box-shadow: 0 0 0 4px rgba(242, 101, 34, 0.1);
-        }
-        .form-group input.error, .form-group select.error {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-        }
-        .form-error {
-            font-size: 0.75rem;
-            color: #ef4444;
-            margin-top: 6px;
-            min-height: 18px;
-        }
-        .modal .btn-orange {
-            width: 100%;
-            background: linear-gradient(135deg, #f26522, #ff4500);
-            color: #fff;
-            padding: 14px;
-            font-size: 1rem;
-            margin-top: 8px;
-        }
-        .modal .btn-orange:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
-        }
-        .modal-switch {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-        .modal-switch a {
-            color: #f26522;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .modal-switch a:hover { text-decoration: underline; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-        /* ── Mobile ── */
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 768px) {
-            section { padding: 60px 24px; }
-            .navbar { padding: 20px 24px; }
+            section, .hero, .testimonials, .explore-courses, .success-stories, .community { padding: 60px 24px; }
+            .navbar { padding: 0 24px; }
             .nav-links { display: none; }
-            .hamburger { display: flex; }
+            .hamburger { display: flex; margin-left: 14px; }
             
-            /* Add Mobile Menu Class Here if needed based on original */
+            /* Keep Sign Up button but hide Login on mobile navbar to save space */
+            .nav-actions .btn-outline-dark { display: none; }
+            .nav-actions .btn-orange { 
+                padding: 6px 16px; 
+                font-size: 0.85rem; 
+            }
+            .nav-logo { flex: 1; }
+
             .nav-links.open {
                 display: flex;
                 flex-direction: column;
                 position: absolute;
-                top: 80px;
-                left: 24px;
-                right: 24px;
-                background: rgba(255,255,255,0.95);
-                backdrop-filter: blur(10px);
-                border-radius: 16px;
-                padding: 24px;
-                box-shadow: 0 16px 40px rgba(0,0,0,0.15);
-                gap: 16px;
+                top: 72px;
+                left: 0;
+                right: 0;
+                background: #ffffff;
+                border-bottom: 1px solid #f0f0f0;
+                padding: 20px 24px;
+                box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+                gap: 14px;
+                z-index: 99;
             }
-            .nav-links.open a { color: #111111; font-size: 1.1rem; }
-            
-            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links.open a { color: #1a1a2e; font-size: 1rem; }
+
+            .hero .section-inner,
+            .explore-courses .section-inner,
+            .success-stories .section-inner,
+            .community .section-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-text p { margin-left: auto; margin-right: auto; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
-            .hero .section-inner, .how-to-apply .section-inner, .about .section-inner { flex-direction: column; }
         }
         @media (max-width: 600px) {
-            .blob, .deco-diamond, .deco-cross, .deco-dots, .deco-line { display: none; } /* Hide heavy decos on small mobile */
-            .hero .section-inner { text-align: center; gap: 32px; }
-            .hero-accent-line { margin: 0 auto 24px; }
-            .hero-text h1 { font-size: 2.4rem; }
-            .hero-text p { margin-left: auto; margin-right: auto; }
-            .hero-visual { display: none; }
-            
-            .how-visual, .about-visual { display: none; }
-            .services-grid { grid-template-columns: 1fr; }
-            
-            .cta-banner { flex-direction: column; text-align: center; padding: 32px 24px; margin: 32px 24px; }
-            .cta-banner h3 { flex-direction: column; font-size: 1.5rem; }
+            .hero-text h1 { font-size: 2.2rem; }
+            .testimonials-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
             .social-icons { justify-content: center; }
-            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .hero-visual img, .explore-visual img, .success-visual img, .community-visual img {
+                max-width: 300px;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
 <div class="page-wrapper">
 
     <!-- ── Navbar ── -->
     <nav class="navbar" id="navbar">
         <a href="#" class="nav-logo">
-            <i class="ph-bold ph-fire"></i> UTP
+            <span class="brand-icon"></span> UTP
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="#hero">Home</a></li>
@@ -783,199 +553,148 @@ $csrfToken = generateCSRFToken();
             <li><a href="#about">Blog</a></li>
         </ul>
         <div class="nav-actions">
-            <a href="/auth/login.php" class="btn btn-outline">
-                <i class="ph-bold ph-sign-in"></i> Login
-            </a>
-            <a href="/auth/signup.php" class="btn btn-white">
-                <i class="ph-bold ph-user-plus"></i> Sign Up
-            </a>
+            <a href="/auth/login.php" class="btn btn-outline-dark">Login</a>
+            <a href="/auth/signup.php" class="btn btn-orange">Sign Up</a>
         </div>
         <button class="hamburger" id="hamburgerBtn" onclick="toggleNav()" aria-label="Menu">
-            <i class="ph-bold ph-list"></i>
+            <span></span><span></span><span></span>
         </button>
     </nav>
 
     <!-- ── Hero ── -->
     <section class="hero" id="hero">
-        <div class="blob blob-large"></div>
-        <div class="deco-diamond" style="top: 15%; left: 8%;"></div>
-        <div class="deco-cross" style="bottom: 20%; left: 45%;"></div>
-        <div class="deco-dots" style="top: 10%; right: 10%;"></div>
-        
         <div class="section-inner">
-            <div class="hero-text">
-                <div class="hero-accent-line"></div>
-                <h1>We Guide Your<br>Journey into <span class="highlight">UTP</span></h1>
-                <p>Discover and apply for world-class foundation programmes at Universiti Teknologi PETRONAS. Your future in engineering, technology, and science starts here.</p>
-                <div class="hero-actions">
-                    <a href="/auth/signup.php" class="btn btn-white" style="padding: 14px 32px; font-size: 1rem;">
-                        Apply Now <i class="ph-bold ph-arrow-right"></i>
-                    </a>
-                </div>
+            <div class="hero-text animate-on-scroll">
+                <h1>Unlock Your<br>Potential with<br><span class="highlight">Quality Education</span></h1>
+                <p>Empowering learners with knowledge, skills, and opportunities for a brighter future.</p>
+                <a href="/auth/signup.php" class="btn btn-orange" style="padding: 14px 36px; font-size: 1rem;">
+                    Register
+                </a>
             </div>
-            <div class="hero-visual">
-                <div class="deco-line" style="top: 30%; right: 20%;"></div>
-                <div class="deco-diamond" style="bottom: 15%; right: 15%; width: 14px; height: 14px;"></div>
+            <div class="hero-visual animate-on-scroll">
+                <img src="/assets/images/hero_illustration.png" alt="Students studying together">
             </div>
         </div>
     </section>
 
-    <!-- ── What We Offer (Why UTP) ── -->
-    <section class="services text-center" id="services">
-        <div class="deco-dots" style="top: 20%; left: 5%;"></div>
-        <div class="deco-diamond" style="bottom: 15%; right: 10%;"></div>
-
+    <!-- ── Testimonials ── -->
+    <section class="testimonials" id="testimonials">
         <div class="section-inner">
-            <p class="section-label">Why Choose Us</p>
-            <h2 class="section-title">World-Class <span class="highlight">Programmes</span></h2>
-            <p class="section-subtitle">UTP offers a range of renowned foundation and undergraduate programmes backed by PETRONAS — preparing you for a global career.</p>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon"><i class="ph-bold ph-graduation-cap"></i></div>
-                    <h3>Foundation</h3>
-                    <p>A strong academic foundation in science, engineering, and technology to kickstart your journey.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon"><i class="ph-bold ph-flask"></i></div>
-                    <h3>Engineering</h3>
-                    <p>Top-tier chemical, mechanical, civil, and electrical engineering programmes recognised globally.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon"><i class="ph-bold ph-laptop"></i></div>
-                    <h3>Computing & CS</h3>
-                    <p>Cutting-edge computer science and information technology programmes for the digital age.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon"><i class="ph-bold ph-atom"></i></div>
-                    <h3>Science & Mgmt</h3>
-                    <p>Applied sciences, geosciences, and business management — blending research with real skills.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ── How to Apply ── -->
-    <section class="how-to-apply" id="how">
-        <div class="blob blob-med"></div>
-        <div class="deco-cross" style="top: 10%; right: 15%;"></div>
-        <div class="deco-line" style="bottom: 20%; right: 5%;"></div>
-        <div class="deco-dots" style="bottom: 10%; left: 10%;"></div>
-
-        <div class="section-inner">
-            <div class="how-visual"></div>
-            <div class="how-content">
-                <p class="section-label">Simple Solutions</p>
-                <h2>Simple Application <span class="highlight">Steps!</span></h2>
-                <p>Our streamlined application process makes it easy to apply for your desired programme in just a few steps.</p>
-                
-                <div class="steps-list">
-                    <div class="step-item">
-                        <div class="step-num">1</div>
-                        <div class="step-text">
-                            <div class="step-item-title"><i class="ph-bold ph-list-numbers step-icon"></i> Choose Programme</div>
-                            <div class="step-item-desc">Find the course that fits your career goals.</div>
-                        </div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">2</div>
-                        <div class="step-text">
-                            <div class="step-item-title"><i class="ph-bold ph-folder-open step-icon"></i> Prepare Documents</div>
-                            <div class="step-item-desc">Gather transcripts, certificates, and ID.</div>
-                        </div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">3</div>
-                        <div class="step-text">
-                            <div class="step-item-title"><i class="ph-bold ph-paper-plane-tilt step-icon"></i> Submit Application</div>
-                            <div class="step-item-desc">Fill out the form and submit securely.</div>
-                        </div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">4</div>
-                        <div class="step-text">
-                            <div class="step-item-title"><i class="ph-bold ph-envelope-open step-icon"></i> Await Offer</div>
-                            <div class="step-item-desc">Track your status and receive your offer letter.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="how-actions">
-                    <a href="/auth/signup.php" class="btn btn-white">
-                        Apply Now <i class="ph-bold ph-arrow-right"></i>
-                    </a>
-                    <button class="btn btn-outline" style="padding: 10px 24px;">Read More</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ── About UTP / Testimonials ── -->
-    <section class="about" id="about">
-        <div class="deco-diamond" style="top: 20%; left: 40%; width: 12px; height: 12px;"></div>
-        <div class="deco-dots" style="bottom: 15%; right: 5%;"></div>
-        
-        <div class="section-inner">
-            <div class="about-text">
-                <p class="section-label">Discover UTP</p>
-                <h2>A Campus Designed for <span class="highlight">Innovation</span></h2>
-                <p>Located in Seri Iskandar, Perak, our award-winning campus integrates nature with state-of-the-art facilities. We empower students to become well-rounded graduates ready to lead the future of energy, engineering, and technology.</p>
-                
-                <div class="cta-banner" style="margin: 32px 0 0 0; padding: 24px 32px; flex-direction: column; align-items: flex-start; gap: 16px;">
-                    <div style="display: flex; gap: 16px; align-items: center;">
-                        <i class="ph-bold ph-certificate cta-icon" style="font-size: 2rem;"></i>
-                        <div>
-                            <h3 style="font-size: 1.2rem; margin-bottom: 0;">Top 300 Global University</h3>
-                            <p style="font-size: 0.85rem; margin: 0;">Consistently ranked among the best in Asia and the world.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-visual">
-                <div class="testimonial-card">
-                    <div class="testi-stars">
-                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
-                    </div>
-                    <p class="testi-quote">"My foundation year at UTP gave me the perfect headstart. The lecturers are incredibly supportive, and the facilities are world-class. It truly feels like a second home."</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar">A</div>
+            <h2 class="animate-on-scroll">Testimonials</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testi-header">
+                        <div class="testi-avatar">AF</div>
                         <div class="testi-info">
                             <h4>Ahmad Farhan</h4>
                             <p>Foundation in Engineering</p>
                         </div>
                     </div>
+                    <p class="testi-text">My foundation year at UTP gave me the perfect headstart. The lecturers are incredibly supportive and the facilities are world-class.</p>
                 </div>
-                <div class="deco-cross" style="top: -20px; right: -20px;"></div>
-                <div class="deco-diamond" style="bottom: -20px; left: -20px;"></div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testi-header">
+                        <div class="testi-avatar">NR</div>
+                        <div class="testi-info">
+                            <h4>Nur Rashidah</h4>
+                            <p>Mechanical Engineering</p>
+                        </div>
+                    </div>
+                    <p class="testi-text">The scholarship opportunity at UTP changed my life. I learned practical skills that prepared me for a global engineering career.</p>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testi-header">
+                        <div class="testi-avatar">DH</div>
+                        <div class="testi-info">
+                            <h4>Daniel Heng</h4>
+                            <p>Computer Science</p>
+                        </div>
+                    </div>
+                    <p class="testi-text">UTP's CS programme is top-notch. The industry connections and internship placements really set this university apart.</p>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testi-header">
+                        <div class="testi-avatar">SA</div>
+                        <div class="testi-info">
+                            <h4>Siti Aminah</h4>
+                            <p>Chemical Engineering</p>
+                        </div>
+                    </div>
+                    <p class="testi-text">From day one, UTP made me feel like I belong. The campus, the community, and the learning environment are truly exceptional.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ── CTA Banner ── -->
-    <div class="cta-banner">
-        <div class="cta-text">
-            <h3><i class="ph-bold ph-rocket-launch cta-icon"></i> Ready to start your journey?</h3>
-            <p>Join thousands of students building their future at Universiti Teknologi PETRONAS.</p>
+    <!-- ── Explore Courses ── -->
+    <section class="explore-courses" id="services">
+        <div class="section-inner">
+            <div class="explore-visual animate-on-scroll">
+                <img src="/assets/images/courses_illustration.png" alt="Online courses illustration">
+            </div>
+            <div class="explore-content animate-on-scroll">
+                <h2>Explore a wide<br>range of courses</h2>
+                <p>Study at your own pace with online, in-person, or hybrid classes. Personalised guidance and support to help you achieve your aspirations. Gain practical, real-world knowledge to excel in your chosen field.</p>
+                <a href="/auth/signup.php" class="btn btn-orange-outline" style="padding: 12px 32px;">
+                    Register Today
+                </a>
+            </div>
         </div>
-        <a href="/auth/signup.php" class="btn btn-white" style="padding: 14px 36px; font-size: 1rem;">
-            Create Account
-        </a>
-    </div>
+    </section>
+
+    <!-- ── Student Success Stories ── -->
+    <section class="success-stories" id="success">
+        <div class="section-inner">
+            <div class="success-content animate-on-scroll">
+                <h2>Student Success Stories</h2>
+                <p>Study at your own pace with online, in-person, or hybrid classes. Personalised guidance and support to help you achieve your aspirations. Gain practical, real-world knowledge to excel in your chosen field.</p>
+                <a href="/auth/signup.php" class="btn btn-orange-outline" style="padding: 12px 32px;">
+                    Register Today
+                </a>
+            </div>
+            <div class="success-visual animate-on-scroll">
+                <img src="/assets/images/success_illustration.png" alt="Student success illustration">
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Join a Global Community ── -->
+    <section class="community" id="about">
+        <div class="section-inner">
+            <div class="community-visual animate-on-scroll">
+                <img src="/assets/images/community_illustration.png" alt="Global community illustration">
+            </div>
+            <div class="community-content animate-on-scroll">
+                <h2>Join a Global Community</h2>
+                <p>Study at your own pace with online, in-person, or hybrid classes. Personalised guidance and support to help you achieve your aspirations. Gain practical, real-world knowledge to excel in your chosen field.</p>
+                <a href="#about" class="btn btn-orange" style="padding: 12px 32px;">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- ── Footer ── -->
     <footer>
-        <div class="deco-line" style="top: 40px; right: 10%;"></div>
         <div class="footer-grid">
             <div class="footer-col">
                 <a href="#" class="footer-brand">
-                    <i class="ph-bold ph-fire"></i> UTP
+                    <span class="brand-icon-footer"></span> UTP
                 </a>
                 <p class="footer-desc">Empowering the next generation of engineers, technologists, and leaders through world-class education and research.</p>
                 <div class="social-icons">
-                    <a href="#"><i class="ph-bold ph-facebook-logo"></i></a>
-                    <a href="#"><i class="ph-bold ph-instagram-logo"></i></a>
-                    <a href="#"><i class="ph-bold ph-twitter-logo"></i></a>
-                    <a href="#"><i class="ph-bold ph-linkedin-logo"></i></a>
+                    <a href="#" aria-label="Facebook">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Twitter">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
                 </div>
             </div>
             <div class="footer-col">
@@ -1012,9 +731,7 @@ $csrfToken = generateCSRFToken();
     </footer>
 </div>
 
-
-
-<script>
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
     /* ── Mobile Nav ── */
     function toggleNav() {
         document.getElementById('navLinks').classList.toggle('open');
@@ -1027,21 +744,17 @@ $csrfToken = generateCSRFToken();
         });
     });
 
-    /* ── Interactive Parallax Animation ── */
-    const parallaxElements = document.querySelectorAll('.blob, .deco-diamond, .deco-cross, .deco-dots, .deco-line');
-    document.addEventListener('mousemove', (e) => {
-        // Calculate offset from center of viewport
-        const x = (window.innerWidth / 2 - e.clientX) / 35;
-        const y = (window.innerHeight / 2 - e.clientY) / 35;
-
-        parallaxElements.forEach((el, index) => {
-            // Vary speed and direction slightly per element
-            const speed = (index % 4 + 1) * (index % 2 === 0 ? 1 : -0.7);
-            
-            // Modern CSS translate property separates translation from transform (rotations/keyframes)
-            el.style.translate = `${x * speed}px ${y * speed}px`;
-            el.style.transition = 'translate 0.1s ease-out'; // slight smoothing
+    /* ── Scroll-triggered animations ── */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
         });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
     });
 </script>
 </body>
