@@ -3,7 +3,7 @@
  * Admin Applications Management
  * View, filter, approve/reject student applications
  */
-require_once __DIR__ . '/admin_header.php';
+require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 
 $db = getDB();
@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Location: /admin/applications.php' . ($statusFilter ? '?status=' . $statusFilter : ''));
     exit;
 }
+
+require_once __DIR__ . '/admin_header.php';
 
 // Build query
 $where = [];

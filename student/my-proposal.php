@@ -42,7 +42,7 @@ require_once __DIR__ . '/../includes/header.php';
             <h1>Eligibility Proposal</h1>
             <p>Auto-generated document for your application</p>
         </div>
-        <button onclick="window.print()" class="btn btn-orange btn-sm">Print / Save PDF</button>
+        <button data-action="print" class="btn btn-orange btn-sm">Print / Save PDF</button>
     </div>
 
     <!-- Printable Proposal Document -->

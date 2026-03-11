@@ -112,7 +112,7 @@ if (isset($_GET['edit'])) {
 
 <div class="flex-between mb-4">
     <span style="font-size:0.9rem; color:var(--text-secondary);"><?= count($scholarships) ?> scholarships found</span>
-    <button onclick="openModal('add_sch_modal')" class="btn btn-purple btn-sm">Add Scholarship</button>
+    <button data-modal-target="add_sch_modal" class="btn btn-purple btn-sm">Add Scholarship</button>
 </div>
 
 <?php if (!$editSch): ?>
@@ -289,7 +289,7 @@ if (isset($_GET['edit'])) {
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" onclick="closeModal('add_sch_modal')" class="btn btn-outline btn-sm">Cancel</button>
+                <button type="button" data-modal-close class="btn btn-outline btn-sm">Cancel</button>
                 <button type="submit" class="btn btn-purple btn-sm">Add Scholarship</button>
             </div>
         </form>

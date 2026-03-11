@@ -78,7 +78,7 @@ if (isset($_GET['edit'])) {
 
 <div class="flex-between mb-4">
     <span style="font-size:0.9rem; color:var(--text-secondary);"><?= count($programmes) ?> programmes</span>
-    <button onclick="openModal('add_programme_modal')" class="btn btn-purple btn-sm">Add Programme</button>
+    <button data-modal-target="add_programme_modal" class="btn btn-purple btn-sm">Add Programme</button>
 </div>
 
 <?php if ($editProg): ?>
@@ -229,7 +229,7 @@ if (isset($_GET['edit'])) {
                 <textarea name="description" class="form-input admin-focus" rows="3"></textarea>
             </div>
             <div class="modal-actions">
-                <button type="button" onclick="closeModal('add_programme_modal')" class="btn btn-outline btn-sm">Cancel</button>
+                <button type="button" data-modal-close class="btn btn-outline btn-sm">Cancel</button>
                 <button type="submit" class="btn btn-purple btn-sm">Add Programme</button>
             </div>
         </form>

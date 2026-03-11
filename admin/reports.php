@@ -144,7 +144,7 @@ require_once __DIR__ . '/admin_header.php';
     </div>
     <div class="flex gap-2">
         <a href="?from=<?= urlencode($dateFrom) ?>&to=<?= urlencode($dateTo) ?>&export=csv" class="btn btn-outline btn-sm">Export CSV</a>
-        <button onclick="window.print()" class="btn btn-purple btn-sm">Print Report</button>
+        <button data-action="print" class="btn btn-purple btn-sm">Print Report</button>
     </div>
 </div>
 

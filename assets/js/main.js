@@ -54,6 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
             closeModal(targetId);
         });
     });
+
+    const printBtns = document.querySelectorAll('[data-action="print"]');
+    printBtns.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.print();
+        });
+    });
 });
 
 function validatePasswordStrength(input) {
@@ -205,7 +213,16 @@ function updateGradeInputs(qualType) {
         actionCol.style.display = 'flex';
         actionCol.style.alignItems = 'center';
         if (!isCore) {
-            actionCol.innerHTML = '<button type="button" class="btn btn-red btn-sm" onclick="this.parentElement.parentElement.remove()" style="padding:8px 12px; height:42px;">X</button>';
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-red btn-sm';
+            removeBtn.textContent = 'X';
+            removeBtn.style.padding = '8px 12px';
+            removeBtn.style.height = '42px';
+            removeBtn.addEventListener('click', function() {
+                row.remove();
+            });
+            actionCol.appendChild(removeBtn);
         } else {
             actionCol.innerHTML = '<div style="width:42px;"></div>'; // Spacer
         }
@@ -232,7 +249,9 @@ function updateGradeInputs(qualType) {
     addBtn.className = 'btn btn-outline btn-sm';
     addBtn.textContent = '+ Add Another Subject';
     addBtn.style.marginTop = '10px';
-    addBtn.onclick = function() { window.addSubjectRow(); };
+    addBtn.addEventListener('click', function() {
+        window.addSubjectRow();
+    });
 
     container.appendChild(addBtn);
 
