@@ -120,3 +120,4 @@ function sendApplicationStatusEmail(string $userEmail, string $userName, string 
     return $mailSent;
 }
 endif;
+
