@@ -3,20 +3,19 @@
  * Consolidated Email Notifications
  */
 
-if (!function_exists('sendVerificationEmail')):    function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool
-    {
-        if (getenv('APP_ENV') === 'testing')
-            return true;
+if (!function_exists('sendVerificationEmail')):
+function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool {
+    if (getenv('APP_ENV') === 'testing') return true;
 
-        $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
-        $systemUrl = getenv('APP_URL') ?: 'http://localhost';
-
-        $subject = "UTP System - Verify Your Email";
-        $token = bin2hex(random_bytes(32));
-
-        // In a real app, you would save this token to the user record for validation
-
-        $message = "
+    $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
+    $systemUrl = getenv('APP_URL') ?: 'http://localhost';
+    
+    $subject = "UTP System - Verify Your Email";
+    $token = bin2hex(random_bytes(32));
+    
+    // In a real app, you would save this token to the user record for validation
+    
+    $message = "
     <html>
     <body>
         <h2>Welcome to UTP Scholarship & Course Eligibility System</h2>
@@ -27,35 +26,34 @@ if (!function_exists('sendVerificationEmail')):    function sendVerificationEmai
     </html>
     ";
 
-        $headers = [
-            "MIME-Version: 1.0",
-            "Content-type: text/html; charset=utf-8",
-            "From: $mailFrom",
-            "Reply-To: $mailFrom"
-        ];
+    $headers = [
+        "MIME-Version: 1.0",
+        "Content-type: text/html; charset=utf-8",
+        "From: $mailFrom",
+        "Reply-To: $mailFrom"
+    ];
 
-        return @mail($userEmail, $subject, $message, implode("\r\n", $headers));    }
+    return @mail($userEmail, $subject, $message, implode("\r\n", $headers));
+}
 endif;
 
-if (!function_exists('sendApplicationStatusEmail')):    function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool
-    {
-        if (getenv('APP_ENV') === 'testing')
-            return true;
+if (!function_exists('sendApplicationStatusEmail')):
+function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
+    if (getenv('APP_ENV') === 'testing') return true;
 
-        $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
-        $systemUrl = getenv('APP_URL') ?: 'http://localhost';
+    $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
+    $systemUrl = getenv('APP_URL') ?: 'http://localhost';
 
-        $subject = "UTP Application Status Update: " . ucfirst($status);
+    $subject = "UTP Application Status Update: " . ucfirst($status);
+    
+    $statusColor = '#3f51b5'; // processing blue
+    if ($status === 'approved') {
+        $statusColor = '#4caf50'; // success green
+    } elseif ($status === 'rejected') {
+        $statusColor = '#f44336'; // danger red
+    }
 
-        $statusColor = '#3f51b5'; // processing blue
-        if ($status === 'approved') {
-            $statusColor = '#4caf50'; // success green
-        }
-        elseif ($status === 'rejected') {
-            $statusColor = '#f44336'; // danger red
-        }
-
-        $message = "
+    $message = "
     <html>
     <head>
         <style>
@@ -78,13 +76,13 @@ if (!function_exists('sendApplicationStatusEmail')):    function sendApplication
                 <p>Your application status is now: <span class='status-badge'>" . htmlspecialchars($status) . "</span></p>
                 ";
 
-        if (!empty($adminNotes)) {
-            $message .= "<div style='background: #f9f9f9; border-left: 4px solid #ccc; padding: 10px 15px; margin: 20px 0; font-style: italic;'>
+    if (!empty($adminNotes)) {
+        $message .= "<div style='background: #f9f9f9; border-left: 4px solid #ccc; padding: 10px 15px; margin: 20px 0; font-style: italic;'>
                     <strong>Admin Notes:</strong><br>" . nl2br(htmlspecialchars($adminNotes)) . "
                   </div>";
-        }
+    }
 
-        $message .= "
+    $message .= "
                 <p>To view your full application history and status, please log in to your dashboard:</p>
                 <p style='text-align: center; margin: 30px 0;'>
                     <a href='$systemUrl/auth/login.php' class='btn'>Go to Dashboard</a>
@@ -100,25 +98,25 @@ if (!function_exists('sendApplicationStatusEmail')):    function sendApplication
     </html>
     ";
 
-        $headers = [
-            "MIME-Version: 1.0",
-            "Content-type: text/html; charset=utf-8",
-            "From: $mailFrom",
-            "Reply-To: $mailFrom"
-        ];
+    $headers = [
+        "MIME-Version: 1.0",
+        "Content-type: text/html; charset=utf-8",
+        "From: $mailFrom",
+        "Reply-To: $mailFrom"
+    ];
 
-        $mailSent = @mail($userEmail, $subject, $message, implode("\r\n", $headers));
-
-        if (!$mailSent) {
-            if (function_exists('trackEvent')) {
-                trackEvent('Status Email Failed', ['email' => $userEmail, 'status' => $status], 'WARNING');
-            }
+    $mailSent = @mail($userEmail, $subject, $message, implode("\r\n", $headers));
+    
+    if (!$mailSent) {
+        if (function_exists('trackEvent')) {
+            trackEvent('Status Email Failed', ['email' => $userEmail, 'status' => $status], 'WARNING');
         }
-        else {
-            if (function_exists('trackEvent')) {
-                trackEvent('Status Email Sent', ['email' => $userEmail, 'status' => $status]);
-            }
+    } else {
+        if (function_exists('trackEvent')) {
+            trackEvent('Status Email Sent', ['email' => $userEmail, 'status' => $status]);
         }
-
-        return $mailSent;    }
+    }
+    
+    return $mailSent;
+}
 endif;
