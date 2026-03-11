@@ -3,7 +3,8 @@
  * Rate Limiter Component
  */
 
-function checkRateLimit($ip, $maxAttempts = 5, $windowMinutes = 1) {
+function checkRateLimit($ip, $maxAttempts = 5, $windowMinutes = 1)
+{
     $db = getDB();
 
     $threshold = date('Y-m-d H:i:s', strtotime("-$windowMinutes minutes"));
@@ -18,13 +19,15 @@ function checkRateLimit($ip, $maxAttempts = 5, $windowMinutes = 1) {
     return $count < $maxAttempts;
 }
 
-function recordLoginAttempt($ip) {
+function recordLoginAttempt($ip)
+{
     $db = getDB();
     $stmt = $db->prepare("INSERT INTO login_attempts (ip_address) VALUES (?)");
     $stmt->execute([$ip]);
 }
 
-function clearLoginAttempts($ip) {
+function clearLoginAttempts($ip)
+{
     $db = getDB();
     $stmt = $db->prepare("DELETE FROM login_attempts WHERE ip_address = ?");
     $stmt->execute([$ip]);

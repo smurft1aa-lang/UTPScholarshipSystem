@@ -1,6 +1,6 @@
-# Force HTTPS if APP_ENV is production
+# Force HTTPS behind a reverse proxy/load balancer
 RewriteEngine On
-RewriteCond %{ENV:APP_ENV} ^production$
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 

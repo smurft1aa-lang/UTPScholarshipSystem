@@ -25,6 +25,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASS}
       - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=utp_app
+      - MYSQL_PASSWORD=${DB_APP_PASS:-${DB_PASS}}
     volumes:
       - db_data:/var/lib/mysql
       - ./sql/setup.sql:/docker-entrypoint-initdb.d/setup.sql
