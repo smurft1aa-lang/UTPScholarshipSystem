@@ -3,6 +3,38 @@
  * Consolidated Email Notifications
  */
 
+function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool {
+    if (getenv('APP_ENV') === 'testing') return true;
+
+    $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
+    $systemUrl = getenv('APP_URL') ?: 'http://localhost';
+    
+    $subject = "UTP System - Verify Your Email";
+    $token = bin2hex(random_bytes(32));
+    
+    // In a real app, you would save this token to the user record for validation
+    
+    $message = "
+    <html>
+    <body>
+        <h2>Welcome to UTP Scholarship & Course Eligibility System</h2>
+        <p>Dear " . htmlspecialchars($userName) . ",</p>
+        <p>Please click the link below to verify your email address:</p>
+        <p><a href='$systemUrl/auth/verify.php?token=$token&id=$userId'>Verify Email Address</a></p>
+    </body>
+    </html>
+    ";
+
+    $headers = [
+        "MIME-Version: 1.0",
+        "Content-type: text/html; charset=utf-8",
+        "From: $mailFrom",
+        "Reply-To: $mailFrom"
+    ];
+
+    return @mail($userEmail, $subject, $message, implode("\r\n", $headers));
+}
+
 function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
     if (getenv('APP_ENV') === 'testing') return true;
 
