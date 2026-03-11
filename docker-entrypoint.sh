@@ -3,20 +3,11 @@ set -e
 
 echo "=== UTP System Starting ==="
 
-# Wait for MySQL to be ready before starting Apache
-echo "Waiting for MySQL at ${DB_HOST:-db}..."
-MAX_TRIES=30
-COUNT=0
-until mysqladmin ping -h "${DB_HOST:-db}" -u root -p"${DB_PASS}" --silent 2>/dev/null; do
-    COUNT=$((COUNT + 1))
-    if [ "$COUNT" -ge "$MAX_TRIES" ]; then
-        echo "ERROR: MySQL did not become ready after ${MAX_TRIES} attempts. Exiting."
-        exit 1
-    fi
-    echo "MySQL not ready yet (attempt $COUNT/$MAX_TRIES) — retrying in 3s..."
-    sleep 3
-done
-echo "MySQL is ready."
+# Ensure required directories exist with correct permissions
+mkdir -p /var/www/html/logs
+mkdir -p /var/www/html/uploads/documents
+chown -R www-data:www-data /var/www/html/logs
+chown -R www-data:www-data /var/www/html/uploads/documents
 
 # Install Composer dependencies if not already installed
 if [ -f "composer.json" ] && [ ! -d "vendor" ]; then
@@ -24,11 +15,32 @@ if [ -f "composer.json" ] && [ ! -d "vendor" ]; then
     composer install --no-dev --optimize-autoloader
 fi
 
-# Ensure required directories exist with correct permissions
-mkdir -p /var/www/html/logs
-mkdir -p /var/www/html/uploads/documents
-chown -R www-data:www-data /var/www/html/logs
-chown -R www-data:www-data /var/www/html/uploads/documents
+# Wait for MySQL using PHP PDO (works with Railway's dynamic DB_HOST)
+echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT:-3306}..."
+MAX_TRIES=60
+COUNT=0
+until php -r "
+    \$host = getenv('DB_HOST') ?: 'db';
+    \$port = getenv('DB_PORT') ?: 3306;
+    \$db   = getenv('DB_NAME') ?: 'railway';
+    \$user = getenv('DB_USER') ?: 'root';
+    \$pass = getenv('DB_PASS') ?: '';
+    try {
+        new PDO(\"mysql:host=\$host;port=\$port;dbname=\$db\", \$user, \$pass, [PDO::ATTR_TIMEOUT => 3]);
+        exit(0);
+    } catch (Exception \$e) {
+        exit(1);
+    }
+" 2>/dev/null; do
+    COUNT=$((COUNT + 1))
+    if [ "$COUNT" -ge "$MAX_TRIES" ]; then
+        echo "ERROR: MySQL did not become ready after ${MAX_TRIES} attempts. Exiting."
+        exit 1
+    fi
+    echo "MySQL not ready yet (attempt $COUNT/$MAX_TRIES) — retrying in 5s..."
+    sleep 5
+done
+echo "MySQL is ready."
 
 echo "=== Starting Apache ==="
 exec "$@"
