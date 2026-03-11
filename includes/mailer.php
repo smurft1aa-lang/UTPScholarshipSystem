@@ -3,8 +3,8 @@
  * Consolidated Email Notifications
  */
 
-if (!function_exists('sendVerificationEmail')):
-function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool {
+if (!function_exists('sendVerificationEmail')) {
+    function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool {
     if (getenv('APP_ENV') === 'testing') return true;
 
     $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
@@ -35,10 +35,10 @@ function sendVerificationEmail(string $userId, string $userEmail, string $userNa
 
     return @mail($userEmail, $subject, $message, implode("\r\n", $headers));
 }
-endif;
+}
 
-if (!function_exists('sendApplicationStatusEmail')):
-function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
+if (!function_exists('sendApplicationStatusEmail')) {
+    function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
     if (getenv('APP_ENV') === 'testing') return true;
 
     $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
@@ -119,5 +119,5 @@ function sendApplicationStatusEmail(string $userEmail, string $userName, string 
     
     return $mailSent;
 }
-endif;
+}
 
