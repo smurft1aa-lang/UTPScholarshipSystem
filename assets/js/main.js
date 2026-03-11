@@ -36,6 +36,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    // Modal handling
+    const modalTriggers = document.querySelectorAll('[data-modal-target]');
+    modalTriggers.forEach(function(trigger) {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-modal-target');
+            openModal(targetId);
+        });
+    });
+
+    const modalClosers = document.querySelectorAll('[data-modal-close]');
+    modalClosers.forEach(function(closer) {
+        closer.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.closest('.modal-overlay').id;
+            closeModal(targetId);
+        });
+    });
 });
 
 function validatePasswordStrength(input) {

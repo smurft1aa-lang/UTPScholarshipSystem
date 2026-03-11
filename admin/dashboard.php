@@ -206,7 +206,7 @@ $today = date('j');
                     </td>
                     <td><?= date('d M Y', strtotime($app['created_at'])) ?></td>
                     <td>
-                        <button onclick="openModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Review</button>
+                        <button data-modal-target="modal_<?= $app['id'] ?>" class="btn btn-outline btn-sm">Review</button>
                     </td>
                 </tr>
 
@@ -243,7 +243,7 @@ $today = date('j');
                 </div>
             </form>
             <div class="modal-actions">
-                <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Cancel</button>
+                <button data-modal-close class="btn btn-outline btn-sm">Cancel</button>
             </div>
         </div>
     </div>

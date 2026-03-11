@@ -183,7 +183,7 @@ $applications = $stmt->fetchAll();
                     </td>
                     <td><?= date('d M Y', strtotime($app['created_at'])) ?></td>
                     <td>
-                        <button onclick="openModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Review</button>
+                        <button data-modal-target="modal_<?= $app['id'] ?>" class="btn btn-outline btn-sm">Review</button>
                     </td>
                 </tr>
 
@@ -240,7 +240,7 @@ $applications = $stmt->fetchAll();
                 </div>
             </form>
             <div class="modal-actions">
-                <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Close</button>
+                <button data-modal-close class="btn btn-outline btn-sm">Close</button>
             </div>
         </div>
     </div>
