@@ -210,39 +210,44 @@ $today = date('j');
                     </td>
                 </tr>
 
-                <!-- Review Modal Inline -->
-                <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
-                    <div class="modal">
-                        <h2>Quick Review #<?= $app['id'] ?></h2>
-                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
-                        <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
-                        <form method="POST" style="margin-top:20px;">
-                            <?php require_once __DIR__ . '/../includes/security.php'; ?>
-                            <?= csrfField() ?>
-                            <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
-                            <div class="form-group">
-                                <label class="form-label">Admin Notes</label>
-                                <textarea name="admin_notes" class="form-input" rows="2" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Update Status</label>
-                                <div class="flex gap-3">
-                                    <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
-                                    <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
-                                    <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="modal-actions">
-                            <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Cancel</button>
-                        </div>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
     <?php endif; ?>
 </div>
+
+<!-- Review Modals -->
+<?php if (!empty($recentApps)): ?>
+    <?php foreach ($recentApps as $app): ?>
+    <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
+        <div class="modal">
+            <h2>Quick Review #<?= $app['id'] ?></h2>
+            <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
+            <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
+            <form method="POST" style="margin-top:20px;">
+                <?php require_once __DIR__ . '/../includes/security.php'; ?>
+                <?= csrfField() ?>
+                <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
+                <div class="form-group">
+                    <label class="form-label">Admin Notes</label>
+                    <textarea name="admin_notes" class="form-input" rows="2" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Update Status</label>
+                    <div class="flex gap-3">
+                        <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
+                        <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
+                        <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/admin_footer.php'; ?>

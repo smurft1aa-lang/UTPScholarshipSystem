@@ -187,60 +187,65 @@ $applications = $stmt->fetchAll();
                     </td>
                 </tr>
 
-                <!-- Review Modal -->
-                <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
-                    <div class="modal">
-                        <h2>Review Application #<?= $app['id'] ?></h2>
-                        <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?> (<?= htmlspecialchars($app['ic_number']) ?>)</p>
-                        <p><strong>Qualification:</strong> <?= htmlspecialchars($app['qual_type']) ?> (Eligible for <?= $app['eligible_count'] ?> programmes)</p>
-                        <p><strong>Documents:</strong> <?= $app['doc_count'] ?> out of 3 uploaded</p>
-                        
-                        <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border); margin:12px 0;">
-                            <?php if ($app['prog1_name']): ?>
-                                <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br>
-                                    1. <?= htmlspecialchars($app['prog1_name']) ?><br>
-                                    2. <?= htmlspecialchars($app['prog2_name']) ?><br>
-                                    3. <?= htmlspecialchars($app['prog3_name']) ?>
-                                </p>
-                            <?php else: ?>
-                                <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br> <span style="color:var(--text-muted); font-style:italic;">Pending Selection</span></p>
-                            <?php endif; ?>
-                            <?php if ($app['schol_name']): ?>
-                                <p><strong>Preferred Scholarship:</strong><br> <?= htmlspecialchars($app['schol_name']) ?></p>
-                            <?php endif; ?>
-                        </div>
-
-                        <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
-                        <?php if ($app['admin_notes']): ?>
-                            <p><strong>Previous Notes:</strong> <?= htmlspecialchars($app['admin_notes']) ?></p>
-                        <?php endif; ?>
-
-                        <form method="POST" style="margin-top:20px;">
-                            <?= csrfField() ?>
-                            <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
-                            <div class="form-group">
-                                <label class="form-label">Admin Notes</label>
-                                <textarea name="admin_notes" class="form-input admin-focus" rows="3" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Update Status</label>
-                                <div class="flex gap-3">
-                                    <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
-                                    <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
-                                    <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="modal-actions">
-                            <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Close</button>
-                        </div>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
     </table>
 </div>
+
+<!-- Review Modals -->
+<?php if (!empty($applications)): ?>
+    <?php foreach ($applications as $app): ?>
+    <div class="modal-overlay" id="modal_<?= $app['id'] ?>">
+        <div class="modal">
+            <h2>Review Application #<?= $app['id'] ?></h2>
+            <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?> (<?= htmlspecialchars($app['ic_number']) ?>)</p>
+            <p><strong>Qualification:</strong> <?= htmlspecialchars($app['qual_type']) ?> (Eligible for <?= $app['eligible_count'] ?> programmes)</p>
+            <p><strong>Documents:</strong> <?= $app['doc_count'] ?> out of 3 uploaded</p>
+            
+            <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border); margin:12px 0;">
+                <?php if ($app['prog1_name']): ?>
+                    <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br>
+                        1. <?= htmlspecialchars($app['prog1_name']) ?><br>
+                        2. <?= htmlspecialchars($app['prog2_name']) ?><br>
+                        3. <?= htmlspecialchars($app['prog3_name']) ?>
+                    </p>
+                <?php else: ?>
+                    <p style="margin-bottom:8px;"><strong>Applied Programmes:</strong><br> <span style="color:var(--text-muted); font-style:italic;">Pending Selection</span></p>
+                <?php endif; ?>
+                <?php if ($app['schol_name']): ?>
+                    <p><strong>Preferred Scholarship:</strong><br> <?= htmlspecialchars($app['schol_name']) ?></p>
+                <?php endif; ?>
+            </div>
+
+            <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
+            <?php if ($app['admin_notes']): ?>
+                <p><strong>Previous Notes:</strong> <?= htmlspecialchars($app['admin_notes']) ?></p>
+            <?php endif; ?>
+
+            <form method="POST" style="margin-top:20px;">
+                <?= csrfField() ?>
+                <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
+                <div class="form-group">
+                    <label class="form-label">Admin Notes</label>
+                    <textarea name="admin_notes" class="form-input admin-focus" rows="3" placeholder="Add notes..."><?= htmlspecialchars($app['admin_notes'] ?? '') ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Update Status</label>
+                    <div class="flex gap-3">
+                        <button type="submit" name="action" value="processing" class="btn btn-outline btn-sm">Processing</button>
+                        <button type="submit" name="action" value="approved" class="btn btn-success btn-sm">Approve</button>
+                        <button type="submit" name="action" value="rejected" class="btn btn-danger btn-sm">Reject</button>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button onclick="closeModal('modal_<?= $app['id'] ?>')" class="btn btn-outline btn-sm">Close</button>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 
 <!-- Pagination -->
 <?php if ($totalPages > 1): ?>
