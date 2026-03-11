@@ -19,32 +19,22 @@ $appStats = [];
 while ($row = $stmt->fetch()) $appStats[$row['status']] = $row['cnt'];
 $totalApps = array_sum($appStats);
 
-// Explicit Programme Popularity (Student Choices)
+// Unified Programme Statistics
 $stmt = $db->prepare("
-    SELECT p.name, p.category, COUNT(a.id) as app_count
-    FROM programmes p
-    JOIN applications a ON (a.programme_id_1 = p.id OR a.programme_id_2 = p.id OR a.programme_id_3 = p.id)
-    WHERE a.created_at BETWEEN ? AND ?
-    GROUP BY p.id
-    ORDER BY app_count DESC
-");
-$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
-$progPopularity = $stmt->fetchAll();
-
-// System Processing Volume (AI Assessments)
-$stmt = $db->prepare("
-    SELECT p.name, p.category, COUNT(er.id) as assessed_count,
+    SELECT p.name, p.category,
+           (SELECT COUNT(a2.id) FROM applications a2 WHERE (a2.programme_id_1 = p.id OR a2.programme_id_2 = p.id OR a2.programme_id_3 = p.id) AND a2.created_at BETWEEN ? AND ?) as applied_count,
            SUM(CASE WHEN er.eligible = 1 THEN 1 ELSE 0 END) as eligible_count,
+           COUNT(er.id) as total_students,
            ROUND(AVG(er.fit_percentage), 1) as avg_fit
     FROM eligibility_results er
     JOIN programmes p ON er.programme_id = p.id
     JOIN applications a ON er.application_id = a.id
     WHERE a.created_at BETWEEN ? AND ?
     GROUP BY p.id
-    ORDER BY assessed_count DESC
+    ORDER BY applied_count DESC, eligible_count DESC
 ");
-$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
-$systemProcessing = $stmt->fetchAll();
+$stmt->execute([$dateFrom, $dateTo . ' 23:59:59', $dateFrom, $dateTo . ' 23:59:59']);
+$progStats = $stmt->fetchAll();
 
 // Scholarship distribution
 $stmt = $db->prepare("
@@ -108,33 +98,22 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fputcsv($out, ['Rejected', $appStats['rejected'] ?? 0]);
     fputcsv($out, []);
     
-    // 2. Programme Popularity (Explicit Applications)
-    fputcsv($out, ['PROGRAMME POPULARITY (EXPLICIT APPLICATIONS)']);
-    fputcsv($out, ['Programme Name', 'Category', 'Explicit Applications']);
-    foreach ($progPopularity as $pp) {
+    // 2. Programme Statistics
+    fputcsv($out, ['PROGRAMME STATISTICS']);
+    fputcsv($out, ['Programme Name', 'Category', 'Applied Students', 'Eligible Students', 'Total Students', 'Average AI Fit %']);
+    foreach ($progStats as $ps) {
         fputcsv($out, [
-            $pp['name'], 
-            $pp['category'], 
-            $pp['app_count']
+            $ps['name'], 
+            $ps['category'], 
+            $ps['applied_count'], 
+            $ps['eligible_count'], 
+            $ps['total_students'], 
+            $ps['avg_fit'] . '%'
         ]);
     }
     fputcsv($out, []);
     
-    // 3. System Processing Volume (AI Eligibility Checks)
-    fputcsv($out, ['SYSTEM PROCESSING VOLUME (AI ELIGIBILITY ASSESSMENTS)']);
-    fputcsv($out, ['Programme Name', 'Category', 'Total Assessed', 'Eligible Candidates', 'Average AI Fit %']);
-    foreach ($systemProcessing as $sp) {
-        fputcsv($out, [
-            $sp['name'], 
-            $sp['category'], 
-            $sp['assessed_count'], 
-            $sp['eligible_count'], 
-            $sp['avg_fit'] . '%'
-        ]);
-    }
-    fputcsv($out, []);
-    
-    // 4. Scholarship Distribution
+    // 3. Scholarship Distribution
     fputcsv($out, ['SCHOLARSHIP DISTRIBUTION']);
     fputcsv($out, ['Scholarship Name', 'Potential Candidates', 'Budget Min', 'Budget Max']);
     foreach ($schDist as $sd) {
@@ -237,46 +216,33 @@ require_once __DIR__ . '/admin_header.php';
     <?php endif; ?>
 </div>
 
-<!-- Programme Popularity -->
+<!-- Programme Statistics -->
 <div class="card mb-6">
-    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Programme Popularity (Explicit Applications)</h3>
-    <?php if (empty($progPopularity)): ?>
+    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Programme Statistics</h3>
+    <?php if (empty($progStats)): ?>
         <p style="color:var(--text-muted);">No data available for this period.</p>
     <?php else: ?>
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Programme</th><th>Category</th><th>Explicit Applications</th></tr></thead>
-            <tbody>
-            <?php foreach ($progPopularity as $pp): ?>
+            <thead>
                 <tr>
-                    <td><strong><?= htmlspecialchars($pp['name']) ?></strong></td>
-                    <td><span class="badge badge-purple"><?= htmlspecialchars($pp['category']) ?></span></td>
-                    <td><?= $pp['app_count'] ?></td>
+                    <th>Programme</th>
+                    <th>Category</th>
+                    <th>Applied Students</th>
+                    <th>Eligible Students</th>
+                    <th>Total Students</th>
+                    <th>Avg Fit</th>
                 </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <?php endif; ?>
-</div>
-
-<!-- System Processing Volume -->
-<div class="card mb-6">
-    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">System Processing Volume (AI Eligibility Assessments)</h3>
-    <?php if (empty($systemProcessing)): ?>
-        <p style="color:var(--text-muted);">No data available for this period.</p>
-    <?php else: ?>
-    <div class="table-wrap">
-        <table>
-            <thead><tr><th>Programme</th><th>Category</th><th>Total Assessed</th><th>Eligible</th><th>Avg Fit</th></tr></thead>
+            </thead>
             <tbody>
-            <?php foreach ($systemProcessing as $sp): ?>
+            <?php foreach ($progStats as $ps): ?>
                 <tr>
-                    <td><strong><?= htmlspecialchars($sp['name']) ?></strong></td>
-                    <td><span class="badge badge-outline"><?= htmlspecialchars($sp['category']) ?></span></td>
-                    <td><?= $sp['assessed_count'] ?></td>
-                    <td><?= $sp['eligible_count'] ?></td>
-                    <td><?= $sp['avg_fit'] ?>%</td>
+                    <td><strong><?= htmlspecialchars($ps['name']) ?></strong></td>
+                    <td><span class="badge badge-purple"><?= htmlspecialchars($ps['category']) ?></span></td>
+                    <td><?= $ps['applied_count'] ?></td>
+                    <td><?= $ps['eligible_count'] ?></td>
+                    <td><?= $ps['total_students'] ?></td>
+                    <td><?= $ps['avg_fit'] ?>%</td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
