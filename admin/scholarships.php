@@ -64,7 +64,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCSRFToken($_POST['csrf_toke
     exit;
 }
 
-$scholarships = $db->query("SELECT s.*, (SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM scholarship_programme sp JOIN programmes p ON sp.programme_id = p.id WHERE sp.scholarship_id = s.id) as programme_names FROM scholarships s ORDER BY s.created_at DESC")->fetchAll();
+// Build query for filtering
+$statusFilter = $_GET['status'] ?? '';
+$searchStr = sanitize($_GET['search'] ?? '');
+
+$where = [];
+$params = [];
+
+if ($statusFilter !== '') {
+    $where[] = "s.is_active = ?";
+    $params[] = intval($statusFilter);
+}
+if ($searchStr !== '') {
+    $where[] = "(s.name LIKE ? OR s.description LIKE ?)";
+    $params[] = "%{$searchStr}%";
+    $params[] = "%{$searchStr}%";
+}
+
+$whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
+$query = "SELECT s.*, (SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM scholarship_programme sp JOIN programmes p ON sp.programme_id = p.id WHERE sp.scholarship_id = s.id) as programme_names FROM scholarships s $whereClause ORDER BY s.created_at DESC";
+$stmt = $db->prepare($query);
+$stmt->execute($params);
+$scholarships = $stmt->fetchAll();
+
 $allProgrammes = $db->query("SELECT id, name FROM programmes WHERE is_active = 1 ORDER BY name")->fetchAll();
 
 $editSch = null;
@@ -88,9 +111,27 @@ if (isset($_GET['edit'])) {
 </div>
 
 <div class="flex-between mb-4">
-    <span style="font-size:0.9rem; color:var(--text-secondary);"><?= count($scholarships) ?> scholarships</span>
+    <span style="font-size:0.9rem; color:var(--text-secondary);"><?= count($scholarships) ?> scholarships found</span>
     <button onclick="openModal('add_sch_modal')" class="btn btn-purple btn-sm">Add Scholarship</button>
 </div>
+
+<?php if (!$editSch): ?>
+<!-- Filters -->
+<div class="card mb-4" style="padding:16px 20px;">
+    <form method="GET" class="flex" style="gap:12px; align-items:center; flex-wrap:wrap;">
+        <select name="status" class="form-select" style="width:auto; min-width:160px;" onchange="this.form.submit()">
+            <option value="">All Statuses</option>
+            <option value="1" <?= $statusFilter === '1' ? 'selected' : '' ?>>Active</option>
+            <option value="0" <?= $statusFilter === '0' ? 'selected' : '' ?>>Inactive</option>
+        </select>
+        <input type="text" name="search" class="form-input admin-focus" style="width:auto; min-width:240px; flex-grow:1;" placeholder="Search by name or description..." value="<?= htmlspecialchars($searchStr) ?>">
+        <button type="submit" class="btn btn-purple btn-sm">Search</button>
+        <?php if ($statusFilter !== '' || $searchStr !== ''): ?>
+            <a href="/admin/scholarships.php" class="btn btn-outline btn-sm">Clear</a>
+        <?php endif; ?>
+    </form>
+</div>
+<?php endif; ?>
 
 <?php if ($editSch): ?>
 <!-- Edit Scholarship -->
@@ -168,6 +209,11 @@ if (isset($_GET['edit'])) {
 
 <?php else: ?>
 <!-- Scholarships List -->
+<?php if (empty($scholarships)): ?>
+    <div class="card text-center" style="padding:48px; color:var(--text-muted);">
+        No scholarships found matching your criteria.
+    </div>
+<?php else: ?>
 <div class="grid-auto">
     <?php foreach ($scholarships as $s): ?>
     <div class="result-card">
@@ -189,6 +235,7 @@ if (isset($_GET['edit'])) {
     </div>
     <?php endforeach; ?>
 </div>
+<?php endif; ?>
 <?php endif; ?>
 
 <!-- Add Scholarship Modal -->

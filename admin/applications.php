@@ -22,6 +22,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
             require_once __DIR__ . '/../includes/audit.php';
             logAudit($_SESSION['user_id'], 'Application Status Changed', 'Application', $appId, "Status: $action");
+            
+            // Fetch student info and dispatch email notification
+            require_once __DIR__ . '/../includes/mailer.php';
+            $stmt = $db->prepare("
+                SELECT u.email, u.full_name, p.name as prog_name 
+                FROM applications a 
+                JOIN users u ON a.user_id = u.id 
+                LEFT JOIN programmes p ON a.programme_id_1 = p.id 
+                WHERE a.id = ?
+            ");
+            $stmt->execute([$appId]);
+            $studentInfo = $stmt->fetch();
+            if ($studentInfo) {
+                sendApplicationStatusEmail(
+                    $studentInfo['email'], 
+                    $studentInfo['full_name'], 
+                    $action, 
+                    $studentInfo['prog_name'] ?: 'UTP Programme', 
+                    $notes
+                );
+            }
         }
     }
     header('Location: /admin/applications.php' . ($statusFilter ? '?status=' . $statusFilter : ''));

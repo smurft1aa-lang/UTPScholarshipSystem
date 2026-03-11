@@ -18,9 +18,21 @@ $appStats = [];
 while ($row = $stmt->fetch()) $appStats[$row['status']] = $row['cnt'];
 $totalApps = array_sum($appStats);
 
-// Programme popularity
+// Explicit Programme Popularity (Student Choices)
 $stmt = $db->prepare("
-    SELECT p.name, p.category, COUNT(er.id) as app_count,
+    SELECT p.name, p.category, COUNT(a.id) as app_count
+    FROM programmes p
+    JOIN applications a ON (a.programme_id_1 = p.id OR a.programme_id_2 = p.id OR a.programme_id_3 = p.id)
+    WHERE a.created_at BETWEEN ? AND ?
+    GROUP BY p.id
+    ORDER BY app_count DESC
+");
+$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
+$progPopularity = $stmt->fetchAll();
+
+// System Processing Volume (AI Assessments)
+$stmt = $db->prepare("
+    SELECT p.name, p.category, COUNT(er.id) as assessed_count,
            SUM(CASE WHEN er.eligible = 1 THEN 1 ELSE 0 END) as eligible_count,
            ROUND(AVG(er.fit_percentage), 1) as avg_fit
     FROM eligibility_results er
@@ -28,10 +40,10 @@ $stmt = $db->prepare("
     JOIN applications a ON er.application_id = a.id
     WHERE a.created_at BETWEEN ? AND ?
     GROUP BY p.id
-    ORDER BY app_count DESC
+    ORDER BY assessed_count DESC
 ");
 $stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
-$progPopularity = $stmt->fetchAll();
+$systemProcessing = $stmt->fetchAll();
 
 // Scholarship distribution
 $stmt = $db->prepare("
@@ -74,6 +86,69 @@ $stmt = $db->prepare("
 ");
 $stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
 $monthlyTrend = $stmt->fetchAll();
+
+// Handle CSV Export
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="utp_performance_report_' . $dateFrom . '_to_' . $dateTo . '.csv"');
+    
+    $out = fopen('php://output', 'w');
+    
+    fputcsv($out, ['REPORT SUMMARY', "Period: $dateFrom to $dateTo"]);
+    fputcsv($out, []);
+    
+    // 1. Application Stats
+    fputcsv($out, ['APPLICATION STATISTICS']);
+    fputcsv($out, ['Status', 'Count']);
+    fputcsv($out, ['Total Applications', $totalApps]);
+    fputcsv($out, ['Approved', $appStats['approved'] ?? 0]);
+    fputcsv($out, ['Processing', $appStats['processing'] ?? 0]);
+    fputcsv($out, ['Submitted', $appStats['submitted'] ?? 0]);
+    fputcsv($out, ['Rejected', $appStats['rejected'] ?? 0]);
+    fputcsv($out, []);
+    
+    // 2. Programme Popularity (Explicit Applications)
+    fputcsv($out, ['PROGRAMME POPULARITY (EXPLICIT APPLICATIONS)']);
+    fputcsv($out, ['Programme Name', 'Category', 'Explicit Applications']);
+    foreach ($progPopularity as $pp) {
+        fputcsv($out, [
+            $pp['name'], 
+            $pp['category'], 
+            $pp['app_count']
+        ]);
+    }
+    fputcsv($out, []);
+    
+    // 3. System Processing Volume (AI Eligibility Checks)
+    fputcsv($out, ['SYSTEM PROCESSING VOLUME (AI ELIGIBILITY ASSESSMENTS)']);
+    fputcsv($out, ['Programme Name', 'Category', 'Total Assessed', 'Eligible Candidates', 'Average AI Fit %']);
+    foreach ($systemProcessing as $sp) {
+        fputcsv($out, [
+            $sp['name'], 
+            $sp['category'], 
+            $sp['assessed_count'], 
+            $sp['eligible_count'], 
+            $sp['avg_fit'] . '%'
+        ]);
+    }
+    fputcsv($out, []);
+    
+    // 4. Scholarship Distribution
+    fputcsv($out, ['SCHOLARSHIP DISTRIBUTION']);
+    fputcsv($out, ['Scholarship Name', 'Potential Candidates', 'Budget Min', 'Budget Max']);
+    foreach ($schDist as $sd) {
+        fputcsv($out, [
+            $sd['name'], 
+            $sd['potential_students'], 
+            $sd['budget_min'], 
+            $sd['budget_max']
+        ]);
+    }
+    fputcsv($out, []);
+    
+    fclose($out);
+    exit;
+}
 ?>
 
 <div class="flex-between mb-6 no-print">
@@ -81,7 +156,10 @@ $monthlyTrend = $stmt->fetchAll();
         <h1>Performance Reports</h1>
         <p>Structured reports on applications, programmes, and scholarships.</p>
     </div>
-    <button onclick="window.print()" class="btn btn-purple btn-sm">Print Report</button>
+    <div class="flex gap-2">
+        <a href="?from=<?= urlencode($dateFrom) ?>&to=<?= urlencode($dateTo) ?>&export=csv" class="btn btn-outline btn-sm">Export CSV</a>
+        <button onclick="window.print()" class="btn btn-purple btn-sm">Print Report</button>
+    </div>
 </div>
 
 <!-- Date Range Filter -->
@@ -154,21 +232,44 @@ $monthlyTrend = $stmt->fetchAll();
 
 <!-- Programme Popularity -->
 <div class="card mb-6">
-    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Programme Popularity</h3>
+    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Programme Popularity (Explicit Applications)</h3>
     <?php if (empty($progPopularity)): ?>
         <p style="color:var(--text-muted);">No data available for this period.</p>
     <?php else: ?>
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Programme</th><th>Category</th><th>Applications</th><th>Eligible</th><th>Avg Fit</th></tr></thead>
+            <thead><tr><th>Programme</th><th>Category</th><th>Explicit Applications</th></tr></thead>
             <tbody>
             <?php foreach ($progPopularity as $pp): ?>
                 <tr>
                     <td><strong><?= htmlspecialchars($pp['name']) ?></strong></td>
                     <td><span class="badge badge-purple"><?= htmlspecialchars($pp['category']) ?></span></td>
                     <td><?= $pp['app_count'] ?></td>
-                    <td><?= $pp['eligible_count'] ?></td>
-                    <td><?= $pp['avg_fit'] ?>%</td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+</div>
+
+<!-- System Processing Volume -->
+<div class="card mb-6">
+    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">System Processing Volume (AI Eligibility Assessments)</h3>
+    <?php if (empty($systemProcessing)): ?>
+        <p style="color:var(--text-muted);">No data available for this period.</p>
+    <?php else: ?>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Programme</th><th>Category</th><th>Total Assessed</th><th>Eligible</th><th>Avg Fit</th></tr></thead>
+            <tbody>
+            <?php foreach ($systemProcessing as $sp): ?>
+                <tr>
+                    <td><strong><?= htmlspecialchars($sp['name']) ?></strong></td>
+                    <td><span class="badge badge-outline"><?= htmlspecialchars($sp['category']) ?></span></td>
+                    <td><?= $sp['assessed_count'] ?></td>
+                    <td><?= $sp['eligible_count'] ?></td>
+                    <td><?= $sp['avg_fit'] ?>%</td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
