@@ -6,11 +6,13 @@
 function checkRateLimit($ip, $maxAttempts = 5, $windowMinutes = 1) {
     $db = getDB();
 
-    $stmt = $db->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? MINUTE)");
-    $stmt->execute([$windowMinutes]);
+    $threshold = date('Y-m-d H:i:s', strtotime("-$windowMinutes minutes"));
 
-    $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)");
-    $stmt->execute([$ip, $windowMinutes]);
+    $stmt = $db->prepare("DELETE FROM login_attempts WHERE attempted_at < ?");
+    $stmt->execute([$threshold]);
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempted_at > ?");
+    $stmt->execute([$ip, $threshold]);
     $count = $stmt->fetchColumn();
 
     return $count < $maxAttempts;

@@ -56,7 +56,7 @@ class AuthTest extends TestCase {
     }
 
     public function test_register_fails_with_duplicate_ic() {
-        $result = registerUser('Test', 'new@test.com', 'Valid@1234', '1111', '123'); // 1111 is student test seed
+        $result = registerUser('Test', 'new@test.com', 'Valid@1234', '111111111111', '123'); // 111111111111 is student test seed
         $this->assertFalse($result['success']);
         $this->assertEquals('IC Number already registered.', $result['error']);
     }
@@ -80,6 +80,8 @@ class AuthTest extends TestCase {
         initSession();
         $_SESSION['user_id'] = 1;
         $_SESSION['last_activity'] = time() - 3600; // 1 hr ago
+        
+        session_write_close();
         
         // Next initSession call should destroy it
         initSession();
@@ -113,9 +115,11 @@ class AuthTest extends TestCase {
     }
 
     public function test_unverified_user_blocked_from_eligibility_check() {
+        $db = getDB();
+        $db->exec("INSERT INTO users (id, full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (999, 'Unverified', 'unverified@test.com', 'hash', '999999999999', '012', 'student', 0)");
+        
         $_SESSION['role'] = 'student';
-        $_SESSION['user_id'] = 2;
-        $_SESSION['email_verified'] = 0;
+        $_SESSION['user_id'] = 999;
         
         $this->assertFalse(isVerified());
     }

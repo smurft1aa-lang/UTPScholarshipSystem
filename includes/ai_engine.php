@@ -236,7 +236,7 @@ class AIEngine {
             JOIN scholarship_programme sp ON s.id = sp.scholarship_id
             WHERE sp.programme_id IN ({$placeholders})
             AND s.is_active = 1
-            AND (s.end_date IS NULL OR s.end_date >= CURDATE())
+            AND (s.end_date IS NULL OR s.end_date >= CURRENT_DATE)
             GROUP BY s.id
             ORDER BY s.budget_max DESC
         ");
