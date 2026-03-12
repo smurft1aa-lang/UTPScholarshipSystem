@@ -174,21 +174,23 @@ function updateGradeInputs(qualType) {
     window.addSubjectRow = function(prefillSubject = '', isCore = false) {
         var row = document.createElement('div');
         row.className = 'form-row';
-        row.style.marginBottom = '12px';
-        row.style.display = 'flex';
+        row.style.marginBottom = '16px';
+        row.style.display = 'grid';
+        row.style.gridTemplateColumns = '2fr 1fr 42px';
         row.style.gap = '12px';
+        row.style.alignItems = 'flex-start';
 
         var subjCol = document.createElement('div');
         subjCol.className = 'form-group';
         subjCol.style.marginBottom = '0';
-        subjCol.style.flex = '2';
 
         if (isCore) {
             subjCol.innerHTML = '<label class="form-label">' + prefillSubject + '</label>' +
                                 '<input type="hidden" name="subjects[]" value="' + prefillSubject + '">';
         } else {
-            var subjSelect = '<select name="subjects[]" class="form-select" required>' +
-                             '<option value="">Select Subject</option>';
+            var subjSelect = '<label class="form-label">Subject</label>' +
+                             '<select name="subjects[]" class="form-select" required>' +
+                             '<option value="" disabled' + (prefillSubject === '' ? ' selected' : '') + '>Select Subject</option>';
             optionalSubjects.forEach(function(s) {
                 subjSelect += '<option value="' + s + '"' + (prefillSubject === s ? ' selected' : '') + '>' + s + '</option>';
             });
@@ -199,10 +201,10 @@ function updateGradeInputs(qualType) {
         var gradeCol = document.createElement('div');
         gradeCol.className = 'form-group';
         gradeCol.style.marginBottom = '0';
-        gradeCol.style.flex = '1';
 
-        var gradeSelect = '<select name="grades[]" class="form-select" required>' +
-                          '<option value="">Grade</option>';
+        var gradeSelect = '<label class="form-label">Grade</label>' +
+                          '<select name="grades[]" class="form-select" required>' +
+                          '<option value="" disabled selected>Grade</option>';
         gradeList.forEach(function(g) {
             gradeSelect += '<option value="' + g + '">' + g + '</option>';
         });
@@ -211,7 +213,10 @@ function updateGradeInputs(qualType) {
 
         var actionCol = document.createElement('div');
         actionCol.style.display = 'flex';
-        actionCol.style.alignItems = 'center';
+        actionCol.style.flexDirection = 'column';
+        actionCol.style.justifyContent = 'flex-end';
+        actionCol.style.height = '100%';
+        
         if (!isCore) {
             var removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -219,12 +224,11 @@ function updateGradeInputs(qualType) {
             removeBtn.textContent = 'X';
             removeBtn.style.padding = '8px 12px';
             removeBtn.style.height = '42px';
+            removeBtn.style.marginTop = '26px'; // Align with select inputs
             removeBtn.addEventListener('click', function() {
                 row.remove();
             });
             actionCol.appendChild(removeBtn);
-        } else {
-            actionCol.innerHTML = '<div style="width:42px;"></div>'; // Spacer
         }
 
         row.appendChild(subjCol);

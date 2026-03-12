@@ -74,26 +74,17 @@ require_once __DIR__ . '/../includes/header.php';
                 Select the grade you achieved for each subject. All subjects are checked against UTP entry requirements.
             </p>
             <div id="grade_inputs"></div>
-        </div>
-
-        <!-- Submit -->
-        <div class="hidden" id="step2" style="display:block;">
-            <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn" style="display:none;">
-                Check My Eligibility
-            </button>
+            
+            <div class="mt-6">
+                <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn">
+                    Check My Eligibility
+                </button>
+            </div>
         </div>
     </form>
 </div>
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
-// Show submit button when grades are visible
-var observer = new MutationObserver(function() {
-    var step2 = document.getElementById('step2');
-    var btn = document.getElementById('submit_btn');
-    if (step2 && !step2.classList.contains('hidden') && btn) {
-        btn.style.display = 'block';
-    }
-});
 
 document.querySelectorAll('.qual-card').forEach(function(card) {
     card.addEventListener('click', function() {
@@ -108,10 +99,6 @@ document.querySelectorAll('.qual-card').forEach(function(card) {
         updateGradeInputs(this.getAttribute('data-qual'));
     });
 });
-var step2El = document.getElementById('step2');
-if (step2El) {
-    observer.observe(step2El, { attributes: true, attributeFilter: ['class'] });
-}
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
