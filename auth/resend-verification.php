@@ -19,17 +19,14 @@ if ($user['email_verified'] == 1) {
     exit;
 }
 
-// Rate limit: 1 per 5 mins using login_attempts tracking
-$ip = getClientIP();
-if (!checkRateLimit($ip . '_resend', 1, 5)) {
-    $_SESSION['error'] = "Please wait 5 minutes before requesting another verification email.";
-    header("Location: /student/dashboard.php");
-    exit;
+$sent = sendVerificationEmail($userId, $user['email'], $user['full_name']);
+
+if ($sent) {
+    $_SESSION['success'] = "Verification email sent! Please check your inbox.";
 }
-recordLoginAttempt($ip . '_resend');
+else {
+    $_SESSION['error'] = "Failed to send verification email. Please try again.";
+}
 
-sendVerificationEmail($userId, $user['email'], $user['full_name']);
-
-$_SESSION['success'] = "Verification email sent. Please check your inbox.";
 header("Location: /student/dashboard.php");
 exit;
