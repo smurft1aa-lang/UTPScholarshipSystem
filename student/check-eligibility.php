@@ -73,6 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
             <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:20px;">
                 Select the grade you achieved for each subject. All subjects are checked against UTP entry requirements.
             </p>
+            <div id="grade_inputs"></div>
         </div>
 
         <!-- Submit -->
