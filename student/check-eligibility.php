@@ -73,13 +73,13 @@ require_once __DIR__ . '/../includes/header.php';
             <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:20px;">
                 Select the grade you achieved for each subject. All subjects are checked against UTP entry requirements.
             </p>
-            <div id="grade_inputs"></div>
-            
-            <div class="mt-6">
-                <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn">
-                    Check My Eligibility
-                </button>
-            </div>
+        </div>
+
+        <!-- Submit -->
+        <div id="submit_container" style="display:none;">
+            <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn">
+                Check My Eligibility
+            </button>
         </div>
     </form>
 </div>
@@ -97,6 +97,7 @@ document.querySelectorAll('.qual-card').forEach(function(card) {
         
         this.style.borderColor = 'var(--orange)';
         updateGradeInputs(this.getAttribute('data-qual'));
+        document.getElementById('submit_container').style.display = 'block';
     });
 });
 </script>

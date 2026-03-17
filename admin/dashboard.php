@@ -3,14 +3,13 @@
  * Admin Dashboard
  * Overview with stats, application status, calendar
  */
-require_once __DIR__ . '/admin_header.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
-$db = getDB();
-
-// Handle quick status update
+// Handle quick status update FIRST (before any output)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    require_once __DIR__ . '/../includes/security.php';
     if (validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $db = getDB();
         $appId = intval($_POST['app_id'] ?? 0);
         $action = sanitize($_POST['action']);
         $notes = sanitize($_POST['admin_notes'] ?? '');
@@ -25,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit;
 }
 
+// NOW load the header (which sends output)
+require_once __DIR__ . '/admin_header.php';
+$db = getDB();
 // Stats
 $totalStudents = $db->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
 $totalApplications = $db->query("SELECT COUNT(*) FROM applications")->fetchColumn();
