@@ -69,11 +69,31 @@ try {
     $stmt = $db->prepare("UPDATE applications SET programme_id_1 = ?, programme_id_2 = ?, programme_id_3 = ?, scholarship_id = ?, updated_at = NOW() WHERE id = ?");
     $stmt->execute([$prog1, $prog2, $prog3, $scholarshipId, $appId]);
 
+    // Send confirmation email
+    require_once __DIR__ . '/../includes/mailer.php';
+    $userStmt = $db->prepare("SELECT full_name, email FROM users WHERE id = ?");
+    $userStmt->execute([$userId]);
+    $user = $userStmt->fetch();
+
+    $progStmt = $db->prepare("SELECT name FROM programmes WHERE id = ?");
+    $progStmt->execute([$prog1]);
+    $prog = $progStmt->fetch();
+
+    if ($user && $prog) {
+        sendApplicationStatusEmail(
+            $user['email'],
+            $user['full_name'],
+            'processing',
+            $prog['name']
+        );
+    }
+
     $_SESSION['success'] = 'Your application has been successfully submitted! The administration will review it shortly.';
     header('Location: /student/dashboard.php');
     exit;
 
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     trackEvent('Application Submission Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     $_SESSION['error'] = 'An error occurred. Please try again.';
     header('Location: /student/results.php');
