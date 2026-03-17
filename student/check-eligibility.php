@@ -77,8 +77,8 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Submit -->
-        <div class="hidden" id="step2" style="display:block;">
-            <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn" style="display:none;">
+        <div id="submit_container" style="display:none;">
+            <button type="submit" class="btn btn-orange btn-lg btn-block" id="submit_btn">
                 Check My Eligibility
             </button>
         </div>
@@ -106,6 +106,7 @@ document.querySelectorAll('.qual-card').forEach(function(card) {
         
         this.style.borderColor = 'var(--orange)';
         updateGradeInputs(this.getAttribute('data-qual'));
+        document.getElementById('submit_container').style.display = 'block';
     });
 });
 var step2El = document.getElementById('step2');
