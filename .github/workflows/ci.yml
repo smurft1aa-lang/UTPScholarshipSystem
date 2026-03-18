@@ -46,8 +46,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
-      - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --colors=always
+      - name: Run PHPUnit tests and Code Coverage Gate
+        run: |
+          vendor/bin/phpunit --colors=always
+          php scripts/check_coverage.php coverage.xml 80
         env:
           APP_ENV: testing
 
