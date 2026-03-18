@@ -40,13 +40,24 @@ if (empty($subjects) || empty($grades) || count($subjects) !== count($grades)) {
 $db = getDB();
 $userId = $_SESSION['user_id'];
 
-// ── Guard: prevent duplicate applications ──
-$stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ?");
+// ── Guard: allow overwrite if status is 'submitted', block if processed ──
+$stmt = $db->prepare("SELECT id, status FROM applications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
 $stmt->execute([$userId]);
-if ((int)$stmt->fetchColumn() > 0) {
-    $_SESSION['error'] = 'You have already submitted an eligibility check. You can view your results on the dashboard.';
-    header('Location: /student/dashboard.php');
-    exit;
+$existingApp = $stmt->fetch();
+
+if ($existingApp) {
+    if (in_array($existingApp['status'], ['approved', 'rejected'])) {
+        $_SESSION['error'] = 'Your application has already been processed. You cannot change your grades now.';
+        header('Location: /student/dashboard.php');
+        exit;
+    }
+    // They are just re-checking. We will delete the old un-processed application + cascade delete qualifications/grades/results.
+    $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
+    $stmt->execute([$existingApp['id']]);
+    
+    // Also delete their previous qualifications so we start fresh
+    $stmt = $db->prepare("DELETE FROM qualifications WHERE user_id = ?");
+    $stmt->execute([$userId]);
 }
 
 try {
