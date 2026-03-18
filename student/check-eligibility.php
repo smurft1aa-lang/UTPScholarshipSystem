@@ -83,10 +83,26 @@ require_once __DIR__ . '/../includes/header.php';
             </button>
         </div>
     </form>
+
+    <!-- Skeleton Loader (Hidden by default) -->
+    <div id="ai_loader" style="display:none; text-align:center; padding:40px 0;">
+        <h2 style="font-size:1.5rem; color:var(--orange); margin-bottom:16px;">AI Engine is Evaluating...</h2>
+        <p style="color:var(--text-secondary); margin-bottom:32px;">Analyzing your grades against entry requirements across all programmes.</p>
+        
+        <div class="card" style="max-width:600px; margin:0 auto; text-align:left;">
+            <div class="skeleton skeleton-heading"></div>
+            <div class="skeleton skeleton-text" style="width:80%"></div>
+            <div class="skeleton skeleton-text" style="width:90%"></div>
+            
+            <div style="margin-top:24px;">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
-
 document.querySelectorAll('.qual-card').forEach(function(card) {
     card.addEventListener('click', function() {
         var input = this.querySelector('input');
@@ -100,6 +116,18 @@ document.querySelectorAll('.qual-card').forEach(function(card) {
         updateGradeInputs(this.getAttribute('data-qual'));
         document.getElementById('submit_container').style.display = 'block';
     });
+});
+
+// Intercept form submission to show skeleton loader
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (validateForm(this)) {
+        // Hide form and steps
+        document.querySelector('.steps').style.display = 'none';
+        this.style.display = 'none';
+        // Show AI skeleton loader
+        document.getElementById('ai_loader').style.display = 'block';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 });
 </script>
 

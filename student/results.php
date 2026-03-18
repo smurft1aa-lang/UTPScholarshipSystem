@@ -102,7 +102,10 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
         </div>
         <?php if ($application): ?>
-            <a href="/student/my-proposal.php?id=<?= $application['id'] ?>" class="btn btn-outline btn-sm">View Proposal</a>
+            <div style="display:flex; gap:12px;">
+                <a href="/student/export-results.php" target="_blank" class="btn btn-outline btn-sm">📄 Download PDF</a>
+                <a href="/student/my-proposal.php?id=<?= $application['id'] ?>" class="btn btn-orange btn-sm">View Proposal</a>
+            </div>
         <?php endif; ?>
     </div>
 

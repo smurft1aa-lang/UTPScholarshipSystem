@@ -68,9 +68,14 @@ $stmt = $db->query("SELECT DISTINCT action FROM audit_log ORDER BY action");
 $uniqueActions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 ?>
 
-<div class="page-header">
-    <h1>System Audit Log</h1>
-    <p>Monitor security events and administrative actions.</p>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h1>System Audit Log</h1>
+        <p>Monitor security events and administrative actions.</p>
+    </div>
+    <a href="/api/export-audit-csv.php?<?= htmlspecialchars($_SERVER['QUERY_STRING'] ?? '') ?>" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:8px;">
+        📄 Export CSV
+    </a>
 </div>
 
 <!-- Filters -->

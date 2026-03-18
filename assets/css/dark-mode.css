@@ -1,0 +1,190 @@
+/**
+ * Dark Mode — Variable Overrides
+ *
+ * Activates via:
+ *   1. User toggle: [data-theme="dark"] on <html>
+ *   2. System preference: @media (prefers-color-scheme: dark)
+ *
+ * All colors reference the same CSS custom property names defined in style.css.
+ */
+
+/* ── User Toggle (data-theme="dark") ───────────────────────────── */
+[data-theme="dark"] {
+    --text: #e4e4e9;
+    --text-secondary: #a8a8b3;
+    --text-muted: #6e6e82;
+    --bg: #1a1a2e;
+    --bg-page: #0f0f1e;
+    --border: #2d2d44;
+    --border-light: #232340;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.5);
+
+    /* Orange (Student) — lighter for dark bg */
+    --orange: #f59e0b;
+    --orange-hover: #d97706;
+    --orange-light: #1f1a10;
+    --orange-badge: #2a2010;
+
+    /* Purple (Admin) — lighter for dark bg */
+    --purple: #8b5cf6;
+    --purple-hover: #7c3aed;
+    --purple-light: #1a1530;
+    --purple-badge: #1f1835;
+
+    /* Status colors — desaturated for dark bg */
+    --green: #34d399;
+    --green-bg: #0d2818;
+    --yellow: #fbbf24;
+    --yellow-bg: #1f1a0a;
+    --red: #f87171;
+    --red-bg: #2a1215;
+    --blue: #60a5fa;
+    --blue-bg: #0f1a2e;
+
+    color-scheme: dark;
+}
+
+/* ── System Preference Auto-Detection ──────────────────────────── */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --text: #e4e4e9;
+        --text-secondary: #a8a8b3;
+        --text-muted: #6e6e82;
+        --bg: #1a1a2e;
+        --bg-page: #0f0f1e;
+        --border: #2d2d44;
+        --border-light: #232340;
+        --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.5);
+
+        --orange: #f59e0b;
+        --orange-hover: #d97706;
+        --orange-light: #1f1a10;
+        --orange-badge: #2a2010;
+
+        --purple: #8b5cf6;
+        --purple-hover: #7c3aed;
+        --purple-light: #1a1530;
+        --purple-badge: #1f1835;
+
+        --green: #34d399;
+        --green-bg: #0d2818;
+        --yellow: #fbbf24;
+        --yellow-bg: #1f1a0a;
+        --red: #f87171;
+        --red-bg: #2a1215;
+        --blue: #60a5fa;
+        --blue-bg: #0f1a2e;
+
+        color-scheme: dark;
+    }
+}
+
+/* ── Dark Mode Toggle Button ───────────────────────────────────── */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+    color: var(--text-secondary);
+}
+
+.theme-toggle:hover {
+    background: var(--border-light);
+    border-color: var(--text-muted);
+    transform: rotate(15deg);
+}
+
+/* Sun icon for dark mode, moon for light */
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: inline; }
+
+[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: inline; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+}
+
+/* ── Skeleton Loader Animations ────────────────────────────────── */
+.skeleton {
+    background: linear-gradient(90deg, var(--border-light) 25%, var(--border) 50%, var(--border-light) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: var(--radius);
+    min-height: 1rem;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-heading {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-card {
+    height: 120px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+@keyframes skeleton-pulse {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ── Smooth transitions for theme switching ────────────────────── */
+body,
+.navbar,
+.sidebar,
+.card,
+.admin-card,
+input, select, textarea,
+.btn {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ── Accessibility Focus Indicators ────────────────────────────── */
+:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Skip to main content link */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 16px;
+    background: var(--blue);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    z-index: 1000;
+    font-weight: 600;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 8px;
+}

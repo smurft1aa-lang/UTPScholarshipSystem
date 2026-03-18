@@ -19,8 +19,13 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
     <meta name="description" content="UTP Scholarship & Course Eligibility System - Check your eligibility for foundation programmes and scholarships.">
     <title>UTP System</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/dark-mode.css">
+    <script>/* Restore theme before paint to prevent flash */
+    (function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+    </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <?php if ($currentUser): ?>
 <nav class="navbar">
     <div class="navbar-inner">
@@ -40,6 +45,10 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <a href="/api/logout.php" class="mobile-signout">Sign Out</a>
         </div>
         <div class="navbar-right">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span class="icon-moon">🌙</span>
+                <span class="icon-sun">☀️</span>
+            </button>
             <span class="navbar-user desktop-only"><strong><?= htmlspecialchars($currentUser['full_name']) ?></strong></span>
             <a href="/api/logout.php" class="btn btn-signout desktop-only">Sign Out</a>
             <button class="hamburger-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
@@ -57,6 +66,17 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             navLinks.classList.toggle('nav-open');
         });
     }
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+    }
 </script>
 <?php endif; ?>
-<main>
+<main id="main-content">
