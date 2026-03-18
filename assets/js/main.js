@@ -280,3 +280,96 @@ function updateSteps(activeStep) {
         if (index + 1 < activeStep) line.classList.add('completed');
     });
 }
+
+// ── Toast Notification System ──
+
+/**
+ * Show a toast notification.
+ * @param {string} message - The message to display
+ * @param {'success'|'error'|'warning'|'info'} type - Type of toast
+ * @param {number} duration - Duration in milliseconds (default 4000)
+ */
+function showToast(message, type, duration) {
+    type = type || 'info';
+    duration = duration || 4000;
+
+    // Create container if it doesn't exist
+    var container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    var icons = { success: '✓', error: '✕', warning: '!', info: 'i' };
+
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.style.setProperty('--toast-duration', (duration / 1000) + 's');
+    toast.innerHTML =
+        '<span class="toast-icon">' + (icons[type] || 'i') + '</span>' +
+        '<span class="toast-message">' + message + '</span>' +
+        '<button class="toast-close" aria-label="Close">&times;</button>' +
+        '<div class="toast-progress"></div>';
+
+    container.appendChild(toast);
+
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', function() {
+        removeToast(toast);
+    });
+
+    // Auto dismiss
+    setTimeout(function() {
+        removeToast(toast);
+    }, duration);
+}
+
+function removeToast(toast) {
+    if (toast.classList.contains('removing')) return;
+    toast.classList.add('removing');
+    setTimeout(function() {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+}
+
+// ── Loading States ──
+
+/**
+ * Set a button to loading state
+ * @param {HTMLElement} btn - The button element
+ */
+function setButtonLoading(btn) {
+    btn.classList.add('loading');
+    btn.disabled = true;
+}
+
+/**
+ * Remove loading state from a button
+ * @param {HTMLElement} btn - The button element
+ */
+function clearButtonLoading(btn) {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+}
+
+// Auto-show toasts from PHP flash messages
+document.addEventListener('DOMContentLoaded', function() {
+    var flashElements = document.querySelectorAll('[data-toast]');
+    flashElements.forEach(function(el) {
+        var msg = el.getAttribute('data-toast-message') || el.textContent.trim();
+        var type = el.getAttribute('data-toast') || 'info';
+        if (msg) showToast(msg, type);
+        el.style.display = 'none';
+    });
+
+    // Add loading state to forms on submit
+    var submitForms = document.querySelectorAll('form:not([data-no-loading])');
+    submitForms.forEach(function(form) {
+        form.addEventListener('submit', function() {
+            var btn = form.querySelector('button[type="submit"], .btn-submit');
+            if (btn) setButtonLoading(btn);
+        });
+    });
+});
+

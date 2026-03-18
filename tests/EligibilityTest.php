@@ -3,19 +3,30 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../includes/ai_engine.php';
 
+/**
+ * Eligibility Engine Tests
+ * Uses database transactions to isolate test data — no more destructive DELETEs.
+ */
 class EligibilityTest extends TestCase {
 
     protected function setUp(): void {
         $db = getDB();
-        $db->exec("DELETE FROM grades");
-        $db->exec("DELETE FROM qualifications WHERE id > 10");
-        $db->exec("DELETE FROM entry_requirements");
-        
-        // Create baseline programme requirements
+        // Use transaction to isolate test data — rolled back in tearDown
+        $db->beginTransaction();
+
+        // Insert test-specific entry requirements (programme_id = 1)
         $db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES 
             (1, 'SPM', 'Mathematics', 'C', 1.00),
             (1, 'SPM', 'Physics', 'C', 1.00)
         ");
+    }
+
+    protected function tearDown(): void {
+        $db = getDB();
+        // Roll back all changes — seed data remains untouched
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
     }
 
     protected function createQualAndGrades($gradesMap) {
@@ -34,7 +45,6 @@ class EligibilityTest extends TestCase {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'C', 'Physics' => 'B']);
         $results = AIEngine::checkEligibility($qualId);
         
-        // Extract results for programme 1
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         

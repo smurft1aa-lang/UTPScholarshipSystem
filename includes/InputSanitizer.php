@@ -1,13 +1,29 @@
 <?php
 /**
  * Input Sanitizer and Validation Component
+ * 
+ * IMPORTANT: sanitize() now trims input only — no HTML encoding at input time.
+ * HTML escaping must be done at OUTPUT time using htmlspecialchars() in views.
+ * This prevents double-encoding when data is stored then displayed.
  */
 
+/**
+ * Sanitize input: trim whitespace only.
+ * DO NOT encode HTML entities here — that happens at output time.
+ */
 function sanitize($input) {
     if (is_array($input)) {
         return array_map('sanitize', $input);
     }
-    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+    return trim($input);
+}
+
+/**
+ * Escape output for safe HTML rendering.
+ * Use this in views/templates when echoing user data.
+ */
+function e($value) {
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 function validateEmail($email) {

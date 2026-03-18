@@ -1,10 +1,10 @@
-name: CI
+name: CI — PHPUnit Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main, newf]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
 jobs:
   test:
@@ -14,42 +14,47 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: utp_scholarship
+          MYSQL_ROOT_PASSWORD: testing
+          MYSQL_DATABASE: utp_scholarship_test
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-cmd="mysqladmin ping -h localhost -u root -ptesting"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo
+          coverage: xdebug
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Install dependencies
-      run: composer install --no-interaction --prefer-dist
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
 
-    - name: Run test suite
-      env:
-        APP_ENV: testing
-        DB_HOST: 127.0.0.1
-        DB_PORT: 3306
-        DB_USER: root
-        DB_PASS: password
-        DB_NAME: utp_scholarship
-      run: ./vendor/bin/phpunit --configuration phpunit.xml
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit --colors=always
+        env:
+          APP_ENV: testing
+
+      - name: Upload coverage report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
