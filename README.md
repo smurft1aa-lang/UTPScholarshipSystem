@@ -29,7 +29,7 @@ You can boot the entire system automatically mapping the LAMP stack.
    ```bash
    make up
    ```
-3. Open your browser and navigate to `http://localhost:8000/landing.php` or `http://localhost:8000/auth/login.php`
+3. Open your browser and navigate to `http://localhost:8080/landing.php` or `http://localhost:8080/auth/login.php`
 
 ### Option B: Manual Host Deployment
 2. **Configure Environment:**
@@ -61,3 +61,66 @@ After running the setup script, a default super-admin account is generated:
 - Directory indexing is disabled by default via `.htaccess` to protect source files.
 - Upload directories actively block PHP execution to prevent malicious uploads.
 - All database queries exclusively use Prepared Statements to prevent SQL Injection.
+
+## API Endpoints
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/api/check-eligibility.php` | Student | Submit grades and receive programme eligibility results with fit percentages, gap analysis, and scholarship matches |
+| `POST` | `/api/submit-application.php` | Student | Submit a scholarship application with programme preferences and uploaded documents |
+| `POST` | `/api/logout.php` | Any | Terminate the current session and redirect to login |
+
+### Example: Check Eligibility
+
+**Request:**
+```json
+{
+  "csrf_token": "<token>",
+  "qual_type": "SPM",
+  "subjects": ["Mathematics", "Physics", "Chemistry"],
+  "grades": ["A+", "A", "A"]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "programme_id": 1,
+      "programme_name": "Mechanical Engineering",
+      "eligible": true,
+      "fit_percentage": 85.0,
+      "confidence_label": "Strong Match",
+      "recommendation": "...",
+      "gaps": []
+    }
+  ],
+  "scholarships": [...]
+}
+```
+
+## Project Structure
+
+```
+├── admin/           # Admin dashboard, applications, reports, settings
+├── api/             # REST API endpoints
+├── assets/css/      # Stylesheets (style.css, landing.css, auth.css)
+├── assets/js/       # Client-side JavaScript
+├── auth/            # Login, signup, password reset, email verification
+├── config/          # Database configuration
+├── includes/        # Core PHP modules (auth, AI engine, CSRF, etc.)
+├── sql/             # Database schema and migrations
+├── student/         # Student dashboard, eligibility check, results
+├── tests/           # PHPUnit test suite
+└── uploads/         # User-uploaded documents
+```
+
+## Database Migrations
+
+After initial setup, apply migrations chronologically:
+```bash
+mysql -u root -p utp_scholarship < sql/migration_001_improvements.sql
+```
+

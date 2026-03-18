@@ -40,6 +40,15 @@ if (empty($subjects) || empty($grades) || count($subjects) !== count($grades)) {
 $db = getDB();
 $userId = $_SESSION['user_id'];
 
+// ── Guard: prevent duplicate applications ──
+$stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE user_id = ?");
+$stmt->execute([$userId]);
+if ((int)$stmt->fetchColumn() > 0) {
+    $_SESSION['error'] = 'You have already submitted an eligibility check. You can view your results on the dashboard.';
+    header('Location: /student/dashboard.php');
+    exit;
+}
+
 try {
     $db->beginTransaction();
 

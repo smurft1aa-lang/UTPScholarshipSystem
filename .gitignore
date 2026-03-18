@@ -31,3 +31,18 @@ Desktop.ini
 
 # Composer
 vendor/
+
+# Debug / test scripts (never commit)
+debug_mail.php
+test_mail.php
+
+# Uploads
+uploads/documents/*
+!uploads/documents/.gitkeep
+
+# Logs
+logs/
+
+# Test coverage
+coverage/
+

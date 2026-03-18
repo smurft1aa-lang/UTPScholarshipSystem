@@ -608,11 +608,11 @@ WHERE s.name = 'Schlumberger WTA (M) Sdn Bhd' AND p.category = 'Engineering & Sc
 
 -- Link new programmes to specific scholarships requested
 -- (PETRONAS, PTPTN, JPA, MARA, PNB are already linked by earlier query since they select all programmes, same for TAZU etc.)
--- Link Baker Hughes, Schlumberger, Halliburton to new programmes (15, 16)
+-- Link Baker Hughes, Schlumberger, Halliburton to Materials Engineering & Industrial Physics
 INSERT INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name IN ('Baker Hughes', 'Schlumberger WTA (M) Sdn Bhd', 'Halliburton Energy Sdn Bhd', 'Yayasan Sime Darby') 
-AND p.id IN (15, 16);
+AND p.name IN ('Materials Engineering', 'Industrial Physics');
 
 -- Murata Electronics - EE/Computer Engineering
 INSERT INTO scholarship_programme (scholarship_id, programme_id)

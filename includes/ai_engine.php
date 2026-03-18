@@ -10,10 +10,20 @@ require_once __DIR__ . '/GradeMapper.php';
 class AIEngine {
 
     /**
-     * Run full eligibility check for a student
-     * Returns array of programme results sorted by fit percentage
+     * Run full eligibility check for a student.
+     * Results are cached in session per qualification ID (10-min TTL).
+     * Pass $forceRefresh = true to bypass the cache.
      */
-    public static function checkEligibility($qualificationId) {
+    public static function checkEligibility($qualificationId, $forceRefresh = false) {
+        // ── Cache check ──
+        $cacheKey = 'eligibility_' . $qualificationId;
+        if (!$forceRefresh && isset($_SESSION[$cacheKey]) && is_array($_SESSION[$cacheKey])) {
+            $cached = $_SESSION[$cacheKey];
+            if (isset($cached['timestamp']) && (time() - $cached['timestamp']) < 600) {
+                return $cached['results'];
+            }
+        }
+
         startTimer('ai_eligibility');
         try {
             $db = getDB();
@@ -62,6 +72,14 @@ class AIEngine {
         $time = endTimer('ai_eligibility');
         if ($time > 500) {
             trackEvent('Slow AI Calculation', ['time_ms' => $time, 'qualification_id' => $qualificationId], 'WARNING');
+        }
+
+        // ── Store in cache ──
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $_SESSION[$cacheKey] = [
+                'results' => $results,
+                'timestamp' => time()
+            ];
         }
 
         return $results;
