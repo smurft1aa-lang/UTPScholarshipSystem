@@ -4,9 +4,21 @@ RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# HTTP Strict Transport Security (HSTS) — enforce HTTPS for 1 year
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
 # Block direct access to sensitive directories and files
 RewriteRule ^config/ - [F,L]
 RewriteRule ^includes/ - [F,L]
+RewriteRule ^src/ - [F,L]
 RewriteRule ^sql/ - [F,L]
+RewriteRule ^tests/ - [F,L]
+RewriteRule ^scripts/ - [F,L]
+RewriteRule ^vendor/ - [F,L]
 RewriteRule ^uploads/documents/ - [F,L]
 RewriteRule ^\.env - [F,L]
+RewriteRule ^composer\.(json|lock)$ - [F,L]
+RewriteRule ^phpunit\.xml$ - [F,L]
+RewriteRule ^docker - [F,L]
+RewriteRule ^Makefile$ - [F,L]
+RewriteRule ^\.github/ - [F,L]

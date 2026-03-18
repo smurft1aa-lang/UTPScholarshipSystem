@@ -5,13 +5,20 @@
  * Restricted to admin users only.
  */
 require_once __DIR__ . '/../includes/init.php';
+setSecurityHeaders();
 requireAdmin();
 
 $db = getDB();
 
-// Optional date range filtering
-$startDate = $_GET['start'] ?? null;
-$endDate = $_GET['end'] ?? null;
+// Optional date range filtering — sanitize inputs
+$startDate = isset($_GET['start']) ? sanitize($_GET['start']) : null;
+$endDate = isset($_GET['end']) ? sanitize($_GET['end']) : null;
+
+// Validate date format (YYYY-MM-DD) to prevent SQL injection via date params
+if ($startDate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate))
+    $startDate = null;
+if ($endDate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate))
+    $endDate = null;
 
 $sql = "SELECT a.id, u.full_name, u.email, a.action, a.target_type, a.target_id, a.details, a.ip_address, a.created_at
         FROM audit_log a

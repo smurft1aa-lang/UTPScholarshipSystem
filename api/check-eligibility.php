@@ -7,6 +7,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
 
+setSecurityHeaders();
 initSession();
 requireLogin();
 
@@ -54,7 +55,7 @@ if ($existingApp) {
     // They are just re-checking. We will delete the old un-processed application + cascade delete qualifications/grades/results.
     $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
     $stmt->execute([$existingApp['id']]);
-    
+
     // Also delete their previous qualifications so we start fresh
     $stmt = $db->prepare("DELETE FROM qualifications WHERE user_id = ?");
     $stmt->execute([$userId]);
@@ -100,11 +101,16 @@ try {
 
     $db->commit();
 
+    logAudit($userId, 'Eligibility Check Completed', 'Application', $appId, "Qualification: $qualType, Results: " . count($results));
+    trackEvent('Eligibility Check Completed', ['user_id' => $userId, 'qualification_type' => $qualType, 'results_count' => count($results)]);
+
     header('Location: /student/results.php');
     exit;
 
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     $db->rollBack();
+    trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     $_SESSION['error'] = 'An error occurred. Please try again.';
     header('Location: /student/check-eligibility.php');
     exit;

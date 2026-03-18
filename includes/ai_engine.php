@@ -7,14 +7,16 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/GradeMapper.php';
 
-class AIEngine {
+class AIEngine
+{
 
     /**
      * Run full eligibility check for a student.
      * Results are cached in session per qualification ID (10-min TTL).
      * Pass $forceRefresh = true to bypass the cache.
      */
-    public static function checkEligibility($qualificationId, $forceRefresh = false) {
+    public static function checkEligibility($qualificationId, $forceRefresh = false)
+    {
         // ── Cache check ──
         $cacheKey = 'eligibility_' . $qualificationId;
         if (!$forceRefresh && isset($_SESSION[$cacheKey]) && is_array($_SESSION[$cacheKey])) {
@@ -28,63 +30,67 @@ class AIEngine {
         try {
             $db = getDB();
 
-        // Get qualification info
-        $stmt = $db->prepare("SELECT * FROM qualifications WHERE id = ?");
-        $stmt->execute([$qualificationId]);
-        $qual = $stmt->fetch();
-        if (!$qual) return [];
+            // Get qualification info
+            $stmt = $db->prepare("SELECT * FROM qualifications WHERE id = ?");
+            $stmt->execute([$qualificationId]);
+            $qual = $stmt->fetch();
+            if (!$qual)
+                return [];
 
-        $qualType = $qual['qual_type'];
+            $qualType = $qual['qual_type'];
 
-        // Get student grades
-        $stmt = $db->prepare("SELECT subject, grade FROM grades WHERE qualification_id = ?");
-        $stmt->execute([$qualificationId]);
-        $studentGrades = [];
-        while ($row = $stmt->fetch()) {
-            $studentGrades[strtolower(trim($row['subject']))] = $row['grade'];
+            // Get student grades
+            $stmt = $db->prepare("SELECT subject, grade FROM grades WHERE qualification_id = ?");
+            $stmt->execute([$qualificationId]);
+            $studentGrades = [];
+            while ($row = $stmt->fetch()) {
+                $studentGrades[strtolower(trim($row['subject']))] = $row['grade'];
+            }
+
+            // Get all active programmes
+            $stmt = $db->prepare("SELECT * FROM programmes WHERE is_active = 1");
+            $stmt->execute();
+            $programmes = $stmt->fetchAll();
+
+            $results = [];
+
+            foreach ($programmes as $prog) {
+                // Get requirements for this programme and qual type
+                $stmt = $db->prepare("SELECT subject, min_grade, weight FROM entry_requirements WHERE programme_id = ? AND qual_type = ?");
+                $stmt->execute([$prog['id'], $qualType]);
+                $requirements = $stmt->fetchAll();
+
+                if (empty($requirements))
+                    continue;
+
+                $result = self::evaluateProgramme($prog, $requirements, $studentGrades, $qualType);
+                $results[] = $result;
+            }
+
+            // Sort by eligible first, then by fit percentage descending
+            usort($results, function ($a, $b) {
+                if ($a['eligible'] !== $b['eligible'])
+                    return $b['eligible'] - $a['eligible'];
+                return $b['fit_percentage'] - $a['fit_percentage'];
+            });
+
+            $time = endTimer('ai_eligibility');
+            if ($time > 500) {
+                trackEvent('Slow AI Calculation', ['time_ms' => $time, 'qualification_id' => $qualificationId], 'WARNING');
+            }
+
+            // ── Store in cache ──
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                $_SESSION[$cacheKey] = [
+                    'results' => $results,
+                    'timestamp' => time()
+                ];
+            }
+
+            return $results;
+
         }
-
-        // Get all active programmes
-        $stmt = $db->prepare("SELECT * FROM programmes WHERE is_active = 1");
-        $stmt->execute();
-        $programmes = $stmt->fetchAll();
-
-        $results = [];
-
-        foreach ($programmes as $prog) {
-            // Get requirements for this programme and qual type
-            $stmt = $db->prepare("SELECT subject, min_grade, weight FROM entry_requirements WHERE programme_id = ? AND qual_type = ?");
-            $stmt->execute([$prog['id'], $qualType]);
-            $requirements = $stmt->fetchAll();
-
-            if (empty($requirements)) continue;
-
-            $result = self::evaluateProgramme($prog, $requirements, $studentGrades, $qualType);
-            $results[] = $result;
-        }
-
-        // Sort by eligible first, then by fit percentage descending
-        usort($results, function($a, $b) {
-            if ($a['eligible'] !== $b['eligible']) return $b['eligible'] - $a['eligible'];
-            return $b['fit_percentage'] - $a['fit_percentage'];
-        });
-
-        $time = endTimer('ai_eligibility');
-        if ($time > 500) {
-            trackEvent('Slow AI Calculation', ['time_ms' => $time, 'qualification_id' => $qualificationId], 'WARNING');
-        }
-
-        // ── Store in cache ──
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            $_SESSION[$cacheKey] = [
-                'results' => $results,
-                'timestamp' => time()
-            ];
-        }
-
-        return $results;
-        
-        } catch (Exception $e) {
+        catch (Exception $e) {
             trackEvent('AI Engine Check Failed', ['exception' => $e, 'qualification_id' => $qualificationId], 'ERROR');
             return [];
         }
@@ -93,7 +99,8 @@ class AIEngine {
     /**
      * Evaluate a single programme against student grades
      */
-    private static function evaluateProgramme($programme, $requirements, $studentGrades, $qualType) {
+    private static function evaluateProgramme($programme, $requirements, $studentGrades, $qualType)
+    {
         $totalWeightedScore = 0;
         $maxWeightedScore = 0;
         $allMet = true;
@@ -140,7 +147,8 @@ class AIEngine {
                     'met' => $met,
                     'weight' => $weight
                 ];
-            } else {
+            }
+            else {
                 // Subject not found — check if it's a generic "Other Subject" placeholder
                 if (strpos($subjectKey, 'other') !== false) {
                     // For "Other Subject" slots, give partial credit
@@ -152,7 +160,8 @@ class AIEngine {
                         'met' => true,
                         'weight' => $weight
                     ];
-                } else {
+                }
+                else {
                     $allMet = false;
                     $gaps[] = [
                         'subject' => $req['subject'],
@@ -179,10 +188,10 @@ class AIEngine {
         if (!empty($programme['stem_bonus'])) {
             $physicsGradeStr = $studentGrades['physics'] ?? '';
             $chemistryGradeStr = $studentGrades['chemistry'] ?? '';
-            
+
             $physicsPoints = GradeMapper::gradeToPoints($physicsGradeStr, $qualType);
             $chemistryPoints = GradeMapper::gradeToPoints($chemistryGradeStr, $qualType);
-            
+
             if ($physicsPoints >= 9 && $chemistryPoints >= 9) {
                 // Increase fit percentage by 5%, capped at 100%
                 $fitPercentage = min(100, $fitPercentage + 5.0);
@@ -192,13 +201,17 @@ class AIEngine {
         // Add confidence label
         if ($fitPercentage >= 90) {
             $confidenceLabel = "Excellent Match";
-        } elseif ($fitPercentage >= 75) {
+        }
+        elseif ($fitPercentage >= 75) {
             $confidenceLabel = "Strong Match";
-        } elseif ($fitPercentage >= 60) {
+        }
+        elseif ($fitPercentage >= 60) {
             $confidenceLabel = "Good Match";
-        } elseif ($fitPercentage >= 40) {
+        }
+        elseif ($fitPercentage >= 40) {
             $confidenceLabel = "Possible Match";
-        } else {
+        }
+        else {
             $confidenceLabel = "Not Recommended";
         }
 
@@ -222,15 +235,20 @@ class AIEngine {
     /**
      * Generate natural-language recommendation text
      */
-    private static function generateRecommendation($programmeName, $eligible, $fitPct, $gaps) {
+    private static function generateRecommendation($programmeName, $eligible, $fitPct, $gaps)
+    {
         if ($eligible && $fitPct >= 80) {
             return "Excellent match for {$programmeName}. Your grades strongly meet all entry requirements. This programme is highly recommended for you.";
-        } elseif ($eligible && $fitPct >= 60) {
+        }
+        elseif ($eligible && $fitPct >= 60) {
             return "Good match for {$programmeName}. You meet all minimum requirements. Consider strengthening your grades in core subjects for scholarship opportunities.";
-        } elseif ($eligible) {
+        }
+        elseif ($eligible) {
             return "You meet the minimum entry requirements for {$programmeName}. Your grades are at the threshold level — strengthening them would improve your profile.";
-        } else {
-            $gapSubjects = array_map(function($g) { return $g['subject']; }, array_slice($gaps, 0, 3));
+        }
+        else {
+            $gapSubjects = array_map(function ($g) {
+                return $g['subject']; }, array_slice($gaps, 0, 3));
             $gapList = implode(', ', $gapSubjects);
             if ($fitPct >= 60) {
                 return "You are close to qualifying for {$programmeName}. Focus on improving: {$gapList}. A small improvement could make you eligible.";
@@ -242,8 +260,10 @@ class AIEngine {
     /**
      * Get matching scholarships for eligible programmes
      */
-    public static function getMatchingScholarships($eligibleProgrammeIds, $fitPercentages) {
-        if (empty($eligibleProgrammeIds)) return [];
+    public static function getMatchingScholarships($eligibleProgrammeIds, $fitPercentages)
+    {
+        if (empty($eligibleProgrammeIds))
+            return [];
 
         $db = getDB();
         $placeholders = str_repeat('?,', count($eligibleProgrammeIds) - 1) . '?';

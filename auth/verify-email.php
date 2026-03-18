@@ -2,9 +2,14 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 
+setSecurityHeaders();
+initSession();
+
 $token = $_GET['token'] ?? '';
 if (empty($token)) {
-    die("Invalid token.");
+    $_SESSION['error'] = 'Invalid or missing verification token.';
+    header('Location: /auth/login.php');
+    exit;
 }
 
 $db = getDB();
@@ -35,7 +40,8 @@ if (isLoggedIn() && $_SESSION['user_id'] == $record['user_id']) {
     $_SESSION['email_verified'] = 1;
     $_SESSION['success'] = "Email successfully verified!";
     header("Location: /student/dashboard.php");
-} else {
+}
+else {
     $_SESSION['success'] = "Email successfully verified! You can now log in.";
     header("Location: /auth/login.php");
 }

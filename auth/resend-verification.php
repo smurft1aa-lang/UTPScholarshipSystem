@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 
+setSecurityHeaders();
 requireLogin();
 
 $userId = $_SESSION['user_id'];

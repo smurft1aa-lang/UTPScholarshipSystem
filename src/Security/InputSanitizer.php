@@ -19,7 +19,7 @@ class InputSanitizer
     public static function sanitize(string|array $input): string|array
     {
         if (is_array($input)) {
-            return array_map([self::class, 'sanitize'], $input);
+            return array_map([self::class , 'sanitize'], $input);
         }
         return trim($input);
     }
@@ -49,11 +49,16 @@ class InputSanitizer
     public static function validatePassword(string $password): array
     {
         $errors = [];
-        if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
-        if (!preg_match('/[A-Z]/', $password)) $errors[] = 'Password must contain an uppercase letter.';
-        if (!preg_match('/[a-z]/', $password)) $errors[] = 'Password must contain a lowercase letter.';
-        if (!preg_match('/[0-9]/', $password)) $errors[] = 'Password must contain a number.';
-        if (!preg_match('/[^A-Za-z0-9]/', $password)) $errors[] = 'Password must contain a special character.';
+        if (strlen($password) < 8)
+            $errors[] = 'Password must be at least 8 characters.';
+        if (!preg_match('/[A-Z]/', $password))
+            $errors[] = 'Password must contain an uppercase letter.';
+        if (!preg_match('/[a-z]/', $password))
+            $errors[] = 'Password must contain a lowercase letter.';
+        if (!preg_match('/[0-9]/', $password))
+            $errors[] = 'Password must contain a number.';
+        if (!preg_match('/[^A-Za-z0-9]/', $password))
+            $errors[] = 'Password must contain a special character.';
         return $errors;
     }
 
@@ -63,7 +68,7 @@ class InputSanitizer
     public static function validateICNumber(string $ic): bool
     {
         $clean = preg_replace('/[-\s]/', '', $ic);
-        return (bool) preg_match('/^\d{12}$/', $clean);
+        return (bool)preg_match('/^\d{12}$/', $clean);
     }
 
     /**
@@ -72,7 +77,7 @@ class InputSanitizer
     public static function validatePhone(string $phone): bool
     {
         $clean = preg_replace('/[-\s]/', '', $phone);
-        return (bool) (preg_match('/^(\+?6?01)[0-9]{8,9}$/', $clean) || preg_match('/^\d{10,11}$/', $clean));
+        return (bool)(preg_match('/^(\+?6?01)[0-9]{8,9}$/', $clean) || preg_match('/^\d{10,11}$/', $clean));
     }
 
     /**
@@ -89,7 +94,7 @@ class InputSanitizer
         header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://unpkg.com https://cdn.jsdelivr.net; form-action 'self'; frame-ancestors 'none'");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com; img-src 'self' data: https://api.qrserver.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'");
         header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
     }
 

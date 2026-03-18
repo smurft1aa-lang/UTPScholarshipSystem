@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 requireVerified();
@@ -34,34 +34,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     mkdir($uploadDir, 0755, true);
                 }
                 
-                $ext = pathinfo($_FILES['document']['name'], PATHINFO_EXTENSION);
-                $newName = $userId . '_' . $docType . '_' . time() . '.' . $ext;
-                $targetPath = $uploadDir . '/' . $newName;
+                $ext = strtolower(pathinfo($_FILES['document']['name'], PATHINFO_EXTENSION));
                 
-                if (move_uploaded_file($_FILES['document']['tmp_name'], $targetPath)) {
-                    // Check if already exists
-                    $stmt = $db->prepare("SELECT id, filename FROM documents WHERE user_id = ? AND doc_type = ?");
-                    $stmt->execute([$userId, $docType]);
-                    $existing = $stmt->fetch();
-                    
-                    if ($existing) {
-                        // Delete old file
-                        $oldPath = $uploadDir . '/' . $existing['filename'];
-                        if (file_exists($oldPath)) unlink($oldPath);
-                        
-                        $stmt = $db->prepare("UPDATE documents SET filename = ?, original_name = ?, file_size = ?, uploaded_at = NOW() WHERE id = ?");
-                        $stmt->execute([$newName, $_FILES['document']['name'], $_FILES['document']['size'], $existing['id']]);
-                    } else {
-                        $stmt = $db->prepare("INSERT INTO documents (user_id, doc_type, filename, original_name, file_size) VALUES (?, ?, ?, ?, ?)");
-                        $stmt->execute([$userId, $docType, $newName, $_FILES['document']['name'], $_FILES['document']['size']]);
-                    }
-                    
-                    require_once __DIR__ . '/../includes/audit.php';
-                    logAudit($userId, 'Document Uploaded', 'Document', $docType);
-                    
-                    $success = 'Document uploaded successfully.';
+                // Check for PHP files
+                if (preg_match('/\.php/i', $_FILES['document']['name'])) {
+                    $error = 'PHP files are not allowed.';
                 } else {
-                    $error = 'Failed to save the uploaded file.';
+                    $newName = $userId . '_' . $docType . '_' . time() . '.' . $ext;
+                    $targetPath = $uploadDir . '/' . $newName;
+                    
+                    if (move_uploaded_file($_FILES['document']['tmp_name'], $targetPath)) {
+                        // Check if already exists
+                        $stmt = $db->prepare("SELECT id, filename FROM documents WHERE user_id = ? AND doc_type = ?");
+                        $stmt->execute([$userId, $docType]);
+                        $existing = $stmt->fetch();
+                        
+                        if ($existing) {
+                            // Delete old file
+                            $oldPath = $uploadDir . '/' . $existing['filename'];
+                            if (file_exists($oldPath)) unlink($oldPath);
+                            
+                            $stmt = $db->prepare("UPDATE documents SET filename = ?, original_name = ?, file_size = ?, uploaded_at = NOW() WHERE id = ?");
+                            $stmt->execute([$newName, $_FILES['document']['name'], $_FILES['document']['size'], $existing['id']]);
+                        } else {
+                            $stmt = $db->prepare("INSERT INTO documents (user_id, doc_type, filename, original_name, file_size) VALUES (?, ?, ?, ?, ?)");
+                            $stmt->execute([$userId, $docType, $newName, $_FILES['document']['name'], $_FILES['document']['size']]);
+                        }
+                        
+                        require_once __DIR__ . '/../includes/audit.php';
+                        logAudit($userId, 'Document Uploaded', 'Document', $docType);
+                        
+                        $success = 'Document uploaded successfully.';
+                    } else {
+                        $error = 'Failed to save the uploaded file.';
+                    }
                 }
             }
         } else {

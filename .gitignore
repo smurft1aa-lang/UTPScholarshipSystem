@@ -45,4 +45,11 @@ logs/
 
 # Test coverage
 coverage/
+coverage.xml
+
+# PHPUnit cache
+.phpunit.cache/
+
+# Query debug files
+query
 

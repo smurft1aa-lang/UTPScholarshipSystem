@@ -9,9 +9,11 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
 // Override getDB() to use SQLite in-memory for all tests
-function getDB(): PDO {
+function getDB(): PDO
+{
     static $pdo = null;
-    if ($pdo !== null) return $pdo;
+    if ($pdo !== null)
+        return $pdo;
 
     $pdo = new PDO('sqlite::memory:');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -55,6 +57,7 @@ function getDB(): PDO {
             duration TEXT,
             foundation_fee REAL DEFAULT 0,
             undergraduate_fee REAL DEFAULT 0,
+            stem_bonus INTEGER DEFAULT 0,
             is_active INTEGER DEFAULT 1
         );
 
@@ -196,13 +199,20 @@ function getDB(): PDO {
 
 // Stub out functions that use real mail or filesystem in tests
 if (!function_exists('trackEvent')) {
-    function trackEvent($event, $context = [], $level = 'INFO') { /* no-op in tests */ }
+    function trackEvent($event, $context = [], $level = 'INFO')
+    { /* no-op in tests */
+    }
 }
 if (!function_exists('logAudit')) {
-    function logAudit($userId, $action, $type = null, $id = null, $details = null) { /* no-op */ }
+    function logAudit($userId, $action, $type = null, $id = null, $details = null)
+    { /* no-op */
+    }
 }
 if (!function_exists('sendVerificationEmail')) {
-    function sendVerificationEmail($userId, $email, $name): bool { return true; }
+    function sendVerificationEmail($userId, $email, $name): bool
+    {
+        return true;
+    }
 }
 
 // Load application modules
