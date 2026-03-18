@@ -28,6 +28,8 @@ function getDB(): PDO {
             phone TEXT NOT NULL,
             role TEXT NOT NULL DEFAULT 'student',
             email_verified INTEGER DEFAULT 0,
+            totp_secret TEXT DEFAULT NULL,
+            totp_enabled INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now'))
         );
 

@@ -14,8 +14,8 @@ extension_loaded('curl') || $missingExtensions[] = 'curl';
 extension_loaded('fileinfo') || $missingExtensions[] = 'fileinfo';
 extension_loaded('filter') || $missingExtensions[] = 'filter';
 extension_loaded('hash') || $missingExtensions[] = 'hash';
+extension_loaded('iconv') || $missingExtensions[] = 'iconv';
 extension_loaded('json') || $missingExtensions[] = 'json';
-extension_loaded('mbstring') || $missingExtensions[] = 'mbstring';
 extension_loaded('pdo') || $missingExtensions[] = 'pdo';
 extension_loaded('pdo_mysql') || $missingExtensions[] = 'pdo_mysql';
 
