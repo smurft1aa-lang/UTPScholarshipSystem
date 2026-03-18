@@ -10,9 +10,18 @@ require_once __DIR__ . '/../includes/ai_engine.php';
 class EligibilityTest extends TestCase {
 
     protected function setUp(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION = [];
+
         $db = getDB();
         // Use transaction to isolate test data — rolled back in tearDown
         $db->beginTransaction();
+
+        // Clear existing entry requirements for all programmes during the test scope
+        // This stops seed data (like the real 6 SPM subjects) from mixing with our mock 2 subjects
+        $db->exec("DELETE FROM entry_requirements");
 
         // Insert test-specific entry requirements (programme_id = 1)
         $db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES 

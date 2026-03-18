@@ -36,10 +36,14 @@ class AuthTest extends TestCase
 
     public function test_login_fails_after_5_attempts()
     {
+        // Reset attempts for this IP before testing limits
+        clearLoginAttempts($_SERVER['REMOTE_ADDR']);
+
         for ($i = 0; $i < 5; $i++) {
-            loginUser('admin@test.com', 'wrongpassword');
+            loginUser('admin@utp.edu.my', 'wrongpassword');
         }
-        $result = loginUser('admin@test.com', 'wrongpassword');
+        $result = loginUser('admin@utp.edu.my', 'wrongpassword');
+
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('Too many login attempts', $result['error']);
     }
