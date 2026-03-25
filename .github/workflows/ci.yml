@@ -49,7 +49,7 @@ jobs:
       - name: Run PHPUnit tests and Code Coverage Gate
         run: |
           vendor/bin/phpunit --colors=always
-          php scripts/check_coverage.php coverage.xml 25
+          php scripts/check_coverage.php coverage.xml 80
         env:
           APP_ENV: testing
 
