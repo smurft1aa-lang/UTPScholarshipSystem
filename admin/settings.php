@@ -90,15 +90,15 @@ $totalApps = $db->query("SELECT COUNT(*) FROM applications")->fetchColumn();
             <input type="hidden" name="form_action" value="change_password">
             <div class="form-group">
                 <label class="form-label">Current Password</label>
-                <input type="password" name="current_password" class="form-input admin-focus" required>
+                <input type="password" name="current_password" class="form-input admin-focus" required autocomplete="current-password">
             </div>
             <div class="form-group">
                 <label class="form-label">New Password</label>
-                <input type="password" name="new_password" class="form-input admin-focus" required>
+                <input type="password" name="new_password" class="form-input admin-focus" required autocomplete="new-password">
             </div>
             <div class="form-group">
                 <label class="form-label">Confirm New Password</label>
-                <input type="password" name="confirm_password" class="form-input admin-focus" required>
+                <input type="password" name="confirm_password" class="form-input admin-focus" required autocomplete="new-password">
             </div>
             <button type="submit" class="btn btn-purple btn-sm">Update Password</button>
         </form>
@@ -120,7 +120,7 @@ $totalApps = $db->query("SELECT COUNT(*) FROM applications")->fetchColumn();
             </div>
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-input admin-focus" required>
+                <input type="password" name="password" class="form-input admin-focus" required autocomplete="new-password">
             </div>
             <button type="submit" class="btn btn-purple btn-sm">Create Admin</button>
         </form>

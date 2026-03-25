@@ -18,9 +18,10 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="UTP Scholarship & Course Eligibility System - Check your eligibility for foundation programmes and scholarships.">
     <title>UTP System</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/dark-mode.css">
-    <script>/* Restore theme before paint to prevent flash */
+    <script nonce="<?= $GLOBALS['csp_nonce'] ?>">/* Restore theme before paint to prevent flash */
     (function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
     </script>
 </head>

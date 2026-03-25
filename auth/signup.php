@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/auth.css">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 
 </head>
 <body>
@@ -127,13 +128,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="password">Password</label>
-                            <input type="password" id="password" name="password" class="form-input" data-validate="password" placeholder="Min 8 characters" required>
+                            <input type="password" id="password" name="password" class="form-input" data-validate="password" placeholder="Min 8 characters" required autocomplete="new-password">
                             <div class="form-error" id="password_error"></div>
                             <div id="password_strength" style="font-size:0.75rem;margin-top:4px;font-weight:600;color:#6b7280;position:absolute;top:100%;"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="confirm_password">Confirm Password</label>
-                            <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Re-enter password" required>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Re-enter password" required autocomplete="new-password">
                             <div class="form-error" id="confirm_password_error"></div>
                         </div>
                     </div>

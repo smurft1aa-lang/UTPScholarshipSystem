@@ -47,18 +47,31 @@ $stmt->execute([$userId]);
 $existingApp = $stmt->fetch();
 
 if ($existingApp) {
-    if (in_array($existingApp['status'], ['approved', 'rejected'])) {
-        $_SESSION['error'] = 'Your application has already been processed. You cannot change your grades now.';
-        header('Location: /student/dashboard.php');
-        exit;
-    }
-    // They are just re-checking. We will delete the old un-processed application + cascade delete qualifications/grades/results.
-    $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
-    $stmt->execute([$existingApp['id']]);
+    if (in_array($existingApp['status'], ['submitted', 'processing'])) {
+        // Delete draft eligibility results
+        $stmt = $db->prepare("DELETE FROM eligibility_results WHERE application_id = ?");
+        $stmt->execute([$existingApp['id']]);
 
-    // Also delete their previous qualifications so we start fresh
-    $stmt = $db->prepare("DELETE FROM qualifications WHERE user_id = ?");
-    $stmt->execute([$userId]);
+        // Get the specific qualification ID tied to this draft so we only delete draft grades
+        $stmt = $db->prepare("SELECT qualification_id FROM applications WHERE id = ?");
+        $stmt->execute([$existingApp['id']]);
+        $oldQualId = $stmt->fetchColumn();
+
+        // Delete the draft application itself
+        $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
+        $stmt->execute([$existingApp['id']]);
+
+        // Delete the old qualifications and grades
+        if ($oldQualId) {
+            $stmt = $db->prepare("DELETE FROM grades WHERE qualification_id = ?");
+            $stmt->execute([$oldQualId]);
+
+            $stmt = $db->prepare("DELETE FROM qualifications WHERE id = ?");
+            $stmt->execute([$oldQualId]);
+        }
+    }
+    // If status is 'approved' or 'rejected', we DO NOTHING.
+    // This preserves their historical application and allows them to submit a brand new one.
 }
 
 try {

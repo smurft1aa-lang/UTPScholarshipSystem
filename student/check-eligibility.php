@@ -44,21 +44,21 @@ require_once __DIR__ . '/../includes/header.php';
             <h3 style="margin-bottom:16px; font-size:1.05rem;">Select Your Qualification</h3>
             <div class="grid-3">
                 <label class="card card-flat qual-card" data-qual="SPM" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
-                    <input type="radio" name="qual_type" value="SPM" class="hidden" required>
+                    <input type="radio" name="qual_type" value="SPM" class="hidden">
                     <div class="qual-option" style="pointer-events:none;">
                         <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">SPM</strong>
                         <span style="font-size:0.82rem; color:var(--text-secondary);">Sijil Pelajaran Malaysia</span>
                     </div>
                 </label>
                 <label class="card card-flat qual-card" data-qual="O-Level" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
-                    <input type="radio" name="qual_type" value="O-Level" class="hidden" required>
+                    <input type="radio" name="qual_type" value="O-Level" class="hidden">
                     <div class="qual-option" style="pointer-events:none;">
                         <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">O-Level</strong>
                         <span style="font-size:0.82rem; color:var(--text-secondary);">GCE Ordinary Level</span>
                     </div>
                 </label>
                 <label class="card card-flat qual-card" data-qual="IGCSE" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
-                    <input type="radio" name="qual_type" value="IGCSE" class="hidden" required>
+                    <input type="radio" name="qual_type" value="IGCSE" class="hidden">
                     <div class="qual-option" style="pointer-events:none;">
                         <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">IGCSE</strong>
                         <span style="font-size:0.82rem; color:var(--text-secondary);">International GCSE</span>
@@ -121,12 +121,19 @@ document.querySelectorAll('.qual-card').forEach(function(card) {
 // Intercept form submission to show skeleton loader
 document.querySelector('form').addEventListener('submit', function(e) {
     if (validateForm(this)) {
+        e.preventDefault(); // Pause submission instantly
         // Hide form and steps
         document.querySelector('.steps').style.display = 'none';
         this.style.display = 'none';
         // Show AI skeleton loader
         document.getElementById('ai_loader').style.display = 'block';
         window.scrollTo({top: 0, behavior: 'smooth'});
+        
+        // Wait 1.5s so the user can see the AI evaluation animation before actual HTTP POST
+        var formElement = this;
+        setTimeout(function() {
+            formElement.submit();
+        }, 1500);
     }
 });
 </script>

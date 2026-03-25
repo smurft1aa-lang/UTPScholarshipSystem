@@ -23,6 +23,7 @@ $csrfToken = generateCSRFToken();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="stylesheet" href="/assets/css/landing.css">
 
 </head>
@@ -37,10 +38,10 @@ $csrfToken = generateCSRFToken();
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="#hero">Home</a></li>
-            <li><a href="#services">About</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#services">Programmes</a></li>
-            <li><a href="#about">Contact</a></li>
-            <li><a href="#about">Blog</a></li>
+            <li><a href="#success">Success Stories</a></li>
+            <li><a href="#about">Community</a></li>
         </ul>
         <div class="nav-actions">
             <a href="/auth/login.php" class="btn btn-outline-dark">Login</a>

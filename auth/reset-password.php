@@ -7,7 +7,9 @@ initSession();
 
 $token = $_GET['token'] ?? '';
 if (empty($token) && empty($_POST['token'])) {
-    die("Invalid or missing token.");
+    $_SESSION['error'] = 'Invalid or missing reset token.';
+    header('Location: /auth/forgot-password.php');
+    exit;
 }
 $token = $_POST['token'] ?? $token;
 
@@ -58,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Set New Password</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 </head>
 <body>
     <div class="auth-page">
@@ -72,12 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label class="form-label" for="password">New Password</label>
-                    <input type="password" id="password" name="password" class="form-input" required>
+                    <input type="password" id="password" name="password" class="form-input" required autocomplete="new-password">
                     <small style="color:var(--text-muted);">Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character.</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="confirm_password">Confirm New Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" required>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" required autocomplete="new-password">
                 </div>
                 <button type="submit" class="btn btn-orange btn-block btn-lg">Reset Password</button>
             </form>

@@ -39,16 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $db->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))")->execute([$user['id'], $token]);
                 
                 $appUrl = getenv('APP_URL') ?: 'http://localhost';
-                $mailFrom = getenv('MAIL_FROM') ?: 'noreply@utp.edu.my';
                 $resetLink = rtrim($appUrl, '/') . "/auth/reset-password.php?token=" . urlencode($token);
                 
-                $subject = "Reset Your Password - UTP System";
-                $message = "Hello {$user['full_name']},\n\nYou requested a password reset. Click the link below to set a new password:\n\n$resetLink\n\nThis link will expire in 1 hour.";
-                $headers = "From: $mailFrom\r\nReply-To: $mailFrom";
-                $mailSent = @mail($email, $subject, $message, $headers);
-
-                if (!$mailSent) {
-                    require_once __DIR__ . '/../includes/telemetry.php';
+                require_once __DIR__ . '/../includes/mailer.php';
+                try {
+                    $mail = createMailer();
+                    $mail->addAddress($email, $user['full_name']);
+                    $mail->Subject = 'Reset Your Password - UTP System';
+                    $mail->Body = "
+                    <html>
+                    <body style='font-family: Arial, sans-serif; color: #333;'>
+                        <h2 style='color: #f26522;'>Password Reset Request</h2>
+                        <p>Dear " . htmlspecialchars($user['full_name']) . ",</p>
+                        <p>You requested a password reset. Click the button below to set a new password:</p>
+                        <p>
+                            <a href='" . htmlspecialchars($resetLink) . "'
+                               style='display:inline-block;padding:10px 20px;background:#f26522;color:#fff;text-decoration:none;border-radius:4px;'>
+                                Reset Password
+                            </a>
+                        </p>
+                        <p style='color:#888;font-size:0.85rem;'>This link will expire in 1 hour. If you did not request this, please ignore this email.</p>
+                    </body>
+                    </html>";
+                    $mail->send();
+                } catch (\Exception $mailEx) {
                     trackEvent('Password Reset Email Failed', ['email' => $email], 'WARNING');
                 }
 
@@ -74,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 </head>
 <body>
     <div class="auth-page">

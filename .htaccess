@@ -5,7 +5,9 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # HTTP Strict Transport Security (HSTS) — enforce HTTPS for 1 year
-Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
 
 # Block direct access to sensitive directories and files
 RewriteRule ^config/ - [F,L]
