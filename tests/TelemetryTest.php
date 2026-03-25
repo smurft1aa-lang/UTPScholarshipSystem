@@ -6,21 +6,18 @@ class TelemetryTest extends TestCase
 {
     public function testTimerFunctions()
     {
-        // For 'testing' environment, timers return 0 to avoid breaking test consistency
         putenv('APP_ENV=testing');
         Telemetry::startTimer('test_timer');
-        usleep(1000); // 1ms
+        usleep(1000);
         $time = Telemetry::endTimer('test_timer');
         $this->assertEquals(0, $time);
 
-        // Test with production env to ensure timer works
         putenv('APP_ENV=production');
         Telemetry::startTimer('test_timer');
-        usleep(5000); // 5ms
+        usleep(5000);
         $time = Telemetry::endTimer('test_timer');
         $this->assertGreaterThan(0, $time);
         
-        // Reset
         putenv('APP_ENV=testing');
     }
 
@@ -28,7 +25,6 @@ class TelemetryTest extends TestCase
     {
         putenv('APP_ENV=testing');
         
-        // Use a unique name to verify
         $eventName = 'test_event_' . uniqid();
         Telemetry::trackEvent($eventName, ['key' => 'value'], 'INFO');
         
@@ -37,8 +33,33 @@ class TelemetryTest extends TestCase
             $content = file_get_contents($logFile);
             $this->assertStringContainsString($eventName, $content);
         } else {
-            // Logs might not be setup in the mock tests, we just check execution finishes
             $this->assertTrue(true);
         }
+    }
+
+    public function testInitGracefulFallback()
+    {
+        putenv('APP_ENV=production');
+        putenv('SENTRY_DSN=http://public@sentry.test/1');
+        
+        Telemetry::init();
+        $this->assertTrue(true);
+        putenv('APP_ENV=testing');
+    }
+
+    public function testTrackEventErrorBranchWithException()
+    {
+        putenv('APP_ENV=production');
+        Telemetry::trackEvent('Test Error', ['exception' => new \Exception("Testing telemetry error branch")], 'ERROR');
+        $this->assertTrue(true);
+        putenv('APP_ENV=testing');
+    }
+
+    public function testTrackEventCriticalBranchWithoutException()
+    {
+        putenv('APP_ENV=production');
+        Telemetry::trackEvent('Test Critical', [], 'CRITICAL');
+        $this->assertTrue(true);
+        putenv('APP_ENV=testing');
     }
 }

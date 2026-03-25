@@ -56,4 +56,69 @@ class RoleGuardTest extends TestCase
         
         $this->assertTrue($this->roleGuard->isVerified());
     }
+
+    public function testRequireLoginPasses()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role_verified_at'] = time(); // Prevent reVerifyRole from querying
+        $this->roleGuard->requireLogin();
+        $this->assertTrue(true);
+    }
+
+    public function testRequireAdminPasses()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'admin';
+        $_SESSION['role_verified_at'] = time();
+        $this->roleGuard->requireAdmin();
+        $this->assertTrue(true);
+    }
+
+    public function testRequireStudentPasses()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'student';
+        $_SESSION['role_verified_at'] = time();
+        $this->roleGuard->requireStudent();
+        $this->assertTrue(true);
+    }
+
+    public function testRequireVerifiedPasses()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'student';
+        $_SESSION['role_verified_at'] = time();
+        
+        $stmt = $this->createMock(\PDOStatement::class);
+        $stmt->method('fetchColumn')->willReturn(1); // verified
+        $this->pdo->method('prepare')->willReturn($stmt);
+
+        $this->roleGuard->requireVerified();
+        $this->assertTrue(true);
+    }
+
+    public function testReVerifyRoleUpdatesRole()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'student';
+        $_SESSION['role_verified_at'] = time() - 120; // force query
+        
+        $stmt = $this->createMock(\PDOStatement::class);
+        $stmt->method('fetchColumn')->willReturn('admin');
+        $this->pdo->method('prepare')->willReturn($stmt);
+
+        $this->roleGuard->reVerifyRole();
+        $this->assertEquals('admin', $_SESSION['role']);
+    }
+
+    public function testReVerifyRoleFailsSilentlyOnException()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role_verified_at'] = time() - 120;
+        
+        $this->pdo->method('prepare')->willThrowException(new \Exception("DB failure"));
+        
+        $this->roleGuard->reVerifyRole();
+        $this->assertTrue(true);
+    }
 }
