@@ -45,6 +45,10 @@ class TelemetryTest extends TestCase
         Telemetry::init();
         $this->assertTrue(true);
         putenv('APP_ENV=testing');
+        
+        // Clean up handlers registered by Sentry to prevent PHPUnit "risky test" warnings
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     public function testTrackEventErrorBranchWithException()

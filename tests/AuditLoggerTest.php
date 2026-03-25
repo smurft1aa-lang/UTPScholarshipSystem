@@ -30,7 +30,14 @@ class AuditLoggerTest extends TestCase
         $this->pdo->method('prepare')->willThrowException(new \PDOException("DB Error"));
 
         $logger = new AuditLogger($this->pdo);
+        
+        // Suppress error_log to keep test output clean
+        $oldErrorLog = ini_get('error_log');
+        ini_set('error_log', PHP_OS_FAMILY === 'Windows' ? 'nul' : '/dev/null');
+        
         $result = $logger->log(1, 'test action');
+        
+        ini_set('error_log', $oldErrorLog);
         $this->assertFalse($result);
     }
 }
