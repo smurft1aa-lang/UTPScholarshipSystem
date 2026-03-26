@@ -28,7 +28,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <?php if ($currentUser): ?>
-<nav class="navbar">
+<nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-inner">
         <a href="/student/dashboard.php" class="navbar-brand">
             <span class="brand-icon">U</span>
@@ -80,4 +80,4 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
     }
 </script>
 <?php endif; ?>
-<main id="main-content">
+<main id="main-content" role="main">

@@ -1,4 +1,12 @@
-FROM php:8.1-apache
+# ── Stage 1: Builder ──
+FROM composer:latest AS builder
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+COPY . .
+
+# ── Stage 2: Production ──
+FROM php:8.1-apache AS production
 
 # Install dependencies and extensions
 RUN apt-get update && apt-get install -y \
@@ -8,19 +16,17 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libonig-dev \
     unzip \
-    && docker-php-ext-install pdo pdo_mysql mbstring fileinfo
+    && docker-php-ext-install pdo pdo_mysql mbstring fileinfo \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . /var/www/html/
+# Copy application files from builder (excludes dev dependencies)
+COPY --from=builder /app /var/www/html/
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \

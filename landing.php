@@ -192,28 +192,28 @@ $csrfToken = generateCSRFToken();
             <div class="footer-col">
                 <h4>Admission</h4>
                 <ul>
-                    <li><a href="#">Foundation</a></li>
-                    <li><a href="#">Undergraduate</a></li>
-                    <li><a href="#">Postgraduate</a></li>
-                    <li><a href="#">International</a></li>
+                <li><a href="/auth/signup.php">Foundation</a></li>
+                    <li><a href="/auth/signup.php">Undergraduate</a></li>
+                    <li><a href="/auth/signup.php">Postgraduate</a></li>
+                    <li><a href="/auth/signup.php">International</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Academic</h4>
                 <ul>
-                    <li><a href="#">Engineering</a></li>
-                    <li><a href="#">Computer Science</a></li>
-                    <li><a href="#">Science</a></li>
-                    <li><a href="#">Management</a></li>
+                    <li><a href="/auth/signup.php">Engineering</a></li>
+                    <li><a href="/auth/signup.php">Computer Science</a></li>
+                    <li><a href="/auth/signup.php">Science</a></li>
+                    <li><a href="/auth/signup.php">Management</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Resources</h4>
                 <ul>
-                    <li><a href="#">Student Portal</a></li>
-                    <li><a href="#">Scholarships</a></li>
-                    <li><a href="#">Campus Life</a></li>
-                    <li><a href="#">FAQs</a></li>
+                    <li><a href="/auth/login.php">Student Portal</a></li>
+                    <li><a href="/auth/signup.php">Scholarships</a></li>
+                    <li><a href="#about">Campus Life</a></li>
+                    <li><a href="#testimonials">FAQs</a></li>
                 </ul>
             </div>
         </div>

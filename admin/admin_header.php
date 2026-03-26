@@ -20,8 +20,10 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
     <title>Admin - UTP System</title>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="/assets/css/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="/assets/css/dark-mode.css">
 </head>
 <body>
+<a href="#admin-main-content" class="skip-link">Skip to main content</a>
 <div class="admin-layout">
     
     <!-- Admin Mobile Header -->
@@ -38,7 +40,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <aside class="sidebar" id="adminSidebar">
+    <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Admin sidebar">
         <div class="sidebar-brand">
             <span class="brand-icon">U</span>
             UTP Admin
@@ -84,7 +86,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
             </div>
         </div>
     </aside>
-    <div class="admin-main">
+    <div class="admin-main" id="admin-main-content" role="main">
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
     // Admin Sidebar Toggle Logic

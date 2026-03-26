@@ -297,7 +297,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="card mt-6">
         <h3 style="margin-bottom:16px; font-size:1.1rem;">Application History</h3>
         <div class="table-wrap">
-            <table>
+            <table role="table" aria-label="Application History">
                 <thead>
                     <tr>
                         <th>ID</th>

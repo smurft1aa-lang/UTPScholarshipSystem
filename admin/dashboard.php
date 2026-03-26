@@ -178,7 +178,7 @@ $today = date('j');
         <p style="color:var(--text-muted); padding:20px 0; text-align:center;">No applications yet.</p>
     <?php else: ?>
     <div class="table-wrap" style="border:none; box-shadow:none;">
-        <table>
+        <table role="table" aria-label="Recent Applications">
             <thead>
                 <tr>
                     <th>Student</th>

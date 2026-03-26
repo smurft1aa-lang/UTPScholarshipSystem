@@ -17,13 +17,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/database.php';
 
 // ─── Singleton Instances ────────────────────────────────────────────
-$_app_session = new \UTP\Core\SessionManager();
+$GLOBALS['_app_session'] = new \UTP\Core\SessionManager();
 
 // ─── SessionManager Bridge ──────────────────────────────────────────
 if (!function_exists('initSession')) {
     function initSession() {
-        global $_app_session;
-        $_app_session->start();
+        $GLOBALS['_app_session']->start();
     }
 }
 
@@ -32,8 +31,7 @@ if (!function_exists('logoutUser')) {
         if (isset($_SESSION['user_id'])) {
             logAudit($_SESSION['user_id'], 'User Logged Out');
         }
-        global $_app_session;
-        $_app_session->logout();
+        $GLOBALS['_app_session']->logout();
     }
 }
 
@@ -49,34 +47,34 @@ if (!function_exists('csrfField')) {
 }
 
 // ─── RoleGuard Bridge ───────────────────────────────────────────────
-$_app_guard = new \UTP\Security\RoleGuard(getDB(), $_app_session);
+$GLOBALS['_app_guard'] = new \UTP\Security\RoleGuard(getDB(), $GLOBALS['_app_session']);
 
 if (!function_exists('isLoggedIn')) {
-    function isLoggedIn() { global $_app_guard; return $_app_guard->isLoggedIn(); }
+    function isLoggedIn() { return $GLOBALS['_app_guard']->isLoggedIn(); }
 }
 if (!function_exists('isAdmin')) {
-    function isAdmin() { global $_app_guard; return $_app_guard->isAdmin(); }
+    function isAdmin() { return $GLOBALS['_app_guard']->isAdmin(); }
 }
 if (!function_exists('isStudent')) {
-    function isStudent() { global $_app_guard; return $_app_guard->isStudent(); }
+    function isStudent() { return $GLOBALS['_app_guard']->isStudent(); }
 }
 if (!function_exists('reVerifyRole')) {
-    function reVerifyRole() { global $_app_guard; $_app_guard->reVerifyRole(); }
+    function reVerifyRole() { $GLOBALS['_app_guard']->reVerifyRole(); }
 }
 if (!function_exists('requireLogin')) {
-    function requireLogin() { global $_app_guard; $_app_guard->requireLogin(); }
+    function requireLogin() { $GLOBALS['_app_guard']->requireLogin(); }
 }
 if (!function_exists('requireAdmin')) {
-    function requireAdmin() { global $_app_guard; $_app_guard->requireAdmin(); }
+    function requireAdmin() { $GLOBALS['_app_guard']->requireAdmin(); }
 }
 if (!function_exists('requireStudent')) {
-    function requireStudent() { global $_app_guard; $_app_guard->requireStudent(); }
+    function requireStudent() { $GLOBALS['_app_guard']->requireStudent(); }
 }
 if (!function_exists('isVerified')) {
-    function isVerified() { global $_app_guard; return $_app_guard->isVerified(); }
+    function isVerified() { return $GLOBALS['_app_guard']->isVerified(); }
 }
 if (!function_exists('requireVerified')) {
-    function requireVerified() { global $_app_guard; $_app_guard->requireVerified(); }
+    function requireVerified() { $GLOBALS['_app_guard']->requireVerified(); }
 }
 
 // ─── RateLimiter Bridge ─────────────────────────────────────────────
@@ -149,6 +147,36 @@ if (!function_exists('endTimer')) {
     function endTimer($label) { return \UTP\Services\Telemetry::endTimer($label); }
 }
 
-// ─── UserAuth / Mailer (keep procedural for now) ────────────────────
-require_once __DIR__ . '/UserAuth.php';
-require_once __DIR__ . '/mailer.php';
+// ─── UserAuth Bridge ────────────────────────────────────────────────
+$GLOBALS['_app_auth'] = new \UTP\Services\UserAuth(getDB());
+
+if (!function_exists('registerUser')) {
+    function registerUser($fullName, $email, $password, $icNumber, $phone) {
+        return $GLOBALS['_app_auth']->registerUser($fullName, $email, $password, $icNumber, $phone);
+    }
+}
+if (!function_exists('loginUser')) {
+    function loginUser($email, $password) {
+        return $GLOBALS['_app_auth']->loginUser($email, $password);
+    }
+}
+if (!function_exists('getCurrentUser')) {
+    function getCurrentUser() {
+        return $GLOBALS['_app_auth']->getCurrentUser();
+    }
+}
+
+// ─── Mailer Bridge ──────────────────────────────────────────────────
+if (!function_exists('createMailer')) {
+    function createMailer() { return \UTP\Services\Mailer::createMailer(); }
+}
+if (!function_exists('sendVerificationEmail')) {
+    function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool {
+        return \UTP\Services\Mailer::sendVerificationEmail($userId, $userEmail, $userName);
+    }
+}
+if (!function_exists('sendApplicationStatusEmail')) {
+    function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
+        return \UTP\Services\Mailer::sendApplicationStatusEmail($userEmail, $userName, $status, $programmeName, $adminNotes);
+    }
+}

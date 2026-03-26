@@ -215,11 +215,9 @@ if (!function_exists('sendVerificationEmail')) {
     }
 }
 
-// Load application modules
-require_once __DIR__ . '/../includes/SessionManager.php';
-require_once __DIR__ . '/../includes/RoleGuard.php';
-require_once __DIR__ . '/../includes/UserAuth.php';
-require_once __DIR__ . '/../includes/CSRF.php';
-require_once __DIR__ . '/../includes/RateLimiter.php';
-require_once __DIR__ . '/../includes/InputSanitizer.php';
+// Load Composer autoloader for PSR-4 class resolution (src/ namespace)
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Load legacy bridge modules that the test bootstrap needs
+require_once __DIR__ . '/../includes/GradeMapper.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
