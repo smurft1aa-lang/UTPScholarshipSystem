@@ -97,8 +97,9 @@ try {
     $stmt->execute([$userId, $qualId]);
     $appId = $db->lastInsertId();
 
-    // Run AI eligibility engine
-    $results = AIEngine::checkEligibility($qualId);
+    // Run AI eligibility engine (OOP instance with DI)
+    $aiEngine = new \UTP\Services\AIEngine($db);
+    $results = $aiEngine->checkEligibility($qualId);
 
     // Save eligibility results
     $stmt = $db->prepare("INSERT INTO eligibility_results (application_id, programme_id, eligible, fit_percentage, recommendation_text) VALUES (?, ?, ?, ?, ?)");
