@@ -345,7 +345,8 @@ class AIEngineTest extends TestCase
         $results2 = $this->engine->checkEligibility($qualId);
 
         $this->assertEquals($results1, $results2);
-        $this->assertArrayHasKey('eligibility_' . $qualId, $_SESSION);
+        $userId = $_SESSION['user_id'] ?? 0;
+        $this->assertArrayHasKey('eligibility_' . $userId . '_' . $qualId, $_SESSION);
     }
 
     public function test_force_refresh_bypasses_cache()
