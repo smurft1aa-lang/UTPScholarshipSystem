@@ -5,7 +5,7 @@
  * and boundary conditions that the happy-path tests don't cover.
  */
 
-const BASE_URL = Cypress.config('baseUrl') || 'http://localhost:8000';
+const BASE_URL = Cypress.config('baseUrl') || 'http://localhost:8080';
 
 describe('Authentication Edge Cases', () => {
     it('should reject login with empty fields', () => {
