@@ -123,6 +123,14 @@ try {
     exit;
 
 }
+catch (\RuntimeException $e) {
+    // AI engine failure — return structured JSON error
+    $db->rollBack();
+    trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');
+    http_response_code(500);
+    echo json_encode(['error' => 'Eligibility engine failed. Please try again later.']);
+    exit;
+}
 catch (Exception $e) {
     $db->rollBack();
     trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
