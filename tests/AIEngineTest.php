@@ -1,5 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use UTP\Services\AIEngine;
 
 if (!defined('APP_ENV'))
     define('APP_ENV', 'testing');
@@ -8,64 +9,58 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
-require_once __DIR__ . '/../includes/ai_engine.php';
 
 /**
- * AIEngine Scoring Accuracy Tests
- * Tests exact scoring calculations against worked examples from ALGORITHM.md
+ * AIEngine Scoring Accuracy Tests (OOP)
+ *
+ * Tests the namespaced UTP\Services\AIEngine class to ensure
+ * full code coverage on the OOP implementation.
  */
 class AIEngineTest extends TestCase
 {
+    private \PDO $db;
+    private AIEngine $engine;
+
     protected function setUp(): void
     {
-        // Clear any AI engine cache before each test
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $_SESSION = [];
 
-        $db = getDB();
-        
-        $db->beginTransaction();
-        
-        // Temporarily clear actual requirements, we will test against mock data
-        $db->exec("DELETE FROM entry_requirements");
-        
-        // Mock requirements for generic 'Engineering' (1) and 'Mechanical' (2)
-        $db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES 
+        $this->db = getDB();
+        $this->engine = new AIEngine($this->db);
+
+        $this->db->beginTransaction();
+
+        $this->db->exec("DELETE FROM entry_requirements");
+
+        $this->db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
             (1, 'SPM', 'Mathematics', 'C', 1.00),
             (1, 'SPM', 'Physics', 'C', 1.00),
             (2, 'SPM', 'Mathematics', 'C', 1.00),
             (2, 'SPM', 'Chemistry', 'C', 1.00)
         ");
 
-        // Clean up previous test user (in case a transaction failed previously)
-        $db->exec("DELETE FROM users WHERE id = 9000");
-
-        // Create test student
+        $this->db->exec("DELETE FROM users WHERE id = 9000");
         $hash = password_hash('Test@1234', PASSWORD_BCRYPT);
-        $db->exec("INSERT INTO users (id, full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (9000, 'AI Test Student', 'aitest@test.com', '$hash', '900000000000', '0100000000', 'student', 1)");
+        $this->db->exec("INSERT INTO users (id, full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (9000, 'AI Test Student', 'aitest@test.com', '$hash', '900000000000', '0100000000', 'student', 1)");
     }
 
     protected function tearDown(): void
     {
-        $db = getDB();
-        if ($db->inTransaction()) {
-            $db->rollBack();
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
         }
     }
 
-    /**
-     * Helper to create a user qualification and grades in DB
-     */
     private function createQualificationWithGrades(string $qualType, array $grades): int
     {
-        $db = getDB();
-        $stmt = $db->prepare("INSERT INTO qualifications (user_id, qual_type) VALUES (9000, ?)");
+        $stmt = $this->db->prepare("INSERT INTO qualifications (user_id, qual_type) VALUES (9000, ?)");
         $stmt->execute([$qualType]);
-        $qualId = $db->lastInsertId();
+        $qualId = $this->db->lastInsertId();
 
-        $stmt = $db->prepare("INSERT INTO grades (qualification_id, subject, grade) VALUES (?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO grades (qualification_id, subject, grade) VALUES (?, ?, ?)");
         foreach ($grades as $subject => $grade) {
             $stmt->execute([$qualId, $subject, $grade]);
         }
@@ -84,10 +79,9 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'A+',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
 
-        // Find Mechanical Engineering (programme_id 2)
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -112,10 +106,9 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'C',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
 
-        // Student should be eligible for Mechanical Engineering (C is minimum)
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -125,15 +118,12 @@ class AIEngineTest extends TestCase
         }
         $this->assertNotNull($mechEng);
         $this->assertTrue($mechEng['eligible']);
-        // C = 3 points, so fit = (3*1 + 3*1 + 3*1 + 3*1 + 3*0.9 + 3*0.8) / (10*1+10*1+10*1+10*1+10*0.9+10*0.8)
-        // = (3 + 3 + 3 + 3 + 2.7 + 2.4) / (10+10+10+10+9+8) = 17.1 / 57 = 30%
         $this->assertEquals(30.0, $mechEng['fit_percentage']);
         $this->assertEquals('Not Recommended', $mechEng['confidence_label']);
     }
 
     public function test_below_minimum_grade_is_ineligible()
     {
-        // Require C in Mathematics, got D
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Bahasa Melayu' => 'A+',
             'English' => 'A+',
@@ -143,7 +133,7 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'C',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -154,7 +144,6 @@ class AIEngineTest extends TestCase
         $this->assertNotNull($mechEng);
         $this->assertFalse($mechEng['eligible']);
 
-        // Should have a gap for Mathematics specifically
         $mathGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Mathematics') !== false) {
@@ -166,17 +155,15 @@ class AIEngineTest extends TestCase
 
     public function test_missing_required_subject_is_ineligible()
     {
-        // Missing Chemistry for Mechanical Engineering (mocked requirement)
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Bahasa Melayu' => 'A+',
             'English' => 'A+',
             'Mathematics' => 'A+',
             'Additional Mathematics' => 'A+',
             'Physics' => 'A+',
-            // No Chemistry
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -188,7 +175,6 @@ class AIEngineTest extends TestCase
         $this->assertFalse($mechEng['eligible']);
         $this->assertNotEmpty($mechEng['gaps']);
 
-        // Should have a gap for Chemistry
         $chemGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Chemistry') !== false) {
@@ -206,10 +192,10 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'A',
             'Additional Mathematics' => 'A',
             'Physics' => 'A',
-            'Chemistry' => 'D',  // Below C minimum
+            'Chemistry' => 'D',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -220,7 +206,6 @@ class AIEngineTest extends TestCase
         $this->assertNotNull($mechEng);
         $this->assertFalse($mechEng['eligible']);
 
-        // Should have a gap for Chemistry specifically
         $chemGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Chemistry') !== false) {
@@ -241,10 +226,9 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'A',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
 
-        // All eligible results should come before ineligible
         $foundIneligible = false;
         foreach ($results as $r) {
             if (!$r['eligible']) {
@@ -267,7 +251,7 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'A+',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         $eligibleIds = [];
         $fitMap = [];
         foreach ($results as $r) {
@@ -279,7 +263,7 @@ class AIEngineTest extends TestCase
 
         $this->assertNotEmpty($eligibleIds, 'Should have eligible programmes');
 
-        $scholarships = AIEngine::getMatchingScholarships($eligibleIds, $fitMap);
+        $scholarships = $this->engine->getMatchingScholarships($eligibleIds, $fitMap);
         $this->assertNotEmpty($scholarships, 'A+ student should match at least some scholarships');
     }
 
@@ -294,7 +278,7 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'A',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         foreach ($results as $r) {
             $pct = $r['fit_percentage'];
             if ($pct >= 90) {
@@ -322,7 +306,7 @@ class AIEngineTest extends TestCase
             'Chemistry' => 'A+',
         ]);
 
-        $results = AIEngine::checkEligibility($qualId);
+        $results = $this->engine->checkEligibility($qualId);
         foreach ($results as $r) {
             $this->assertNotEmpty($r['recommendation'], 'Each result should have a recommendation');
             $this->assertIsString($r['recommendation']);
@@ -331,7 +315,123 @@ class AIEngineTest extends TestCase
 
     public function test_empty_scholarship_list_returns_empty()
     {
-        $result = AIEngine::getMatchingScholarships([], []);
+        $result = $this->engine->getMatchingScholarships([], []);
         $this->assertEmpty($result);
+    }
+
+    public function test_invalid_qualification_returns_empty()
+    {
+        $results = $this->engine->checkEligibility(99999);
+        $this->assertEmpty($results);
+    }
+
+    public function test_no_matching_qual_type_returns_empty()
+    {
+        $qualId = $this->createQualificationWithGrades('STPM', [
+            'Mathematics' => 'A',
+        ]);
+        $results = $this->engine->checkEligibility($qualId);
+        $this->assertEmpty($results);
+    }
+
+    public function test_results_are_cached_in_session()
+    {
+        $qualId = $this->createQualificationWithGrades('SPM', [
+            'Mathematics' => 'A',
+            'Physics'     => 'A',
+        ]);
+
+        $results1 = $this->engine->checkEligibility($qualId);
+        $results2 = $this->engine->checkEligibility($qualId);
+
+        $this->assertEquals($results1, $results2);
+        $this->assertArrayHasKey('eligibility_' . $qualId, $_SESSION);
+    }
+
+    public function test_force_refresh_bypasses_cache()
+    {
+        $qualId = $this->createQualificationWithGrades('SPM', [
+            'Mathematics' => 'A',
+            'Physics'     => 'A',
+        ]);
+
+        $results1 = $this->engine->checkEligibility($qualId);
+        $results2 = $this->engine->checkEligibility($qualId, true);
+
+        $this->assertEquals($results1, $results2);
+    }
+
+    public function test_result_contains_all_expected_keys()
+    {
+        $qualId = $this->createQualificationWithGrades('SPM', [
+            'Mathematics' => 'B+',
+            'Physics'     => 'B+',
+        ]);
+
+        $results = $this->engine->checkEligibility($qualId);
+        $this->assertNotEmpty($results);
+
+        $expected = ['programme_id', 'programme_name', 'category', 'description',
+            'eligible', 'fit_percentage', 'confidence_label', 'subject_results',
+            'gaps', 'recommendation'];
+
+        foreach ($expected as $key) {
+            $this->assertArrayHasKey($key, $results[0], "Missing key: $key");
+        }
+    }
+
+    public function test_scholarship_below_threshold_returns_empty()
+    {
+        $scholarships = $this->engine->getMatchingScholarships([1], [1 => 30.0]);
+        $this->assertEmpty($scholarships);
+    }
+
+    public function test_scholarship_above_threshold_returns_results()
+    {
+        $scholarships = $this->engine->getMatchingScholarships([1], [1 => 90.0]);
+        $this->assertNotEmpty($scholarships);
+        $this->assertEquals(90.0, $scholarships[0]['best_fit']);
+    }
+
+    public function test_good_match_recommendation_text()
+    {
+        // Eligible with moderate grades → "Good match" recommendation branch
+        $qualId = $this->createQualificationWithGrades('SPM', [
+            'Mathematics' => 'B',
+            'Physics'     => 'B',
+        ]);
+
+        $results = $this->engine->checkEligibility($qualId);
+        $csResult = null;
+        foreach ($results as $r) {
+            if ($r['programme_name'] === 'Computer Science') {
+                $csResult = $r;
+                break;
+            }
+        }
+        $this->assertNotNull($csResult);
+        $this->assertTrue($csResult['eligible']);
+        $this->assertStringContainsString($csResult['programme_name'], $csResult['recommendation']);
+    }
+
+    public function test_close_to_qualifying_recommendation_text()
+    {
+        // Ineligible but high fit → "close to qualifying" branch
+        $qualId = $this->createQualificationWithGrades('SPM', [
+            'Mathematics' => 'A+',
+            'Physics'     => 'D',  // Below minimum
+        ]);
+
+        $results = $this->engine->checkEligibility($qualId);
+        $csResult = null;
+        foreach ($results as $r) {
+            if ($r['programme_name'] === 'Computer Science') {
+                $csResult = $r;
+                break;
+            }
+        }
+        $this->assertNotNull($csResult);
+        $this->assertFalse($csResult['eligible']);
+        $this->assertNotEmpty($csResult['recommendation']);
     }
 }
