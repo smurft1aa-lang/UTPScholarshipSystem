@@ -31,8 +31,9 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
      */
     public function checkEligibility(int $qualificationId, bool $forceRefresh = false): array
     {
-        // ── Cache check ──
-        $cacheKey = 'eligibility_' . $qualificationId;
+        // ── Cache check (user-scoped to prevent cross-user leakage) ──
+        $userId = $_SESSION['user_id'] ?? 0;
+        $cacheKey = 'eligibility_' . $userId . '_' . $qualificationId;
         if (!$forceRefresh && isset($_SESSION[$cacheKey]) && is_array($_SESSION[$cacheKey])) {
             $cached = $_SESSION[$cacheKey];
             if (isset($cached['timestamp']) && (time() - $cached['timestamp']) < 600) {
@@ -110,7 +111,11 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             if (function_exists('trackEvent')) {
                 trackEvent('AI Engine Check Failed', ['exception' => $e, 'qualification_id' => $qualificationId], 'ERROR');
             }
-            return [];
+            throw new \RuntimeException(
+                'Eligibility check failed: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
         }
     }
 
@@ -201,12 +206,13 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             ? round(($totalWeightedScore / $maxWeightedScore) * 100, 1)
             : 0;
 
-        // Apply STEM-specific bonus
+        // Apply STEM-specific bonus (use qualification-aware threshold)
         if (!empty($programme['stem_bonus'])) {
+            $stemThreshold = (int) round(GradeMapper::getMaxPoints($qualType) * 0.9);
             $physicsPoints = GradeMapper::gradeToPoints($studentGrades['physics'] ?? '', $qualType);
             $chemistryPoints = GradeMapper::gradeToPoints($studentGrades['chemistry'] ?? '', $qualType);
 
-            if ($physicsPoints >= 9 && $chemistryPoints >= 9) {
+            if ($physicsPoints >= $stemThreshold && $chemistryPoints >= $stemThreshold) {
                 $fitPercentage = min(100, $fitPercentage + 5.0);
             }
         }

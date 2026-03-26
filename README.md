@@ -50,11 +50,13 @@ This system utilizes Sentry for native tracking of silent exceptions, slow datab
 2. Run `composer install` to load the `sentry/sentry` PHP SDK.
 3. Ensure `APP_ENV=production` is set to enable breadcrumbs and error capture natively.
 
-## Admin Credentials
-After running the setup script, a default super-admin account is generated:
-- **Email:** admin@utp.edu.my
-- **Password:** Admin123@
-> **⚠️ CRITICAL:** You must change this default password immediately after your first login!
+## Admin Setup
+After running the setup script, a default super-admin account is created.
+Credentials are loaded from environment variables:
+- `ADMIN_EMAIL` — admin login email (defaults to `admin@utp.edu.my`)
+- `ADMIN_PASSWORD` — **must** be set in your `.env` file before first run
+
+> **⚠️ CRITICAL:** Never commit credentials to version control. Copy `.env.example` to `.env` and set a strong password before deploying.
 
 ## Security Notes
 - Ensure your production environment runs via HTTPS (`APP_ENV=production` will force redirects).
