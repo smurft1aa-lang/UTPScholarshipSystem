@@ -3,7 +3,7 @@
         'name' => 'utp/scholarship-system',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '32310ee6c4cb32400194bcca4e4734c1893f13a2',
+        'reference' => 'b3aca8ccbd2d274e83f0d9aac6e407b729f8a491',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -150,6 +150,15 @@
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
+            'reference' => '72115ab2bf1e40af1f9b238938d493ba7f3221e7',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'phpunit/php-code-coverage' => array(
             'pretty_version' => '11.0.12',
@@ -581,7 +590,7 @@
         'utp/scholarship-system' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '32310ee6c4cb32400194bcca4e4734c1893f13a2',
+            'reference' => 'b3aca8ccbd2d274e83f0d9aac6e407b729f8a491',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

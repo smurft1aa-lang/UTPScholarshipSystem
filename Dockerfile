@@ -2,7 +2,7 @@
 FROM composer:latest AS builder
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 COPY . .
 
 # ── Stage 2: Production ──
