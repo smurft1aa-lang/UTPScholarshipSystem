@@ -6,8 +6,6 @@ namespace UTP\Services;
  *
  * Handles user registration, login, and current user retrieval.
  * Delegates to session management, rate limiting, and audit logging.
- *
- * @implements \UTP\Contracts\AuthenticatesUsers
  */
 class UserAuth implements \UTP\Contracts\AuthenticatesUsers
 {
@@ -48,7 +46,7 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         $stmt = $this->db->prepare("INSERT INTO users (full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (?, ?, ?, ?, ?, 'student', 0)");
         $stmt->execute([$fullName, $email, $hash, $icNumber, $phone]);
 
-        $userId = $this->db->lastInsertId();
+        $userId = (int) $this->db->lastInsertId();
 
         if (function_exists('logAudit')) {
             logAudit($userId, 'User Registered', 'User', $userId, "Email: $email");

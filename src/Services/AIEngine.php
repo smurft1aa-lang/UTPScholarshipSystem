@@ -9,8 +9,6 @@ use UTP\Services\GradeMapper;
  * Evaluates student academic profiles against programme entry requirements
  * using a weighted scoring algorithm with gap analysis, confidence labelling,
  * and scholarship matching.
- *
- * @implements \UTP\Contracts\ChecksEligibility
  */
 class AIEngine implements \UTP\Contracts\ChecksEligibility
 {

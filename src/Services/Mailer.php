@@ -48,6 +48,7 @@ class Mailer
         $token = bin2hex(random_bytes(32));
 
         try {
+            /** @phpstan-ignore function.notFound */
             $db = getDB();
             $db->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
             $stmt = $db->prepare("INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))");
