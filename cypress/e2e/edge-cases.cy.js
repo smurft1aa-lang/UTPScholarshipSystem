@@ -70,10 +70,10 @@ describe('Authorization Guards', () => {
 
 describe('Eligibility Form Validation', () => {
     beforeEach(() => {
-        // Login as student first
+        // Login as student — credentials loaded from cypress.env.json (git-ignored)
         cy.visit(`${BASE_URL}/auth/login.php`);
-        cy.get('input[name="email"]').type('azimsanji@gmail.com');
-        cy.get('input[name="password"]').type('Sanji123@');
+        cy.get('input[name="email"]').type(Cypress.env('STUDENT_EMAIL'));
+        cy.get('input[name="password"]').type(Cypress.env('STUDENT_PASSWORD'));
         cy.get('form').submit();
         cy.url().should('include', 'dashboard');
     });

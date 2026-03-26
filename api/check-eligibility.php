@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/security.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
 
 setSecurityHeaders();
+header('Content-Type: application/json; charset=utf-8');
 initSession();
 requireLogin();
 

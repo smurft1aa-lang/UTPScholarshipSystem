@@ -50,6 +50,9 @@ coverage.xml
 # PHPUnit cache
 .phpunit.cache/
 
+# Cypress
+cypress.env.json
+
 # Query debug files
 query
 
