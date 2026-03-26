@@ -53,7 +53,7 @@ This system utilizes Sentry for native tracking of silent exceptions, slow datab
 ## Admin Credentials
 After running the setup script, a default super-admin account is generated:
 - **Email:** admin@utp.edu.my
-- **Password:** Admin@1234
+- **Password:** Admin123@
 > **⚠️ CRITICAL:** You must change this default password immediately after your first login!
 
 ## Security Notes
