@@ -79,7 +79,9 @@ if (!function_exists('requireVerified')) {
 
 // ─── RateLimiter Bridge ─────────────────────────────────────────────
 if (!function_exists('checkRateLimit')) {
-    function checkRateLimit($ip, $maxAttempts = 5, $windowMinutes = 1) {
+    function checkRateLimit($ip, $maxAttempts = null, $windowMinutes = null) {
+        $maxAttempts ??= (int) (getenv('RATE_LIMIT_MAX_ATTEMPTS') ?: 5);
+        $windowMinutes ??= (int) (getenv('RATE_LIMIT_WINDOW_MINUTES') ?: 1);
         $limiter = new \UTP\Security\RateLimiter(getDB());
         return $limiter->check($ip, $maxAttempts, $windowMinutes);
     }

@@ -106,3 +106,49 @@ describe('404 and Invalid Routes', () => {
         });
     });
 });
+
+describe('API error handling', () => {
+    beforeEach(() => {
+        // Login as student
+        cy.visit(`${BASE_URL}/auth/login.php`);
+        cy.get('input[name="email"]').type(Cypress.env('STUDENT_EMAIL'));
+        cy.get('input[name="password"]').type(Cypress.env('STUDENT_PASSWORD'));
+        cy.get('form').submit();
+        cy.url().should('include', 'dashboard');
+    });
+
+    it('should show error message when eligibility API returns 500', () => {
+        // Intercept the eligibility check POST and stub a 500 response
+        cy.intercept('POST', '**/api/check-eligibility.php', {
+            statusCode: 500,
+            body: { error: 'Eligibility engine failed. Please try again later.' },
+        }).as('eligibilityError');
+
+        cy.visit(`${BASE_URL}/student/check-eligibility.php`);
+
+        // Fill in the form minimally to trigger submission
+        cy.get('select[name="qual_type"]').select('SPM');
+        // Add at least one subject/grade pair if inputs exist
+        cy.get('body').then(($body) => {
+            if ($body.find('input[name="subjects[]"]').length > 0) {
+                cy.get('input[name="subjects[]"]').first().type('Mathematics');
+                cy.get('select[name="grades[]"], input[name="grades[]"]').first()
+                    .then(($el) => {
+                        if ($el.is('select')) {
+                            cy.wrap($el).select('A');
+                        } else {
+                            cy.wrap($el).type('A');
+                        }
+                    });
+            }
+        });
+
+        cy.get('button[type="submit"], input[type="submit"]').first().click();
+
+        cy.wait('@eligibilityError');
+
+        // Assert that an error message is visible — not a blank or broken screen
+        cy.get('.toast-error, .alert-danger, .error-message, [role="alert"], .error, .notification-error')
+            .should('be.visible');
+    });
+});
