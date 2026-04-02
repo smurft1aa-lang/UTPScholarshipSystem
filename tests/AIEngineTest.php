@@ -435,4 +435,18 @@ class AIEngineTest extends TestCase
         $this->assertFalse($csResult['eligible']);
         $this->assertNotEmpty($csResult['recommendation']);
     }
+
+    public function test_pdo_exception_causes_runtime_exception()
+    {
+        $mockPdo = $this->createMock(\PDO::class);
+        $mockPdo->method('prepare')
+            ->willThrowException(new \PDOException('Connection lost'));
+
+        $engine = new AIEngine($mockPdo);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Eligibility check failed/');
+
+        $engine->checkEligibility(1);
+    }
 }

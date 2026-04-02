@@ -23,13 +23,16 @@ class RateLimiter
     /**
      * Check whether the given IP has exceeded the allowed login attempts.
      *
-     * @param string $ip          The client's IP address
-     * @param int    $maxAttempts Maximum attempts allowed within the window
-     * @param int    $windowMinutes Time window in minutes
+     * @param string   $ip            The client's IP address
+     * @param int|null $maxAttempts   Maximum attempts allowed (env: RATE_LIMIT_MAX_ATTEMPTS, default 5)
+     * @param int|null $windowMinutes Time window in minutes (env: RATE_LIMIT_WINDOW_MINUTES, default 1)
      * @return bool True if the IP is within limits (allowed), false if rate-limited
      */
-    public function check(string $ip, int $maxAttempts = 5, int $windowMinutes = 1): bool
+    public function check(string $ip, ?int $maxAttempts = null, ?int $windowMinutes = null): bool
     {
+        $maxAttempts ??= (int) (getenv('RATE_LIMIT_MAX_ATTEMPTS') ?: 5);
+        $windowMinutes ??= (int) (getenv('RATE_LIMIT_WINDOW_MINUTES') ?: 1);
+
         // Use gmdate to ensure UTC, matching standard DB CURRENT_TIMESTAMP
         $threshold = gmdate('Y-m-d H:i:s', strtotime("-$windowMinutes minutes"));
 
