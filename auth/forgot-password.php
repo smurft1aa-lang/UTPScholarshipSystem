@@ -45,22 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     $mail = createMailer();
                     $mail->addAddress($email, $user['full_name']);
-                    $mail->Subject = 'Reset Your Password - UTP System';
-                    $mail->Body = "
-                    <html>
-                    <body style='font-family: Arial, sans-serif; color: #333;'>
-                        <h2 style='color: #f26522;'>Password Reset Request</h2>
-                        <p>Dear " . htmlspecialchars($user['full_name']) . ",</p>
-                        <p>You requested a password reset. Click the button below to set a new password:</p>
-                        <p>
-                            <a href='" . htmlspecialchars($resetLink) . "'
-                               style='display:inline-block;padding:10px 20px;background:#f26522;color:#fff;text-decoration:none;border-radius:4px;'>
-                                Reset Password
-                            </a>
-                        </p>
-                        <p style='color:#888;font-size:0.85rem;'>This link will expire in 1 hour. If you did not request this, please ignore this email.</p>
-                    </body>
-                    </html>";
+                    $mail->Subject = 'Reset Your Password — UTP Scholarship System';
+                    $mail->Body = \UTP\Services\Mailer::buildPasswordResetEmail($user['full_name'], $resetLink);
+                    $mail->AltBody = "Dear {$user['full_name']}, reset your password: {$resetLink}";
                     $mail->send();
                 } catch (\Exception $mailEx) {
                     trackEvent('Password Reset Email Failed', ['email' => $email], 'WARNING');
