@@ -43,6 +43,7 @@ class Mailer
     public static function wrapLayout(string $preheader, string $innerHtml, string $footerExtra = ''): string
     {
         $year = date('Y');
+        $systemUrl = getenv('APP_URL') ?: 'http://localhost';
 
         return <<<HTML
 <!DOCTYPE html>
@@ -71,16 +72,12 @@ class Mailer
                     <!-- Logo Header -->
                     <tr>
                         <td align="center" style="padding-bottom:24px;">
-                            <table role="presentation" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td style="background:linear-gradient(135deg,#e8630a,#f59e0b);width:44px;height:44px;border-radius:12px;text-align:center;vertical-align:middle;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-1px;">
-                                        U
-                                    </td>
-                                    <td style="padding-left:12px;font-size:18px;font-weight:700;color:#1a1a2e;letter-spacing:-0.3px;">
-                                        UTP Scholarship System
-                                    </td>
-                                </tr>
-                            </table>
+                            <a href="{$systemUrl}" target="_blank" style="text-decoration:none;">
+                                <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png"
+                                     alt="Universiti Teknologi PETRONAS"
+                                     width="200" height="auto"
+                                     style="display:block;max-width:200px;height:auto;border:0;" />
+                            </a>
                         </td>
                     </tr>
 
