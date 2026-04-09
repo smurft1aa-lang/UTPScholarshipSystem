@@ -168,6 +168,23 @@ if (!function_exists('getCurrentUser')) {
     }
 }
 
+// ─── Telemetry Bridge ───────────────────────────────────────────────
+if (!function_exists('startTimer')) {
+    function startTimer(string $label): void {
+        \UTP\Services\Telemetry::startTimer($label);
+    }
+}
+if (!function_exists('endTimer')) {
+    function endTimer(string $label): float {
+        return \UTP\Services\Telemetry::endTimer($label);
+    }
+}
+if (!function_exists('trackEvent')) {
+    function trackEvent(string $eventName, array $context = [], string $level = 'INFO'): void {
+        \UTP\Services\Telemetry::trackEvent($eventName, $context, $level);
+    }
+}
+
 // ─── Mailer Bridge ──────────────────────────────────────────────────
 if (!function_exists('createMailer')) {
     function createMailer() { return \UTP\Services\Mailer::createMailer(); }

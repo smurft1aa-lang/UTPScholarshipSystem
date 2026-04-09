@@ -28,8 +28,8 @@ if (!function_exists('loadEnv')) {
 
 loadEnv(__DIR__ . '/../.env');
 
-// Init telemetry globally before any DB interaction
-require_once __DIR__ . '/../includes/telemetry.php';
+// Load autoloader for OOP classes (Telemetry, etc.)
+require_once __DIR__ . '/../vendor/autoload.php';
 
 if (!defined('DB_HOST'))
     define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
@@ -47,7 +47,7 @@ if (!function_exists('getDB')) {
     {
         static $pdo = null;
         if ($pdo === null) {
-            startTimer('db_connect');
+            \UTP\Services\Telemetry::startTimer('db_connect');
             try {
                 $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
                 $pdo = new PDO($dsn, DB_USER, DB_PASS, [
@@ -55,13 +55,13 @@ if (!function_exists('getDB')) {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]);
-                $time = endTimer('db_connect');
+                $time = \UTP\Services\Telemetry::endTimer('db_connect');
                 if ($time > 200) {
-                    trackEvent('Slow DB Connection', ['time_ms' => $time], 'WARNING');
+                    \UTP\Services\Telemetry::trackEvent('Slow DB Connection', ['time_ms' => $time], 'WARNING');
                 }
             } catch (PDOException $e) {
                 http_response_code(500);
-                trackEvent('Database Connection Failed', ['exception' => $e], 'CRITICAL');
+                \UTP\Services\Telemetry::trackEvent('Database Connection Failed', ['exception' => $e], 'CRITICAL');
                 if (getenv('APP_ENV') === 'testing')
                     throw $e;
                 die('Database connection failed. Please check your configuration.');

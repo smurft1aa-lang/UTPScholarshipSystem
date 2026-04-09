@@ -42,5 +42,23 @@ until php -r "
 done
 echo "MySQL is ready."
 
+# Set default admin password if still placeholder
+echo "Checking admin account..."
+php -r "
+    require '/var/www/html/config/database.php';
+    \$pdo = getDB();
+    \$stmt = \$pdo->prepare('SELECT password_hash FROM users WHERE email = ?');
+    \$stmt->execute(['admin@utp.edu.my']);
+    \$row = \$stmt->fetch();
+    if (\$row && \$row['password_hash'] === 'PLACEHOLDER_HASH_REPLACED_AT_SETUP') {
+        \$hash = password_hash('Admin1234', PASSWORD_DEFAULT);
+        \$update = \$pdo->prepare('UPDATE users SET password_hash = ? WHERE email = ?');
+        \$update->execute([\$hash, 'admin@utp.edu.my']);
+        echo \"Admin password initialized.\n\";
+    } else {
+        echo \"Admin account OK.\n\";
+    }
+" 2>&1
+
 echo "=== Starting Apache ==="
 exec "$@"

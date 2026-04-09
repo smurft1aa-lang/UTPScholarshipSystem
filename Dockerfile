@@ -6,7 +6,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 COPY . .
 
 # ── Stage 2: Production ──
-FROM php:8.1-apache AS production
+FROM php:8.2-apache AS production
 
 # Install dependencies and extensions
 RUN apt-get update && apt-get install -y \
@@ -40,7 +40,8 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Entrypoint
+# Entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh && chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
