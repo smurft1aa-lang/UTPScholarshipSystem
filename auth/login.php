@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Left Panel containing the form -->
         <div class="left-panel">
             <a href="/landing.php" class="brand">
-                <span class="brand-icon"></span>
+                <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;">
                 UTP
             </a>
 

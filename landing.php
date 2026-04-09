@@ -34,7 +34,7 @@ $csrfToken = generateCSRFToken();
     <!-- ── Navbar ── -->
     <nav class="navbar" id="navbar">
         <a href="#" class="nav-logo">
-            <span class="brand-icon"></span> UTP
+            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:36px;width:auto;"> UTP
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="#hero">Home</a></li>
@@ -171,7 +171,7 @@ $csrfToken = generateCSRFToken();
         <div class="footer-grid">
             <div class="footer-col">
                 <a href="#" class="footer-brand">
-                    <span class="brand-icon-footer"></span> UTP
+                    <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;"> UTP
                 </a>
                 <p class="footer-desc">Empowering the next generation of engineers, technologists, and leaders through world-class education and research.</p>
                 <div class="social-icons">

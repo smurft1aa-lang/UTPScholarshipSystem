@@ -29,7 +29,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
     <!-- Admin Mobile Header -->
     <div class="admin-mobile-header">
         <div class="sidebar-brand" style="border:none; padding:0; height:auto;">
-            <span class="brand-icon">U</span>
+            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" style="height:28px;width:auto;">
             UTP Admin
         </div>
         <button class="hamburger-btn admin-hamburger" id="adminMenuBtn" aria-label="Toggle Menu">
@@ -42,7 +42,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
 
     <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Admin sidebar">
         <div class="sidebar-brand">
-            <span class="brand-icon">U</span>
+            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" style="height:28px;width:auto;">
             UTP Admin
         </div>
         <nav class="sidebar-nav">

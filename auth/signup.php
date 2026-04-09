@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Right Panel containing the pattern illustration (Moved visually to the left) -->
         <div class="right-panel">
             <a href="/landing.php" class="brand">
-                <span class="brand-icon"></span>
+                <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;">
                 UTP
             </a>
         </div>
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Left Panel containing the form (Moved visually to the right) -->
         <div class="left-panel">
             <a href="/landing.php" class="brand brand-mobile">
-                <span class="brand-icon"></span>
+                <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;">
                 UTP
             </a>
             <div class="login-container">
