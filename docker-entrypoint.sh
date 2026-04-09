@@ -45,8 +45,12 @@ echo "MySQL is ready."
 # Set default admin password if still placeholder
 echo "Checking admin account..."
 php -r "
-    require '/var/www/html/config/database.php';
-    \$pdo = getDB();
+    \$host = getenv('DB_HOST') ?: 'db';
+    \$port = getenv('DB_PORT') ?: 3306;
+    \$db   = getenv('DB_NAME') ?: 'utp_scholarship';
+    \$user = getenv('DB_USER') ?: 'root';
+    \$pass = getenv('DB_PASS') ?: '';
+    \$pdo = new PDO(\"mysql:host=\$host;port=\$port;dbname=\$db\", \$user, \$pass);
     \$stmt = \$pdo->prepare('SELECT password_hash FROM users WHERE email = ?');
     \$stmt->execute(['admin@utp.edu.my']);
     \$row = \$stmt->fetch();

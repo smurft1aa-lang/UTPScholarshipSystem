@@ -31,8 +31,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-inner">
         <a href="/student/dashboard.php" class="navbar-brand">
-            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:32px;width:auto;">
-            UTP System
+            UTP
         </a>
         <div class="navbar-links" id="navLinks">
             <div class="mobile-user-info">

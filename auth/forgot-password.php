@@ -81,8 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="auth-page">
         <div class="auth-card">
             <a href="/" class="navbar-brand flex-center mb-6">
-                <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;">
-                UTP System
+                UTP
             </a>
             <h1>Forgot Password</h1>
             <p class="subtitle">Enter your email to receive a reset link</p>

@@ -14,6 +14,9 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<script>
+    (function(){var t=localStorage.getItem('utp-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +32,6 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
     <!-- Admin Mobile Header -->
     <div class="admin-mobile-header">
         <div class="sidebar-brand" style="border:none; padding:0; height:auto;">
-            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" style="height:28px;width:auto;">
             UTP Admin
         </div>
         <button class="hamburger-btn admin-hamburger" id="adminMenuBtn" aria-label="Toggle Menu">
@@ -41,10 +43,9 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Admin sidebar">
-        <div class="sidebar-brand">
-            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" style="height:28px;width:auto;">
-            UTP Admin
-        </div>
+        <a href="/admin/dashboard.php" class="sidebar-brand">
+            UTP
+        </a>
         <nav class="sidebar-nav">
             <a href="/admin/dashboard.php" class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -76,7 +77,13 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
             </a>
         </nav>
         <div class="sidebar-bottom">
-            <a href="/api/logout.php" class="btn btn-outline btn-sm btn-block" style="margin-bottom:10px;">Logout</a>
+            <div style="display:flex;gap:8px;margin-bottom:10px;">
+                <a href="/api/logout.php" class="btn btn-outline btn-sm" style="flex:1;">Logout</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Light/Dark Mode">
+                    <span class="icon-sun">☀️</span>
+                    <span class="icon-moon">🌙</span>
+                </button>
+            </div>
             <div class="sidebar-user">
                 <div class="user-avatar"><?= $initials ?></div>
                 <div class="user-info">
@@ -104,4 +111,26 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
         adminMenuBtn.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
     }
+
+    // Theme Toggle Logic
+    (function() {
+        const toggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('utp-theme');
+
+        // Apply saved theme immediately
+        if (saved) {
+            html.setAttribute('data-theme', saved);
+        }
+
+        if (toggle) {
+            toggle.addEventListener('click', function() {
+                const current = html.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('utp-theme', next);
+            });
+        }
+    })();
 </script>
+

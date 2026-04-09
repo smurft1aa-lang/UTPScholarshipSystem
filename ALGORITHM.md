@@ -1,4 +1,4 @@
-# UTP Eligibility & Scholarship Recommendation Algorithm
+ # UTP Eligibility & Scholarship Recommendation Algorithm
 
 **File:** `includes/ai_engine.php` + `includes/GradeMapper.php`  
 **Class:** `AIEngine`  

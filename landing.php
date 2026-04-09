@@ -24,7 +24,7 @@ $csrfToken = generateCSRFToken();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/landing.css">
+    <link rel="stylesheet" href="/assets/css/landing.css?v=3">
 
 </head>
 <body>
@@ -34,7 +34,7 @@ $csrfToken = generateCSRFToken();
     <!-- ── Navbar ── -->
     <nav class="navbar" id="navbar">
         <a href="#" class="nav-logo">
-            <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:36px;width:auto;"> UTP
+            UTP
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="#hero">Home</a></li>
@@ -171,7 +171,7 @@ $csrfToken = generateCSRFToken();
         <div class="footer-grid">
             <div class="footer-col">
                 <a href="#" class="footer-brand">
-                    <img src="https://www.utp.edu.my/SiteAssets/UTP-logo2.png" alt="UTP" class="brand-logo" style="height:30px;width:auto;"> UTP
+                    UTP
                 </a>
                 <p class="footer-desc">Empowering the next generation of engineers, technologists, and leaders through world-class education and research.</p>
                 <div class="social-icons">
