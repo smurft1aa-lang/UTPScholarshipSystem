@@ -38,7 +38,6 @@ if ($endDate) {
 $sql .= " ORDER BY a.created_at DESC";
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Set CSV download headers
 $filename = 'audit_log_' . date('Y-m-d_His') . '.csv';
@@ -51,8 +50,8 @@ $output = fopen('php://output', 'w');
 // CSV Header Row
 fputcsv($output, ['ID', 'User Name', 'Email', 'Action', 'Target Type', 'Target ID', 'Details', 'IP Address', 'Timestamp']);
 
-// Data Rows
-foreach ($rows as $row) {
+// Stream rows one at a time to avoid OOM on large audit logs
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     fputcsv($output, [
         $row['id'],
         $row['full_name'] ?? 'System',

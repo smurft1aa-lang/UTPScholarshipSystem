@@ -293,7 +293,7 @@ The `AIEngine::checkEligibility()` systematically scores academic profiles again
 2. **Rate Limiting:**
    - `checkRateLimit($ip)` logs bad auth endpoints locally to `login_attempts`. Max 5 attempts rolling per 1-minute window.
 3. **Input Sanitization:**
-   - `sanitize($input)` strips arrays recursively via `htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8')`.
+   - `sanitize($input)` trims whitespace only (recursively for arrays). Output escaping is handled separately at render time via the `e()` helper, which calls `htmlspecialchars($value, ENT_QUOTES, 'UTF-8')`.
 4. **Password Hashing:**
    - Always deployed utilizing PHP's secure native `PASSWORD_BCRYPT` with cost heavily lifted to `12`.
 5. **Session Hardening:**

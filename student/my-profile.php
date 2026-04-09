@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$pageTitle = 'My Profile — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 

@@ -17,7 +17,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - UTP System</title>
+    <title><?= htmlspecialchars($pageTitle ?? 'Admin — UTP Scholarship System') ?></title>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="/assets/css/style.css?v=<?= time() ?>">
     <link rel="stylesheet" href="/assets/css/dark-mode.css">

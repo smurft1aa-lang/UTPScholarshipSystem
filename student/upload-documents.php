@@ -84,6 +84,7 @@ while ($row = $stmt->fetch()) {
     $docs[$row['doc_type']] = $row;
 }
 
+$pageTitle = 'Upload Documents — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 

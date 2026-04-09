@@ -9,6 +9,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
 requireVerified();
 
+$pageTitle = 'Check Eligibility — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 

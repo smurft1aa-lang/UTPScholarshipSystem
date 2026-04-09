@@ -6,13 +6,17 @@
 
 // Load .env file (lightweight, no Composer dependency needed)
 if (!function_exists('loadEnv')) {
-    function loadEnv($path) {
-        if (!file_exists($path)) return;
+    function loadEnv($path)
+    {
+        if (!file_exists($path))
+            return;
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
             $line = trim($line);
-            if ($line === '' || $line[0] === '#') continue;
-            if (strpos($line, '=') === false) continue;
+            if ($line === '' || $line[0] === '#')
+                continue;
+            if (strpos($line, '=') === false)
+                continue;
             list($key, $value) = array_map('trim', explode('=', $line, 2));
             if (!getenv($key)) {
                 putenv("{$key}={$value}");
@@ -27,14 +31,20 @@ loadEnv(__DIR__ . '/../.env');
 // Init telemetry globally before any DB interaction
 require_once __DIR__ . '/../includes/telemetry.php';
 
-if (!defined('DB_HOST')) define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-if (!defined('DB_PORT')) define('DB_PORT', getenv('DB_PORT') ?: '3306');
-if (!defined('DB_NAME')) define('DB_NAME', getenv('DB_NAME') ?: 'utp_scholarship');
-if (!defined('DB_USER')) define('DB_USER', getenv('DB_USER') ?: 'root');
-if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') ?: '');
+if (!defined('DB_HOST'))
+    define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+if (!defined('DB_PORT'))
+    define('DB_PORT', getenv('DB_PORT') ?: '3306');
+if (!defined('DB_NAME'))
+    define('DB_NAME', getenv('DB_NAME') ?: 'utp_scholarship');
+if (!defined('DB_USER'))
+    define('DB_USER', getenv('DB_USER') ?: 'root');
+if (!defined('DB_PASS'))
+    define('DB_PASS', getenv('DB_PASS') ?: '');
 
 if (!function_exists('getDB')) {
-    function getDB() {
+    function getDB()
+    {
         static $pdo = null;
         if ($pdo === null) {
             startTimer('db_connect');
@@ -52,7 +62,8 @@ if (!function_exists('getDB')) {
             } catch (PDOException $e) {
                 http_response_code(500);
                 trackEvent('Database Connection Failed', ['exception' => $e], 'CRITICAL');
-                if (getenv('APP_ENV') === 'testing') throw $e;
+                if (getenv('APP_ENV') === 'testing')
+                    throw $e;
                 die('Database connection failed. Please check your configuration.');
             }
         }

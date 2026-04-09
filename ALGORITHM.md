@@ -311,8 +311,10 @@ if ($time > 500) {
 
 | File | Responsibility |
 |------|---------------|
-| `includes/ai_engine.php` | Main engine: eligibility check, programme evaluation, scholarship matching, recommendation generation |
-| `includes/GradeMapper.php` | Grade-to-points conversion tables and min/max pass thresholds |
+| `src/Services/AIEngine.php` | Main engine: eligibility check, programme evaluation, scholarship matching, recommendation generation |
+| `src/Services/GradeMapper.php` | Grade-to-points conversion tables and min/max pass thresholds |
 | `api/check-eligibility.php` | API endpoint that calls `AIEngine::checkEligibility()` and saves results to DB |
 | `student/results.php` | Displays fit bars, confidence badges, gap analysis, and scholarship matches to the student |
 | `sql/setup.sql` | Seeds all 16 programmes, entry requirements with weights, and 25 real scholarships |
+| `includes/ai_engine.php` | *(Deprecated bridge)* Delegates to `src/Services/AIEngine.php` — will be removed in Q3 2026 |
+| `includes/GradeMapper.php` | *(Deprecated bridge)* Delegates to `src/Services/GradeMapper.php` — will be removed in Q3 2026 |

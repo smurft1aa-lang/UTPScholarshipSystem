@@ -67,6 +67,7 @@ $requiredDocs = [
 
 $missingCount = count($requiredDocs) - count($uploadedDocs);
 
+$pageTitle = 'Dashboard — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 

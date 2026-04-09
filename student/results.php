@@ -83,6 +83,7 @@ if ($application) {
     unset($r); // safe unset
 }
 
+$pageTitle = 'Eligibility Results — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
