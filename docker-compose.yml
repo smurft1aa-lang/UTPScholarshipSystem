@@ -38,7 +38,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:latest
-    profiles: ["debug"]
     ports:
       - "8081:80"
     environment:
