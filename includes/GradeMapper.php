@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural GradeMapper has been migrated to UTP\Services\GradeMapper.
  * This file is kept only as a backward-compatible bridge.

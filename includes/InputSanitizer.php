@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural InputSanitizer has been migrated to UTP\Security\InputSanitizer.
  * This file is kept only as a backward-compatible bridge.

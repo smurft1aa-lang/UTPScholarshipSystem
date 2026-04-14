@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural RateLimiter has been migrated to UTP\Security\RateLimiter.
  * This file is kept only as a backward-compatible bridge.

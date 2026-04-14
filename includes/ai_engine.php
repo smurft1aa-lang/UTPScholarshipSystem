@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural AIEngine has been migrated to UTP\Services\AIEngine.
  * This file is kept only as a backward-compatible bridge.

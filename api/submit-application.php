@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * API: Submit Application
  * Updates an existing application with chosen programme and scholarship

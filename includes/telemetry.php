@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural telemetry has been migrated to UTP\Services\Telemetry.
  * This file is kept only as a backward-compatible bridge.

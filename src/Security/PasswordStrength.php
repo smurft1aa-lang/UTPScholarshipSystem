@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace UTP\Security;
 
 use ZxcvbnPhp\Zxcvbn;

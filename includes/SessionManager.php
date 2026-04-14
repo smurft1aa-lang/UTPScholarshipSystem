@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural SessionManager has been migrated to UTP\Core\SessionManager.
  * This file is kept only as a backward-compatible bridge.

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural CSRF functions have been migrated to UTP\Security\CSRF.
  * This file is kept only as a backward-compatible bridge.

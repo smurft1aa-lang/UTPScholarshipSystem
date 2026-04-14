@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural RoleGuard has been migrated to UTP\Security\RoleGuard.
  * This file is kept only as a backward-compatible bridge.

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Audit Log CSV Export
  * Exports audit log entries as a downloadable CSV file with optional date

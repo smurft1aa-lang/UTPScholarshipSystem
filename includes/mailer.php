@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DEPRECATED: Procedural Mailer functions have been migrated to UTP\Services\Mailer.
  * This file is kept only as a backward-compatible bridge.

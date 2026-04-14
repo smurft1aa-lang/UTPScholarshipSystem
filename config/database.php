@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Database Configuration
  * MySQL connection via PDO — credentials loaded from .env

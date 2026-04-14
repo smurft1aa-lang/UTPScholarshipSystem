@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * API: Check Eligibility
  * Saves qualification + grades, runs AI engine, creates application
