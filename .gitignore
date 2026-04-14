@@ -1,5 +1,7 @@
 # Environment variables
 .env
+tmp.env
+*.env
 .env.local
 .env.*.local
 .env.production
