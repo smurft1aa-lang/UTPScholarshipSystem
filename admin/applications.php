@@ -66,7 +66,7 @@ $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
 // Validation for pagination
 $page = max(1, intval($_GET['page'] ?? 1));
-$perPage = 10;
+$perPage = 20;
 $offset = ($page - 1) * $perPage;
 
 // Count total records for pagination

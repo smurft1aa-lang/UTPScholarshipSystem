@@ -19,7 +19,23 @@ $appStats = [];
 while ($row = $stmt->fetch()) $appStats[$row['status']] = $row['cnt'];
 $totalApps = array_sum($appStats);
 
-// Unified Programme Statistics
+// Pagination for programme stats
+$page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 20;
+$offset = ($page - 1) * $perPage;
+
+// Count total programmes with stats
+$countStmt = $db->prepare("
+    SELECT COUNT(DISTINCT p.id)
+    FROM eligibility_results er
+    JOIN programmes p ON er.programme_id = p.id
+    JOIN applications a ON er.application_id = a.id
+    WHERE a.created_at BETWEEN ? AND ?
+");
+$countStmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
+$totalProgRecords = (int) $countStmt->fetchColumn();
+$totalProgPages = (int) ceil($totalProgRecords / $perPage);
+
 $stmt = $db->prepare("
     SELECT p.name, p.category,
            (SELECT COUNT(a2.id) FROM applications a2 WHERE (a2.programme_id_1 = p.id OR a2.programme_id_2 = p.id OR a2.programme_id_3 = p.id) AND a2.created_at BETWEEN ? AND ?) as applied_count,
@@ -32,8 +48,16 @@ $stmt = $db->prepare("
     WHERE a.created_at BETWEEN ? AND ?
     GROUP BY p.id
     ORDER BY applied_count DESC, eligible_count DESC
+    LIMIT ? OFFSET ?
 ");
-$stmt->execute([$dateFrom, $dateTo . ' 23:59:59', $dateFrom, $dateTo . ' 23:59:59']);
+$stmtParams = [$dateFrom, $dateTo . ' 23:59:59', $dateFrom, $dateTo . ' 23:59:59'];
+$paramIdx = 1;
+foreach ($stmtParams as $p) {
+    $stmt->bindValue($paramIdx++, $p);
+}
+$stmt->bindValue($paramIdx++, $perPage, PDO::PARAM_INT);
+$stmt->bindValue($paramIdx, $offset, PDO::PARAM_INT);
+$stmt->execute();
 $progStats = $stmt->fetchAll();
 
 // Scholarship distribution
@@ -247,6 +271,23 @@ require_once __DIR__ . '/admin_header.php';
             <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($totalProgPages > 1): ?>
+    <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:16px;">
+        <?php
+        $paginationQS = '';
+        if ($dateFrom) $paginationQS .= '&from=' . urlencode($dateFrom);
+        if ($dateTo) $paginationQS .= '&to=' . urlencode($dateTo);
+        ?>
+        <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 . $paginationQS ?>" class="btn btn-outline btn-sm">Previous</a>
+        <?php endif; ?>
+        <span style="font-size:0.9rem; color:var(--text-secondary);">Page <?= $page ?> of <?= $totalProgPages ?></span>
+        <?php if ($page < $totalProgPages): ?>
+            <a href="?page=<?= $page + 1 . $paginationQS ?>" class="btn btn-outline btn-sm">Next</a>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 </div>
