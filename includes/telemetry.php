@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 /**
- * DEPRECATED: Procedural telemetry has been migrated to UTP\Services\Telemetry.
- * This file is kept only as a backward-compatible bridge.
- * All calls are delegated to the OOP class via includes/init.php.
+ * @deprecated Since 2026-04-14. Scheduled for removal in Q3 2026.
+ * This bridge file delegates to includes/init.php which loads the OOP classes.
+ * Migrate callers to require includes/init.php directly, and use
+ * \UTP\Services\Telemetry instead of the procedural telemetry functions.
  */
-// TODO: Remove this bridge after all pages migrated to use src/ directly (Target: Q3 2026)
 require_once __DIR__ . '/init.php';

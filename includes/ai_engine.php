@@ -15,7 +15,7 @@ if (!class_exists('AIEngine', false)) {
         public static function checkEligibility($qualificationId, $forceRefresh = false)
         {
             $engine = new \UTP\Services\AIEngine(getDB());
-            return $engine->checkEligibility($qualificationId, $forceRefresh);
+            return $engine->checkEligibility((int) $qualificationId, $forceRefresh);
         }
 
         public static function getMatchingScholarships(array $eligibleProgrammeIds, array $fitPercentages)

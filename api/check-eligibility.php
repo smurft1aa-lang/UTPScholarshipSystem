@@ -4,8 +4,7 @@ declare(strict_types=1);
  * API: Check Eligibility
  * Saves qualification + grades, runs AI engine, creates application
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
 
 setSecurityHeaders();

@@ -3,7 +3,6 @@
  * Admin Settings
  */
 require_once __DIR__ . '/admin_header.php';
-require_once __DIR__ . '/../includes/security.php';
 
 $db = getDB();
 $success = '';

@@ -5,8 +5,7 @@
  * Step 2: Enter subject grades
  * Step 3: Submit
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 requireVerified();
 
 $pageTitle = 'Check Eligibility — UTP Scholarship System';

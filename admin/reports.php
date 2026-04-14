@@ -3,7 +3,7 @@
  * Admin Structured Performance Reports
  * Application stats, programme popularity, scholarship distribution, grade trends
  */
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/init.php';
 requireAdmin();
 
 $db = getDB();

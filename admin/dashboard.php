@@ -3,8 +3,7 @@
  * Admin Dashboard
  * Overview with stats, application status, calendar
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 // Handle quick status update FIRST (before any output)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -16,10 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if (in_array($action, ['processing', 'approved', 'rejected']) && $appId > 0) {
             $stmt = $db->prepare("UPDATE applications SET status = ?, admin_notes = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?");
             $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
-            require_once __DIR__ . '/../includes/audit.php';
             logAudit($_SESSION['user_id'], 'Application Status Changed', 'Application', $appId, "Status: $action");
             // Send email notification
-            require_once __DIR__ . '/../includes/mailer.php';
             $stmt2 = $db->prepare("SELECT u.email, u.full_name, p.name as prog_name FROM applications a JOIN users u ON a.user_id = u.id LEFT JOIN programmes p ON a.programme_id_1 = p.id WHERE a.id = ?");
             $stmt2->execute([$appId]);
             $studentInfo = $stmt2->fetch();
@@ -236,7 +233,6 @@ $today = date('j');
             <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?></p>
             <p><strong>Current Status:</strong> <?= ucfirst($app['status']) ?></p>
             <form method="POST" style="margin-top:20px;">
-                <?php require_once __DIR__ . '/../includes/security.php'; ?>
                 <?= csrfField() ?>
                 <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
                 <div class="form-group">

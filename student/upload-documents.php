@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 requireVerified();
 
 $db = getDB();
@@ -61,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt->execute([$userId, $docType, $newName, $_FILES['document']['name'], $_FILES['document']['size']]);
                         }
                         
-                        require_once __DIR__ . '/../includes/audit.php';
                         logAudit($userId, 'Document Uploaded', 'Document', $docType);
                         
                         $success = 'Document uploaded successfully.';

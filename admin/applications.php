@@ -3,8 +3,7 @@
  * Admin Applications Management
  * View, filter, approve/reject student applications
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 $db = getDB();
 $statusFilter = $_GET['status'] ?? '';
@@ -20,11 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if (in_array($action, ['processing', 'approved', 'rejected']) && $appId > 0) {
             $stmt = $db->prepare("UPDATE applications SET status = ?, admin_notes = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?");
             $stmt->execute([$action, $notes, $_SESSION['user_id'], $appId]);
-            require_once __DIR__ . '/../includes/audit.php';
             logAudit($_SESSION['user_id'], 'Application Status Changed', 'Application', $appId, "Status: $action");
             
             // Fetch student info and dispatch email notification
-            require_once __DIR__ . '/../includes/mailer.php';
             $stmt = $db->prepare("
                 SELECT u.email, u.full_name, p.name as prog_name 
                 FROM applications a 

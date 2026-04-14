@@ -2,7 +2,7 @@
 /**
  * Student Dashboard
  */
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/init.php';
 requireStudent();
 
 $db = getDB();

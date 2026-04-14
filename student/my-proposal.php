@@ -3,7 +3,7 @@
  * Student Proposal Page
  * Auto-generated sponsorship proposal document
  */
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/init.php';
 requireStudent();
 
 $db = getDB();

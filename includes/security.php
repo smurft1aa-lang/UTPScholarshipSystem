@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 /**
- * DEPRECATED: Module split into CSRF, RateLimiter, InputSanitizer.
- * Required via aggregated init loader.
+ * @deprecated Since 2026-04-14. Scheduled for removal in Q3 2026.
+ * This bridge file delegates to includes/init.php which loads the OOP classes.
+ * Migrate callers to require includes/init.php directly, and use the namespaced
+ * classes: \UTP\Security\CSRF, \UTP\Security\RateLimiter, \UTP\Security\InputSanitizer.
  */
 require_once __DIR__ . '/init.php';

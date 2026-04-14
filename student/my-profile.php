@@ -2,8 +2,7 @@
 /**
  * Student Profile Page
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 requireVerified();
 
 $db = getDB();
@@ -39,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$hash, $userId]);
                 $success = 'Password successfully updated.';
                 
-                require_once __DIR__ . '/../includes/audit.php';
                 logAudit($userId, 'Password Changed');
             }
         }

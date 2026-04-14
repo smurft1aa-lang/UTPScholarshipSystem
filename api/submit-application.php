@@ -4,8 +4,7 @@ declare(strict_types=1);
  * API: Submit Application
  * Updates an existing application with chosen programme and scholarship
  */
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
 header('Content-Type: application/json; charset=utf-8');
@@ -73,7 +72,6 @@ try {
     $stmt->execute([$prog1, $prog2, $prog3, $scholarshipId, $appId]);
 
     // Send confirmation email
-    require_once __DIR__ . '/../includes/mailer.php';
     $userStmt = $db->prepare("SELECT full_name, email FROM users WHERE id = ?");
     $userStmt->execute([$userId]);
     $user = $userStmt->fetch();
