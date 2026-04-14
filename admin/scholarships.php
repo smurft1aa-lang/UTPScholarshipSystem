@@ -83,7 +83,7 @@ if ($searchStr !== '') {
 
 $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-$query = "SELECT s.*, (SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM scholarship_programme sp JOIN programmes p ON sp.programme_id = p.id WHERE sp.scholarship_id = s.id) as programme_names FROM scholarships s $whereClause ORDER BY s.created_at DESC";
+$query = "SELECT s.id, s.name, s.description, s.budget_min, s.budget_max, s.min_fit_percentage, s.start_date, s.end_date, s.is_active, s.created_at, (SELECT GROUP_CONCAT(p.name SEPARATOR ', ') FROM scholarship_programme sp JOIN programmes p ON sp.programme_id = p.id WHERE sp.scholarship_id = s.id) as programme_names FROM scholarships s $whereClause ORDER BY s.created_at DESC";
 $stmt = $db->prepare($query);
 $stmt->execute($params);
 $scholarships = $stmt->fetchAll();
@@ -94,7 +94,7 @@ $editSch = null;
 $editProgIds = [];
 if (isset($_GET['edit'])) {
     $editId = intval($_GET['edit']);
-    $stmt = $db->prepare("SELECT * FROM scholarships WHERE id = ?");
+    $stmt = $db->prepare("SELECT id, name, description, budget_min, budget_max, min_fit_percentage, start_date, end_date, is_active FROM scholarships WHERE id = ?");
     $stmt->execute([$editId]);
     $editSch = $stmt->fetch();
     if ($editSch) {

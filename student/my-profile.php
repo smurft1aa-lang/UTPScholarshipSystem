@@ -10,7 +10,7 @@ $db = getDB();
 $userId = $_SESSION['user_id'];
 
 // Get user
-$stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+$stmt = $db->prepare("SELECT id, full_name, email, ic_number, phone, password_hash, email_verified FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 

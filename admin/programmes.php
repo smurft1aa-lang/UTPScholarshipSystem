@@ -52,19 +52,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCSRFToken($_POST['csrf_toke
 }
 
 // Get programmes
-$programmes = $db->query("SELECT p.*, (SELECT COUNT(*) FROM entry_requirements er WHERE er.programme_id = p.id) as req_count FROM programmes p ORDER BY p.category, p.name")->fetchAll();
+$programmes = $db->query("SELECT p.id, p.name, p.category, p.description, p.is_active, (SELECT COUNT(*) FROM entry_requirements er WHERE er.programme_id = p.id) as req_count FROM programmes p ORDER BY p.category, p.name")->fetchAll();
 
 // Edit mode
 $editProg = null;
 $editReqs = [];
 if (isset($_GET['edit'])) {
     $editId = intval($_GET['edit']);
-    $stmt = $db->prepare("SELECT * FROM programmes WHERE id = ?");
+    $stmt = $db->prepare("SELECT id, name, category, description, is_active FROM programmes WHERE id = ?");
     $stmt->execute([$editId]);
     $editProg = $stmt->fetch();
 
     if ($editProg) {
-        $stmt = $db->prepare("SELECT * FROM entry_requirements WHERE programme_id = ? ORDER BY qual_type, subject");
+        $stmt = $db->prepare("SELECT id, programme_id, qual_type, subject, min_grade, weight FROM entry_requirements WHERE programme_id = ? ORDER BY qual_type, subject");
         $stmt->execute([$editId]);
         $editReqs = $stmt->fetchAll();
     }

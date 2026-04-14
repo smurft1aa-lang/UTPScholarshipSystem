@@ -31,7 +31,7 @@ $stmt->execute([$appId]);
 $eligible = $stmt->fetchAll();
 
 // Get fee structure
-$fees = $db->query("SELECT * FROM fee_structure ORDER BY id")->fetchAll();
+$fees = $db->query("SELECT id, fee_type, description, amount_min, amount_max, frequency, notes FROM fee_structure ORDER BY id")->fetchAll();
 
 $pageTitle = 'Eligibility Proposal — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';
