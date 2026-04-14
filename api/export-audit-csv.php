@@ -19,7 +19,7 @@ if ($dateFrom !== null && $dateFrom !== '') {
     if (!$dt || $dt->format('Y-m-d') !== $dateFrom) {
         http_response_code(400);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['error' => 'Invalid date_from format. Expected Y-m-d.']);
+        echo json_encode(['success' => false, 'error' => 'Invalid date_from format. Expected Y-m-d.']);
         exit;
     }
 } else {
@@ -31,7 +31,7 @@ if ($dateTo !== null && $dateTo !== '') {
     if (!$dt || $dt->format('Y-m-d') !== $dateTo) {
         http_response_code(400);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['error' => 'Invalid date_to format. Expected Y-m-d.']);
+        echo json_encode(['success' => false, 'error' => 'Invalid date_to format. Expected Y-m-d.']);
         exit;
     }
 } else {
@@ -61,35 +61,44 @@ if ($dateTo) {
     $params[] = $dateTo . ' 23:59:59';
 }
 
-$sql .= " ORDER BY a.created_at DESC";
-$stmt = $db->prepare($sql);
-$stmt->execute($params);
+try {
+    $sql .= " ORDER BY a.created_at DESC";
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
 
-// ── Stream CSV row-by-row ──────────────────────────────────────────────
-$filename = 'audit_log_' . date('Y-m-d_His') . '.csv';
-header('Content-Type: text/csv; charset=utf-8');
-header('Content-Disposition: attachment; filename="' . $filename . '"');
-header('Cache-Control: no-cache, no-store');
+    // ── Stream CSV row-by-row ──────────────────────────────────────────────
+    $filename = 'audit_log_' . date('Y-m-d_His') . '.csv';
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: no-cache, no-store');
 
-$output = fopen('php://output', 'w');
+    $output = fopen('php://output', 'w');
 
-// CSV Header Row
-fputcsv($output, ['ID', 'User Name', 'Email', 'Action', 'Target Type', 'Target ID', 'Details', 'IP Address', 'Timestamp']);
+    // CSV Header Row
+    fputcsv($output, ['ID', 'User Name', 'Email', 'Action', 'Target Type', 'Target ID', 'Details', 'IP Address', 'Timestamp']);
 
-// Stream rows one at a time to avoid OOM on large audit logs
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    fputcsv($output, [
-        $row['id'],
-        $row['full_name'] ?? 'System',
-        $row['email'] ?? '',
-        $row['action'],
-        $row['target_type'] ?? '',
-        $row['target_id'] ?? '',
-        $row['details'] ?? '',
-        $row['ip_address'] ?? '',
-        $row['created_at'],
-    ]);
+    // Stream rows one at a time to avoid OOM on large audit logs
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        fputcsv($output, [
+            $row['id'],
+            $row['full_name'] ?? 'System',
+            $row['email'] ?? '',
+            $row['action'],
+            $row['target_type'] ?? '',
+            $row['target_id'] ?? '',
+            $row['details'] ?? '',
+            $row['ip_address'] ?? '',
+            $row['created_at'],
+        ]);
+    }
+
+    fclose($output);
+    exit;
 }
-
-fclose($output);
-exit;
+catch (\Exception $e) {
+    \UTP\Services\Telemetry::trackEvent('Audit CSV Export Failed', ['exception' => $e], 'ERROR');
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => false, 'error' => 'Failed to export audit log.']);
+    exit;
+}

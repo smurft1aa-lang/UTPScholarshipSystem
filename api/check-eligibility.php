@@ -2,25 +2,57 @@
 declare(strict_types=1);
 /**
  * API: Check Eligibility
- * Saves qualification + grades, runs AI engine, creates application
+ * Saves qualification + grades, runs AI engine, creates application.
+ * Returns JSON for API/fetch clients, or redirects for native form submissions.
  */
 require_once __DIR__ . '/../includes/init.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
 
 setSecurityHeaders();
-header('Content-Type: application/json; charset=utf-8');
 initSession();
-requireLogin();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /student/check-eligibility.php');
+/**
+ * Helper: respond with an error in either JSON or redirect format.
+ */
+function apiError(int $httpCode, string $message, string $redirectUrl = '/student/check-eligibility.php'): never
+{
+    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+    if (str_contains($acceptHeader, 'application/json')) {
+        http_response_code($httpCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => false, 'error' => $message]);
+    } else {
+        $_SESSION['error'] = $message;
+        header('Location: ' . $redirectUrl);
+    }
     exit;
 }
 
-if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
-    $_SESSION['error'] = 'Invalid form submission.';
-    header('Location: /student/check-eligibility.php');
+/**
+ * Helper: respond with success in either JSON or redirect format.
+ */
+function apiSuccess(string $redirectUrl): never
+{
+    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+    if (str_contains($acceptHeader, 'application/json')) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => true, 'redirect' => $redirectUrl]);
+    } else {
+        header('Location: ' . $redirectUrl);
+    }
     exit;
+}
+
+if (!isLoggedIn()) {
+    apiError(403, 'Authentication required.');
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    apiError(405, 'Method not allowed. Use POST.');
+}
+
+if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+    apiError(403, 'Invalid form submission.');
 }
 
 $qualType = sanitize($_POST['qual_type'] ?? '');
@@ -28,15 +60,11 @@ $subjects = $_POST['subjects'] ?? [];
 $grades = $_POST['grades'] ?? [];
 
 if (empty($qualType) || !in_array($qualType, ['SPM', 'O-Level', 'IGCSE'])) {
-    $_SESSION['error'] = 'Please select a valid qualification type.';
-    header('Location: /student/check-eligibility.php');
-    exit;
+    apiError(400, 'Please select a valid qualification type.');
 }
 
 if (empty($subjects) || empty($grades) || count($subjects) !== count($grades)) {
-    $_SESSION['error'] = 'Please enter all grades.';
-    header('Location: /student/check-eligibility.php');
-    exit;
+    apiError(400, 'Please enter all grades.');
 }
 
 $db = getDB();
@@ -100,7 +128,7 @@ try {
 
     // Run AI eligibility engine (OOP instance with DI)
     $aiEngine = new \UTP\Services\AIEngine($db);
-    $results = $aiEngine->checkEligibility($qualId);
+    $results = $aiEngine->checkEligibility((int) $qualId);
 
     // Save eligibility results
     $stmt = $db->prepare("INSERT INTO eligibility_results (application_id, programme_id, eligible, fit_percentage, recommendation_text) VALUES (?, ?, ?, ?, ?)");
@@ -119,22 +147,16 @@ try {
     logAudit($userId, 'Eligibility Check Completed', 'Application', $appId, "Qualification: $qualType, Results: " . count($results));
     trackEvent('Eligibility Check Completed', ['user_id' => $userId, 'qualification_type' => $qualType, 'results_count' => count($results)]);
 
-    header('Location: /student/results.php');
-    exit;
+    apiSuccess('/student/results.php');
 
 }
 catch (\RuntimeException $e) {
-    // AI engine failure — return structured JSON error
     $db->rollBack();
-    trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');
-    http_response_code(500);
-    echo json_encode(['error' => 'Eligibility engine failed. Please try again later.']);
-    exit;
+    \UTP\Services\Telemetry::trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');
+    apiError(500, 'Eligibility engine failed. Please try again later.');
 }
-catch (Exception $e) {
+catch (\Exception $e) {
     $db->rollBack();
-    trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
-    $_SESSION['error'] = 'An error occurred. Please try again.';
-    header('Location: /student/check-eligibility.php');
-    exit;
+    \UTP\Services\Telemetry::trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
+    apiError(500, 'An error occurred. Please try again.');
 }

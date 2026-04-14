@@ -2,24 +2,59 @@
 declare(strict_types=1);
 /**
  * API: Submit Application
- * Updates an existing application with chosen programme and scholarship
+ * Updates an existing application with chosen programme and scholarship.
+ * Returns JSON for API/fetch clients, or redirects for native form submissions.
  */
 require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
-header('Content-Type: application/json; charset=utf-8');
 initSession();
-requireVerified();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /student/dashboard.php');
+/**
+ * Helper: respond with an error in either JSON or redirect format.
+ */
+function apiError(int $httpCode, string $message, string $redirectUrl = '/student/results.php'): never
+{
+    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+    if (str_contains($acceptHeader, 'application/json')) {
+        http_response_code($httpCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => false, 'error' => $message]);
+    } else {
+        $_SESSION['error'] = $message;
+        header('Location: ' . $redirectUrl);
+    }
     exit;
 }
 
-if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
-    $_SESSION['error'] = 'Invalid form submission.';
-    header('Location: /student/dashboard.php');
+/**
+ * Helper: respond with success in either JSON or redirect format.
+ */
+function apiSuccess(string $redirectUrl, string $message = ''): never
+{
+    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+    if (str_contains($acceptHeader, 'application/json')) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => true, 'redirect' => $redirectUrl]);
+    } else {
+        if ($message) {
+            $_SESSION['success'] = $message;
+        }
+        header('Location: ' . $redirectUrl);
+    }
     exit;
+}
+
+if (!isLoggedIn() || !isVerified()) {
+    apiError(403, 'Authentication and email verification required.');
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    apiError(405, 'Method not allowed. Use POST.');
+}
+
+if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+    apiError(403, 'Invalid form submission.');
 }
 
 $appId = intval($_POST['app_id'] ?? 0);
@@ -30,15 +65,11 @@ $scholarshipId = (!empty($_POST['scholarship_id'])) ? intval($_POST['scholarship
 $userId = $_SESSION['user_id'];
 
 if ($appId <= 0 || $prog1 <= 0 || $prog2 <= 0 || $prog3 <= 0) {
-    $_SESSION['error'] = 'You must select exactly three (3) programmes according to your preference.';
-    header("Location: /student/results.php");
-    exit;
+    apiError(400, 'You must select exactly three (3) programmes according to your preference.');
 }
 
 if (count(array_unique([$prog1, $prog2, $prog3])) !== 3) {
-    $_SESSION['error'] = 'Please select three different programmes. You cannot choose the same programme more than once.';
-    header("Location: /student/results.php");
-    exit;
+    apiError(400, 'Please select three different programmes. You cannot choose the same programme more than once.');
 }
 
 $db = getDB();
@@ -48,9 +79,7 @@ try {
     $stmt = $db->prepare("SELECT id FROM applications WHERE id = ? AND user_id = ?");
     $stmt->execute([$appId, $userId]);
     if (!$stmt->fetch()) {
-        $_SESSION['error'] = 'Application not found.';
-        header("Location: /student/dashboard.php");
-        exit;
+        apiError(400, 'Application not found.');
     }
 
     // Verify all 3 programmes are eligible
@@ -62,9 +91,7 @@ try {
     ");
     $stmt->execute([$appId, $prog1, $prog2, $prog3]);
     if ($stmt->fetchColumn() != 3) {
-        $_SESSION['error'] = 'One or more selected programmes do not match your eligibility results.';
-        header("Location: /student/results.php");
-        exit;
+        apiError(400, 'One or more selected programmes do not match your eligibility results.');
     }
 
     // Update with chosen programmes and scholarship
@@ -89,14 +116,10 @@ try {
         );
     }
 
-    $_SESSION['success'] = 'Your application has been successfully submitted! The administration will review it shortly.';
-    header('Location: /student/dashboard.php');
-    exit;
+    apiSuccess('/student/dashboard.php', 'Application submitted successfully.');
 
 }
-catch (Exception $e) {
-    trackEvent('Application Submission Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
-    $_SESSION['error'] = 'An error occurred. Please try again.';
-    header('Location: /student/results.php');
-    exit;
+catch (\Exception $e) {
+    \UTP\Services\Telemetry::trackEvent('Application Submission Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
+    apiError(500, 'An error occurred. Please try again.');
 }
