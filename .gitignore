@@ -10,6 +10,9 @@ tmp.env
 # Dependencies
 node_modules/
 
+# Build cache
+.phpstan.cache/
+
 # Logs
 *.log
 nodemon_cmd.log
