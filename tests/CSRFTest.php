@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use UTP\Security\CSRF;
 
@@ -20,14 +21,11 @@ class CSRFTest extends TestCase
     public function testValidateTokenReturnsTrueForValidToken()
     {
         $token = CSRF::generateToken();
-        
-        // Save old token to check rotation
+// Save old token to check rotation
         $oldToken = $_SESSION['csrf_token'];
-        
         $isValid = CSRF::validateToken($token);
         $this->assertTrue($isValid);
-        
-        // Check if token was rotated
+// Check if token was rotated
         $this->assertNotEquals($oldToken, $_SESSION['csrf_token']);
     }
 

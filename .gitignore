@@ -60,4 +60,8 @@ cypress.env.json
 
 # Query debug files
 query
+tt.php
 
+# PHP CodeSniffer
+.phpcs.cache
+phpcs-report.xml

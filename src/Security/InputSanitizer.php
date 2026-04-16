@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 /**
@@ -50,16 +52,21 @@ class InputSanitizer
     public static function validatePassword(string $password): array
     {
         $errors = [];
-        if (strlen($password) < 8)
+        if (strlen($password) < 8) {
             $errors[] = 'Password must be at least 8 characters.';
-        if (!preg_match('/[A-Z]/', $password))
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
             $errors[] = 'Password must contain an uppercase letter.';
-        if (!preg_match('/[a-z]/', $password))
+        }
+        if (!preg_match('/[a-z]/', $password)) {
             $errors[] = 'Password must contain a lowercase letter.';
-        if (!preg_match('/[0-9]/', $password))
+        }
+        if (!preg_match('/[0-9]/', $password)) {
             $errors[] = 'Password must contain a number.';
-        if (!preg_match('/[^A-Za-z0-9]/', $password))
+        }
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
             $errors[] = 'Password must contain a special character.';
+        }
         return $errors;
     }
 
@@ -90,12 +97,11 @@ class InputSanitizer
             $GLOBALS['csp_nonce'] = bin2hex(random_bytes(16));
         }
         $nonce = $GLOBALS['csp_nonce'];
-
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-         header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com; img-src 'self' data: https://api.qrserver.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com; img-src 'self' data: https://api.qrserver.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'");
         header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
     }
 

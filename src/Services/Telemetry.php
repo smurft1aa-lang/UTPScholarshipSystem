@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Services;
 
 /**
@@ -17,16 +19,15 @@ class Telemetry
     {
         $env = getenv('APP_ENV') ?: 'production';
         $dsn = getenv('SENTRY_DSN');
-
         if ($env !== 'testing' && $dsn && class_exists('\Sentry\SentrySdk')) {
             \Sentry\init([
                 'dsn' => $dsn,
                 'environment' => $env,
                 'traces_sample_rate' => 1.0,
             ]);
-
             if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
                 \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+
                     $scope->setUser([
                         'id' => $_SESSION['user_id'],
                         'segment' => $_SESSION['role'] ?? 'guest',
@@ -46,8 +47,7 @@ class Telemetry
     public static function trackEvent(string $eventName, array $context = [], string $level = 'INFO'): void
     {
         $env = getenv('APP_ENV') ?: 'production';
-
-        // 1. Sentry breadcrumb/capture
+// 1. Sentry breadcrumb/capture
         if ($env !== 'testing' && class_exists('\Sentry\SentrySdk')) {
             if ($level === 'ERROR' || $level === 'CRITICAL') {
                 if (isset($context['exception']) && $context['exception'] instanceof \Exception) {
@@ -56,13 +56,7 @@ class Telemetry
                     \Sentry\captureMessage($eventName, \Sentry\Severity::error());
                 }
             } else {
-                \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(
-                    \Sentry\Breadcrumb::LEVEL_INFO,
-                    \Sentry\Breadcrumb::TYPE_DEFAULT,
-                    'app',
-                    $eventName,
-                    $context
-                ));
+                \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(\Sentry\Breadcrumb::LEVEL_INFO, \Sentry\Breadcrumb::TYPE_DEFAULT, 'app', $eventName, $context));
             }
         }
 
@@ -75,24 +69,25 @@ class Telemetry
 
         $userId = $_SESSION['user_id'] ?? 'SYSTEM';
         $timestamp = date('Y-m-d H:i:s');
-
         $logContext = $context;
-        if (isset($logContext['exception'])) unset($logContext['exception']);
+        if (isset($logContext['exception'])) {
+            unset($logContext['exception']);
+        }
         $details = !empty($logContext) ? json_encode($logContext) : 'No details';
-
         $logMessage = "[$timestamp] [$level] [$userId] $eventName: $details\n";
         @file_put_contents($logDir . '/app.log', $logMessage, FILE_APPEND);
     }
 
     /** @var array<string, float> */
     private static array $timers = [];
-
-    /**
+/**
      * Start a performance timer.
      */
     public static function startTimer(string $label): void
     {
-        if (getenv('APP_ENV') === 'testing') return;
+        if (getenv('APP_ENV') === 'testing') {
+            return;
+        }
         self::$timers[$label] = microtime(true);
     }
 
@@ -101,8 +96,12 @@ class Telemetry
      */
     public static function endTimer(string $label): float
     {
-        if (getenv('APP_ENV') === 'testing') return 0;
-        if (!isset(self::$timers[$label])) return 0;
+        if (getenv('APP_ENV') === 'testing') {
+            return 0;
+        }
+        if (!isset(self::$timers[$label])) {
+            return 0;
+        }
         return round((microtime(true) - self::$timers[$label]) * 1000, 2);
     }
 }

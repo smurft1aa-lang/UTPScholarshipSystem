@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 /**
@@ -15,7 +17,6 @@ namespace UTP\Security;
 class RateLimiter
 {
     private \PDO $db;
-
     public function __construct(\PDO $db)
     {
         $this->db = $db;
@@ -33,17 +34,13 @@ class RateLimiter
     {
         $maxAttempts ??= (int) (getenv('RATE_LIMIT_MAX_ATTEMPTS') ?: 5);
         $windowMinutes ??= (int) (getenv('RATE_LIMIT_WINDOW_MINUTES') ?: 1);
-
-        // Use gmdate to ensure UTC, matching standard DB CURRENT_TIMESTAMP
+// Use gmdate to ensure UTC, matching standard DB CURRENT_TIMESTAMP
         $threshold = gmdate('Y-m-d H:i:s', strtotime("-$windowMinutes minutes"));
-
         $stmt = $this->db->prepare("DELETE FROM login_attempts WHERE attempted_at < ?");
         $stmt->execute([$threshold]);
-
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempted_at >= ?");
         $stmt->execute([$ip, $threshold]);
         $count = $stmt->fetchColumn();
-
         return $count < $maxAttempts;
     }
 

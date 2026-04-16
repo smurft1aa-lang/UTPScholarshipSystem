@@ -1,0 +1,202 @@
+openapi: '3.0.3'
+info:
+  title: UTP Scholarship System API
+  description: |
+    REST API for the UTP Scholarship & Course Eligibility System.
+    All endpoints require an active PHP session (cookie-based authentication).
+    CSRF tokens must be included in every POST request body.
+  version: 1.0.0
+  contact:
+    name: UTP Engineering
+    email: engineering@utp.edu.my
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://scholarship.utp.edu.my
+    description: Production
+
+tags:
+  - name: Eligibility
+    description: AI-powered eligibility checking
+  - name: Applications
+    description: Scholarship application management
+  - name: Authentication
+    description: Session management
+  - name: Admin
+    description: Administrative exports
+
+paths:
+  /api/check-eligibility.php:
+    post:
+      summary: Check programme eligibility
+      description: |
+        Saves qualification and grades, runs the AI recommendation engine,
+        creates an application record, and returns programme eligibility results.
+      tags: [Eligibility]
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [csrf_token, qual_type, 'subjects[]', 'grades[]']
+              properties:
+                csrf_token:
+                  type: string
+                  description: CSRF protection token
+                qual_type:
+                  type: string
+                  enum: [SPM, O-Level, IGCSE]
+                  description: Student's qualification type
+                'subjects[]':
+                  type: array
+                  items:
+                    type: string
+                  description: Array of subject names
+                'grades[]':
+                  type: array
+                  items:
+                    type: string
+                  description: Array of letter grades (parallel with subjects)
+      responses:
+        '200':
+          description: Eligibility check completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  redirect:
+                    type: string
+                    example: /student/results.php
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Not authenticated or email not verified
+        '500':
+          description: AI engine or database error
+
+  /api/submit-application.php:
+    post:
+      summary: Submit scholarship application
+      description: |
+        Updates an existing application with 3 chosen programme preferences
+        and an optional scholarship selection. Requires email verification.
+      tags: [Applications]
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [csrf_token, app_id, programme_id_1, programme_id_2, programme_id_3]
+              properties:
+                csrf_token:
+                  type: string
+                app_id:
+                  type: integer
+                  description: Application ID from eligibility check
+                programme_id_1:
+                  type: integer
+                  description: 1st choice programme ID
+                programme_id_2:
+                  type: integer
+                  description: 2nd choice programme ID
+                programme_id_3:
+                  type: integer
+                  description: 3rd choice programme ID
+                scholarship_id:
+                  type: integer
+                  nullable: true
+                  description: Preferred scholarship ID (optional)
+      responses:
+        '200':
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  redirect:
+                    type: string
+        '400':
+          description: Validation error (duplicate programmes, ineligible selection)
+        '403':
+          description: Not authenticated or email not verified
+        '500':
+          description: Server error
+
+  /api/logout.php:
+    post:
+      summary: Logout and destroy session
+      description: Terminates the current session and redirects to login.
+      tags: [Authentication]
+      responses:
+        '302':
+          description: Redirect to /auth/login.php
+
+  /api/export-audit-csv.php:
+    get:
+      summary: Export audit log as CSV
+      description: |
+        Exports audit log entries as a downloadable CSV file.
+        Supports optional date range filtering. Admin only.
+      tags: [Admin]
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter start date (YYYY-MM-DD)
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter end date (YYYY-MM-DD)
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          description: Invalid date format
+        '403':
+          description: Admin role required
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: PHPSESSID
+      description: PHP session cookie
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Please select a valid qualification type.

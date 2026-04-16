@@ -1,15 +1,15 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use UTP\Services\AIEngine;
 
-if (!defined('APP_ENV'))
+if (!defined('APP_ENV')) {
     define('APP_ENV', 'testing');
+}
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_METHOD'] = 'GET';
-
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
-
 /**
  * AIEngine Scoring Accuracy Tests (OOP)
  *
@@ -20,28 +20,22 @@ class AIEngineTest extends TestCase
 {
     private \PDO $db;
     private AIEngine $engine;
-
     protected function setUp(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $_SESSION = [];
-
         $this->db = getDB();
         $this->engine = new AIEngine($this->db);
-
         $this->db->beginTransaction();
-
         $this->db->exec("DELETE FROM entry_requirements");
-
         $this->db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES
             (1, 'SPM', 'Mathematics', 'C', 1.00),
             (1, 'SPM', 'Physics', 'C', 1.00),
             (2, 'SPM', 'Mathematics', 'C', 1.00),
             (2, 'SPM', 'Chemistry', 'C', 1.00)
         ");
-
         $this->db->exec("DELETE FROM users WHERE id = 9000");
         $hash = password_hash('Test@1234', PASSWORD_BCRYPT);
         $this->db->exec("INSERT INTO users (id, full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (9000, 'AI Test Student', 'aitest@test.com', '$hash', '900000000000', '0100000000', 'student', 1)");
@@ -59,7 +53,6 @@ class AIEngineTest extends TestCase
         $stmt = $this->db->prepare("INSERT INTO qualifications (user_id, qual_type) VALUES (9000, ?)");
         $stmt->execute([$qualType]);
         $qualId = $this->db->lastInsertId();
-
         $stmt = $this->db->prepare("INSERT INTO grades (qualification_id, subject, grade) VALUES (?, ?, ?)");
         foreach ($grades as $subject => $grade) {
             $stmt->execute([$qualId, $subject, $grade]);
@@ -78,10 +71,8 @@ class AIEngineTest extends TestCase
             'Physics' => 'A+',
             'Chemistry' => 'A+',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
-
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -105,10 +96,8 @@ class AIEngineTest extends TestCase
             'Physics' => 'C',
             'Chemistry' => 'C',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
-
         $mechEng = null;
         foreach ($results as $r) {
             if (stripos($r['programme_name'], 'Mechanical Engineering') !== false) {
@@ -132,7 +121,6 @@ class AIEngineTest extends TestCase
             'Physics' => 'A+',
             'Chemistry' => 'C',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
@@ -143,7 +131,6 @@ class AIEngineTest extends TestCase
         }
         $this->assertNotNull($mechEng);
         $this->assertFalse($mechEng['eligible']);
-
         $mathGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Mathematics') !== false) {
@@ -162,7 +149,6 @@ class AIEngineTest extends TestCase
             'Additional Mathematics' => 'A+',
             'Physics' => 'A+',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
@@ -174,7 +160,6 @@ class AIEngineTest extends TestCase
         $this->assertNotNull($mechEng);
         $this->assertFalse($mechEng['eligible']);
         $this->assertNotEmpty($mechEng['gaps']);
-
         $chemGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Chemistry') !== false) {
@@ -194,7 +179,6 @@ class AIEngineTest extends TestCase
             'Physics' => 'A',
             'Chemistry' => 'D',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $mechEng = null;
         foreach ($results as $r) {
@@ -205,7 +189,6 @@ class AIEngineTest extends TestCase
         }
         $this->assertNotNull($mechEng);
         $this->assertFalse($mechEng['eligible']);
-
         $chemGap = false;
         foreach ($mechEng['gaps'] as $g) {
             if (stripos($g['subject'], 'Chemistry') !== false) {
@@ -225,10 +208,8 @@ class AIEngineTest extends TestCase
             'Physics' => 'A',
             'Chemistry' => 'A',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
-
         $foundIneligible = false;
         foreach ($results as $r) {
             if (!$r['eligible']) {
@@ -250,7 +231,6 @@ class AIEngineTest extends TestCase
             'Physics' => 'A+',
             'Chemistry' => 'A+',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $eligibleIds = [];
         $fitMap = [];
@@ -262,7 +242,6 @@ class AIEngineTest extends TestCase
         }
 
         $this->assertNotEmpty($eligibleIds, 'Should have eligible programmes');
-
         $scholarships = $this->engine->getMatchingScholarships($eligibleIds, $fitMap);
         $this->assertNotEmpty($scholarships, 'A+ student should match at least some scholarships');
     }
@@ -277,7 +256,6 @@ class AIEngineTest extends TestCase
             'Physics' => 'A',
             'Chemistry' => 'A',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         foreach ($results as $r) {
             $pct = $r['fit_percentage'];
@@ -305,7 +283,6 @@ class AIEngineTest extends TestCase
             'Physics' => 'A+',
             'Chemistry' => 'A+',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         foreach ($results as $r) {
             $this->assertNotEmpty($r['recommendation'], 'Each result should have a recommendation');
@@ -340,10 +317,8 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'A',
             'Physics'     => 'A',
         ]);
-
         $results1 = $this->engine->checkEligibility($qualId);
         $results2 = $this->engine->checkEligibility($qualId);
-
         $this->assertEquals($results1, $results2);
         $userId = $_SESSION['user_id'] ?? 0;
         $this->assertArrayHasKey('eligibility_' . $userId . '_' . $qualId, $_SESSION);
@@ -355,10 +330,8 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'A',
             'Physics'     => 'A',
         ]);
-
         $results1 = $this->engine->checkEligibility($qualId);
         $results2 = $this->engine->checkEligibility($qualId, true);
-
         $this->assertEquals($results1, $results2);
     }
 
@@ -368,14 +341,11 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'B+',
             'Physics'     => 'B+',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
-
         $expected = ['programme_id', 'programme_name', 'category', 'description',
             'eligible', 'fit_percentage', 'confidence_label', 'subject_results',
             'gaps', 'recommendation'];
-
         foreach ($expected as $key) {
             $this->assertArrayHasKey($key, $results[0], "Missing key: $key");
         }
@@ -401,7 +371,6 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'B',
             'Physics'     => 'B',
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $csResult = null;
         foreach ($results as $r) {
@@ -422,7 +391,6 @@ class AIEngineTest extends TestCase
             'Mathematics' => 'A+',
             'Physics'     => 'D',  // Below minimum
         ]);
-
         $results = $this->engine->checkEligibility($qualId);
         $csResult = null;
         foreach ($results as $r) {
@@ -441,12 +409,9 @@ class AIEngineTest extends TestCase
         $mockPdo = $this->createMock(\PDO::class);
         $mockPdo->method('prepare')
             ->willThrowException(new \PDOException('Connection lost'));
-
         $engine = new AIEngine($mockPdo);
-
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessageMatches('/Eligibility check failed/');
-
         $engine->checkEligibility(1);
     }
 }

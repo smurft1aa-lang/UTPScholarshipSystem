@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 use UTP\Core\SessionManager;
@@ -14,7 +16,6 @@ class RoleGuard
 {
     private \PDO $db;
     private SessionManager $session;
-
     public function __construct(\PDO $db, SessionManager $session)
     {
         $this->db = $db;
@@ -45,17 +46,20 @@ class RoleGuard
      */
     public function reVerifyRole(): void
     {
-        if (!isset($_SESSION['user_id'])) return;
+        if (!isset($_SESSION['user_id'])) {
+            return;
+        }
 
         $now = time();
         $lastCheck = $_SESSION['role_verified_at'] ?? 0;
-        if ($now - $lastCheck < 60) return;
+        if ($now - $lastCheck < 60) {
+            return;
+        }
 
         try {
             $stmt = $this->db->prepare("SELECT role FROM users WHERE id = ?");
             $stmt->execute([$_SESSION['user_id']]);
             $dbRole = $stmt->fetchColumn();
-
             if ($dbRole === false) {
                 session_destroy();
                 header('Location: /auth/login.php');
@@ -68,7 +72,7 @@ class RoleGuard
 
             $_SESSION['role_verified_at'] = $now;
         } catch (\Exception $e) {
-            // Fail silently — skip re-verification this cycle
+        // Fail silently — skip re-verification this cycle
         }
     }
 
@@ -114,7 +118,9 @@ class RoleGuard
     public function isVerified(): bool
     {
         $this->session->start();
-        if (!isset($_SESSION['user_id'])) return false;
+        if (!isset($_SESSION['user_id'])) {
+            return false;
+        }
 
         try {
             $stmt = $this->db->prepare("SELECT email_verified FROM users WHERE id = ?");

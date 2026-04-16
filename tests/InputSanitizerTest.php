@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use UTP\Security\InputSanitizer;
 
@@ -51,7 +52,7 @@ class InputSanitizerTest extends TestCase
     public function testSetSecurityHeaders()
     {
         InputSanitizer::setSecurityHeaders();
-        // Since we are running in CLI testing mode, verify it sets nocache correctly or just runs without fatal
+// Since we are running in CLI testing mode, verify it sets nocache correctly or just runs without fatal
         $this->assertTrue(true);
     }
 
@@ -59,8 +60,7 @@ class InputSanitizerTest extends TestCase
     {
         $_SERVER['REMOTE_ADDR'] = '192.168.1.1';
         $this->assertEquals('192.168.1.1', InputSanitizer::getClientIP());
-        
-        // Test with proxy
+// Test with proxy
         putenv('TRUSTED_PROXY=192.168.1.1');
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '10.0.0.1, 10.0.0.2';
         $this->assertEquals('10.0.0.1', InputSanitizer::getClientIP());

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Services;
 
 /**
@@ -11,7 +13,6 @@ namespace UTP\Services;
 class AuditLogger
 {
     private \PDO $db;
-
     public function __construct(\PDO $db)
     {
         $this->db = $db;
@@ -31,12 +32,10 @@ class AuditLogger
     {
         try {
             $ipAddress = \UTP\Security\InputSanitizer::getClientIP();
-
             $stmt = $this->db->prepare("
                 INSERT INTO audit_log (user_id, action, target_type, target_id, details, ip_address) 
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
-
             $stmt->execute([
                 $userId,
                 $action,
@@ -45,7 +44,6 @@ class AuditLogger
                 $details,
                 $ipAddress
             ]);
-
             return true;
         } catch (\PDOException $e) {
             error_log("Audit log failed: " . $e->getMessage());

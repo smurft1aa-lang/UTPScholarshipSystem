@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+    PHP CodeSniffer Configuration
+    UTP Scholarship System | Standard: PSR-12
+
+    Usage:
+        vendor/bin/phpcs                    Check for violations
+        vendor/bin/phpcbf                   Auto-fix violations
+        vendor/bin/phpcs report=summary     Summary view
+-->
+<ruleset name="UTP Scholarship System">
+    <description>PSR-12 coding standard for the UTP Scholarship System</description>
+
+    <!-- ═══════ Base Standard ═══════ -->
+    <rule ref="PSR12"/>
+
+    <!-- ═══════ Scan Directories ═══════ -->
+    <file>src</file>
+    <file>api</file>
+    <file>config</file>
+    <file>tests</file>
+
+    <!-- ═══════ Exclude Paths ═══════ -->
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
+    <exclude-pattern>.phpunit.cache/*</exclude-pattern>
+    <exclude-pattern>.phpstan.cache/*</exclude-pattern>
+    <exclude-pattern>coverage/*</exclude-pattern>
+
+    <!-- ═══════ Pragmatic Relaxations ═══════ -->
+
+    <!-- Allow slightly longer lines (120 → 150) for SQL strings and HTML in emails -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="150"/>
+            <property name="absoluteLineLimit" value="200"/>
+        </properties>
+    </rule>
+
+    <!-- Allow closing tag omission (already PSR-12 default, just explicit) -->
+    <rule ref="PSR12.Files.OpenTag"/>
+
+    <!-- Show progress during scan -->
+    <arg value="sp"/>
+
+    <!-- Use colors in terminal output -->
+    <arg name="colors"/>
+
+    <!-- Check PHP files only -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Cache results for faster re-runs -->
+    <arg name="cache" value=".phpcs.cache"/>
+
+    <!-- Report format -->
+    <arg name="report" value="full"/>
+</ruleset>

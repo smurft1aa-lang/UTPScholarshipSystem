@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 /**
  * CSRF Protection Service
- * 
+ *
  * Generates and validates CSRF tokens with automatic rotation
  * after each successful POST to prevent replay attacks.
  */
@@ -37,8 +39,7 @@ class CSRF
         }
 
         $valid = hash_equals($_SESSION['csrf_token'], $token);
-
-        // Rotate token after each validated POST to prevent replay attacks
+// Rotate token after each validated POST to prevent replay attacks
         if ($valid) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailer Service Tests
  *
@@ -22,25 +23,14 @@ class MailerTest extends TestCase
     public function testStatusEmailSkipsInTestMode(): void
     {
         putenv('APP_ENV=testing');
-        $result = Mailer::sendApplicationStatusEmail(
-            'test@example.com',
-            'Test User',
-            'approved',
-            'Computer Science',
-            'Congratulations!'
-        );
+        $result = Mailer::sendApplicationStatusEmail('test@example.com', 'Test User', 'approved', 'Computer Science', 'Congratulations!');
         $this->assertTrue($result);
     }
 
     public function testStatusEmailWithEmptyNotes(): void
     {
         putenv('APP_ENV=testing');
-        $result = Mailer::sendApplicationStatusEmail(
-            'test@example.com',
-            'Test User',
-            'rejected',
-            'Mechanical Engineering'
-        );
+        $result = Mailer::sendApplicationStatusEmail('test@example.com', 'Test User', 'rejected', 'Mechanical Engineering');
         $this->assertTrue($result);
     }
 }

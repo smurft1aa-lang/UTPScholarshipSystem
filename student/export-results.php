@@ -23,8 +23,9 @@ if (!$qual) {
     exit;
 }
 
-// Get eligibility results
-$results = AIEngine::checkEligibility($qual['id']);
+// Get eligibility results (OOP instance — consistent with rest of codebase)
+$aiEngine = new \UTP\Services\AIEngine($db);
+$results = $aiEngine->checkEligibility((int) $qual['id']);
 
 // Get student info
 $stmt = $db->prepare("SELECT full_name, email, ic_number FROM users WHERE id = ?");

@@ -1,17 +1,16 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 
-if (!defined('APP_ENV'))
+if (!defined('APP_ENV')) {
     define('APP_ENV', 'testing');
+}
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_METHOD'] = 'GET';
-
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
-
 class AuthTest extends TestCase
 {
-
     protected function setUp(): void
     {
         $db = getDB();
@@ -43,7 +42,6 @@ class AuthTest extends TestCase
             loginUser('admin@utp.edu.my', 'wrongpassword');
         }
         $result = loginUser('admin@utp.edu.my', 'wrongpassword');
-
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('Too many login attempts', $result['error']);
     }
@@ -54,7 +52,6 @@ class AuthTest extends TestCase
         $db = getDB();
         $hash = password_hash('Valid@1234', PASSWORD_BCRYPT);
         $db->exec("UPDATE users SET password_hash = '$hash' WHERE email = 'student@test.com'");
-
         $result = loginUser('student@test.com', 'Valid@1234');
         $this->assertTrue($result['success']);
         $this->assertEquals('student', $result['role']);
@@ -69,7 +66,8 @@ class AuthTest extends TestCase
 
     public function test_register_fails_with_duplicate_ic()
     {
-        $result = registerUser('Test', 'new@test.com', 'Valid@1234', '111111111111', '123'); // 111111111111 is student test seed
+        $result = registerUser('Test', 'new@test.com', 'Valid@1234', '111111111111', '123');
+// 111111111111 is student test seed
         $this->assertFalse($result['success']);
         $this->assertEquals('IC Number already registered.', $result['error']);
     }
@@ -95,11 +93,11 @@ class AuthTest extends TestCase
         // Init a session
         initSession();
         $_SESSION['user_id'] = 1;
-        $_SESSION['last_activity'] = time() - 3600; // 1 hr ago
+        $_SESSION['last_activity'] = time() - 3600;
+// 1 hr ago
 
         session_write_close();
-
-        // Next initSession call should destroy it
+// Next initSession call should destroy it
         initSession();
         $this->assertArrayNotHasKey('user_id', $_SESSION);
     }
@@ -111,7 +109,8 @@ class AuthTest extends TestCase
 
     public function test_csrf_token_rejected_if_tampered()
     {
-        generateCSRFToken(); // initializes it
+        generateCSRFToken();
+// initializes it
         $this->assertFalse(validateCSRFToken('tampered_token_xyz'));
     }
 
@@ -119,7 +118,7 @@ class AuthTest extends TestCase
     {
         $_SESSION['role'] = 'admin';
         $_SESSION['user_id'] = 1;
-        // In reality requireStudent throws a redirect. 
+// In reality requireStudent throws a redirect.
         // We will catch it by expecting a specific header or exit.
         // We can simulate it by observing the function logic.
         $this->assertTrue(isAdmin());
@@ -138,10 +137,8 @@ class AuthTest extends TestCase
     {
         $db = getDB();
         $db->exec("INSERT INTO users (id, full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (999, 'Unverified', 'unverified@test.com', 'hash', '999999999999', '012', 'student', 0)");
-
         $_SESSION['role'] = 'student';
         $_SESSION['user_id'] = 999;
-
         $this->assertFalse(isVerified());
     }
 }

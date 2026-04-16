@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 use ZxcvbnPhp\Zxcvbn;
@@ -32,7 +34,6 @@ class PasswordStrength
     {
         $zxcvbn = new Zxcvbn();
         $result = $zxcvbn->passwordStrength($password, $userInputs);
-
         $labels = [
             0 => 'Very Weak',
             1 => 'Weak',
@@ -40,7 +41,6 @@ class PasswordStrength
             3 => 'Strong',
             4 => 'Very Strong',
         ];
-
         return [
             'score' => $result['score'],
             'label' => $labels[$result['score']] ?? 'Unknown',
@@ -61,13 +61,22 @@ class PasswordStrength
     public static function validate(string $password, array $userInputs = []): array
     {
         $errors = [];
-
-        // Traditional rules
-        if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
-        if (!preg_match('/[A-Z]/', $password)) $errors[] = 'Password must contain an uppercase letter.';
-        if (!preg_match('/[a-z]/', $password)) $errors[] = 'Password must contain a lowercase letter.';
-        if (!preg_match('/[0-9]/', $password)) $errors[] = 'Password must contain a number.';
-        if (!preg_match('/[^A-Za-z0-9]/', $password)) $errors[] = 'Password must contain a special character.';
+// Traditional rules
+        if (strlen($password) < 8) {
+            $errors[] = 'Password must be at least 8 characters.';
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = 'Password must contain an uppercase letter.';
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = 'Password must contain a lowercase letter.';
+        }
+        if (!preg_match('/[0-9]/', $password)) {
+            $errors[] = 'Password must contain a number.';
+        }
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+            $errors[] = 'Password must contain a special character.';
+        }
 
         // Entropy check (only if traditional rules pass)
         if (empty($errors)) {

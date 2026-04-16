@@ -527,95 +527,95 @@ INSERT INTO scholarships (name, description, type, budget_min, budget_max, min_f
 -- =====================================================
 
 -- PETRONAS, PTPTN, JPA, MARA, PNB - All programmes
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name IN ('PETRONAS Scholarship Loan Fund', 'Perbadanan Tabung Pendidikan Tinggi Nasional (PTPTN)', 'Jabatan Perkhidmatan Awam (JPA)', 'Majlis Amanah Rakyat (MARA)', 'Permodalan Nasional Berhad (PNB)');
 
 -- TAZU, YUTP, Lembaga Zakat, Biasiswa Sabah, YUTP-YTAR - All programmes
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name IN ('Tabung Amanah Zakat UTP (TAZU)', 'Yayasan Universiti Teknologi PETRONAS (YUTP)', 'Lembaga Zakat Selangor', 'Biasiswa Kerajaan Negeri Sabah', 'Yayasan UTP - Yayasan Tuanku Abdul Rahman Joint Scholarship');
 
 -- Yayasan Peneraju - Engineering & Science + Technology + CS
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Yayasan Peneraju Pendidikan Bumiputera' AND p.category IN ('Engineering & Science', 'Technology', 'Computer Science');
 
 -- Malaysia Rubber Export - Engineering & Science only
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Malaysia Rubber Export Promotion Council' AND p.category = 'Engineering & Science';
 
 -- Sime Darby - Engineering & Science
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Yayasan Sime Darby' AND p.category = 'Engineering & Science';
 
 -- Gamuda - Civil Engineering
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Yayasan Gamuda' AND p.name IN ('Civil Engineering', 'Mechanical Engineering', 'Integrated Engineering');
 
 -- Technip Geoproduction - Petroleum/Mechanical
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Technip Geoproduction (M) Sdn Bhd' AND p.name IN ('Petroleum Engineering', 'Mechanical Engineering', 'Chemical Engineering');
 
 -- Sarawak Energy - Engineering
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Sarawak Energy Berhad' AND p.category = 'Engineering & Science';
 
 -- Penang Future - STEM
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Penang Future Foundation' AND p.category IN ('Engineering & Science', 'Technology', 'Computer Science');
 
 -- YTL Foundation - Engineering + Technology
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'YTL Foundation' AND p.category IN ('Engineering & Science', 'Technology');
 
 -- Velesto - Petroleum + Geoscience
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Velesto Energy Berhad' AND p.name IN ('Petroleum Engineering', 'Geoscience', 'Mechanical Engineering');
 
 -- Baker Hughes - Engineering
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Baker Hughes' AND p.category = 'Engineering & Science';
 
 -- Sapura - Petroleum/Mechanical
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Sapura Energy Sdn Bhd' AND p.name IN ('Petroleum Engineering', 'Mechanical Engineering');
 
 -- Technip Energies - Chemical/Petroleum
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Technip Energies Sdn Bhd' AND p.name IN ('Chemical Engineering', 'Petroleum Engineering');
 
 -- Halliburton - Engineering + Geoscience
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Halliburton Energy Sdn Bhd' AND p.name IN ('Petroleum Engineering', 'Mechanical Engineering', 'Chemical Engineering', 'Geoscience');
 
 -- Schlumberger - Engineering
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Schlumberger WTA (M) Sdn Bhd' AND p.category = 'Engineering & Science';
 
 -- Link new programmes to specific scholarships requested
 -- (PETRONAS, PTPTN, JPA, MARA, PNB are already linked by earlier query since they select all programmes, same for TAZU etc.)
 -- Link Baker Hughes, Schlumberger, Halliburton to Materials Engineering & Industrial Physics
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name IN ('Baker Hughes', 'Schlumberger WTA (M) Sdn Bhd', 'Halliburton Energy Sdn Bhd', 'Yayasan Sime Darby') 
 AND p.name IN ('Materials Engineering', 'Industrial Physics');
 
 -- Murata Electronics - EE/Computer Engineering
-INSERT INTO scholarship_programme (scholarship_id, programme_id)
+INSERT IGNORE INTO scholarship_programme (scholarship_id, programme_id)
 SELECT s.id, p.id FROM scholarships s, programmes p
 WHERE s.name = 'Murata Electronics (Malaysia) Sdn Bhd' AND p.name IN ('Electrical & Electronics Engineering', 'Computer Engineering', 'Computer Science');
 

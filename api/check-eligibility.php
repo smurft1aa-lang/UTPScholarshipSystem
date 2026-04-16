@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * API: Check Eligibility
  * Saves qualification + grades, runs AI engine, creates application.
  * Returns JSON for API/fetch clients, or redirects for native form submissions.
  */
+
 require_once __DIR__ . '/../includes/init.php';
 require_once __DIR__ . '/../includes/ai_engine.php';
 
@@ -148,14 +151,11 @@ try {
     trackEvent('Eligibility Check Completed', ['user_id' => $userId, 'qualification_type' => $qualType, 'results_count' => count($results)]);
 
     apiSuccess('/student/results.php');
-
-}
-catch (\RuntimeException $e) {
+} catch (\RuntimeException $e) {
     $db->rollBack();
     \UTP\Services\Telemetry::trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     apiError(500, 'Eligibility engine failed. Please try again later.');
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
     $db->rollBack();
     \UTP\Services\Telemetry::trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     apiError(500, 'An error occurred. Please try again.');

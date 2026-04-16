@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Services;
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -15,8 +17,7 @@ use PHPMailer\PHPMailer\Exception;
 class Mailer
 {
     private const UTP_LOGO = 'https://www.utp.edu.my/SiteAssets/UTP-logo2.png';
-
-    /**
+/**
      * Create a pre-configured PHPMailer instance.
      */
     public static function createMailer(): PHPMailer
@@ -47,7 +48,8 @@ class Mailer
     {
         $logo = self::UTP_LOGO;
         $year = date('Y');
-        $date = date('j F Y'); // e.g. "9 April 2026"
+        $date = date('j F Y');
+// e.g. "9 April 2026"
 
         return <<<HTML
 <!DOCTYPE html>
@@ -151,9 +153,8 @@ HTML;
 
         $systemUrl = getenv('APP_URL') ?: 'http://localhost';
         $token = bin2hex(random_bytes(32));
-
         try {
-            /** @phpstan-ignore function.notFound */
+        /** @phpstan-ignore function.notFound */
             $db = getDB();
             $db->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
             $stmt = $db->prepare("INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))");
@@ -165,7 +166,6 @@ HTML;
 
         $safeName = htmlspecialchars($userName);
         $verifyUrl = "{$systemUrl}/auth/verify-email.php?token={$token}&id={$userId}";
-
         $bodyHtml = <<<HTML
 <p style="margin:0 0 20px;">Dear {$safeName},</p>
 
@@ -193,12 +193,7 @@ HTML;
 <p style="margin:0;font-weight:bold;">UTP Office of Admissions</p>
 <p style="margin:0;font-size:12.5px;color:#555;">Universiti Teknologi PETRONAS</p>
 HTML;
-
-        $body = self::wrapLayout(
-            "Verify your email address — UTP Scholarship System",
-            $bodyHtml
-        );
-
+        $body = self::wrapLayout("Verify your email address — UTP Scholarship System", $bodyHtml);
         try {
             $mail = self::createMailer();
             $mail->addAddress($userEmail, $userName);
@@ -226,11 +221,9 @@ HTML;
         $safeName = htmlspecialchars($userName);
         $safeProg = htmlspecialchars($programmeName);
         $loginUrl = "{$systemUrl}/auth/login.php";
-
-        // Build status-specific paragraphs
+// Build status-specific paragraphs
         $statusParagraph = '';
         $closingAdvice = '';
-
         if ($status === 'approved') {
             $statusParagraph = <<<HTML
 <p style="margin:0 0 16px;text-indent:2em;">
@@ -262,7 +255,7 @@ HTML;
 </p>
 HTML;
         } else {
-            // processing / submitted
+        // processing / submitted
             $statusParagraph = <<<HTML
 <p style="margin:0 0 16px;text-indent:2em;">
     I am writing to acknowledge that your application for the <strong>{$safeProg}</strong> programme has been received by the Admissions Committee and is currently <strong>under review</strong>.
@@ -309,12 +302,7 @@ HTML;
 <p style="margin:0;font-size:12.5px;color:#555;">Office of Admissions and Financial Aid</p>
 <p style="margin:0;font-size:12.5px;color:#555;">Universiti Teknologi PETRONAS</p>
 HTML;
-
-        $body = self::wrapLayout(
-            "Application update: {$programmeName} — {$status}",
-            $bodyHtml
-        );
-
+        $body = self::wrapLayout("Application update: {$programmeName} — {$status}", $bodyHtml);
         try {
             $mail = self::createMailer();
             $mail->addAddress($userEmail, $userName);
@@ -336,7 +324,6 @@ HTML;
     {
         $safeName = htmlspecialchars($userName);
         $safeLink = htmlspecialchars($resetLink);
-
         $bodyHtml = <<<HTML
 <p style="margin:0 0 20px;">Dear {$safeName},</p>
 
@@ -360,10 +347,6 @@ HTML;
 <p style="margin:0;font-weight:bold;">UTP System Administration</p>
 <p style="margin:0;font-size:12.5px;color:#555;">Universiti Teknologi PETRONAS</p>
 HTML;
-
-        return self::wrapLayout(
-            "Password reset request — UTP Scholarship System",
-            $bodyHtml
-        );
+        return self::wrapLayout("Password reset request — UTP Scholarship System", $bodyHtml);
     }
 }

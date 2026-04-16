@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use UTP\Security\RoleGuard;
 use UTP\Core\SessionManager;
@@ -8,7 +9,6 @@ class RoleGuardTest extends TestCase
     private $pdo;
     private $sessionManager;
     private $roleGuard;
-
     protected function setUp(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -23,7 +23,6 @@ class RoleGuardTest extends TestCase
     {
         $_SESSION['user_id'] = 1;
         $this->assertTrue($this->roleGuard->isLoggedIn());
-        
         unset($_SESSION['user_id']);
         $this->assertFalse($this->roleGuard->isLoggedIn());
     }
@@ -32,7 +31,6 @@ class RoleGuardTest extends TestCase
     {
         $_SESSION['role'] = 'admin';
         $this->assertTrue($this->roleGuard->isAdmin());
-        
         $_SESSION['role'] = 'student';
         $this->assertFalse($this->roleGuard->isAdmin());
     }
@@ -41,26 +39,24 @@ class RoleGuardTest extends TestCase
     {
         $_SESSION['role'] = 'student';
         $this->assertTrue($this->roleGuard->isStudent());
-        
         $_SESSION['role'] = 'admin';
         $this->assertFalse($this->roleGuard->isStudent());
     }
-    
+
     public function testIsVerified()
     {
         $_SESSION['user_id'] = 1;
-        
         $stmt = $this->createMock(\PDOStatement::class);
         $stmt->method('fetchColumn')->willReturn(1);
         $this->pdo->method('prepare')->willReturn($stmt);
-        
         $this->assertTrue($this->roleGuard->isVerified());
     }
 
     public function testRequireLoginPasses()
     {
         $_SESSION['user_id'] = 1;
-        $_SESSION['role_verified_at'] = time(); // Prevent reVerifyRole from querying
+        $_SESSION['role_verified_at'] = time();
+// Prevent reVerifyRole from querying
         $this->roleGuard->requireLogin();
         $this->assertTrue(true);
     }
@@ -88,11 +84,10 @@ class RoleGuardTest extends TestCase
         $_SESSION['user_id'] = 1;
         $_SESSION['role'] = 'student';
         $_SESSION['role_verified_at'] = time();
-        
         $stmt = $this->createMock(\PDOStatement::class);
-        $stmt->method('fetchColumn')->willReturn(1); // verified
+        $stmt->method('fetchColumn')->willReturn(1);
+// verified
         $this->pdo->method('prepare')->willReturn($stmt);
-
         $this->roleGuard->requireVerified();
         $this->assertTrue(true);
     }
@@ -101,12 +96,12 @@ class RoleGuardTest extends TestCase
     {
         $_SESSION['user_id'] = 1;
         $_SESSION['role'] = 'student';
-        $_SESSION['role_verified_at'] = time() - 120; // force query
-        
+        $_SESSION['role_verified_at'] = time() - 120;
+// force query
+
         $stmt = $this->createMock(\PDOStatement::class);
         $stmt->method('fetchColumn')->willReturn('admin');
         $this->pdo->method('prepare')->willReturn($stmt);
-
         $this->roleGuard->reVerifyRole();
         $this->assertEquals('admin', $_SESSION['role']);
     }
@@ -115,9 +110,7 @@ class RoleGuardTest extends TestCase
     {
         $_SESSION['user_id'] = 1;
         $_SESSION['role_verified_at'] = time() - 120;
-        
         $this->pdo->method('prepare')->willThrowException(new \Exception("DB failure"));
-        
         $this->roleGuard->reVerifyRole();
         $this->assertTrue(true);
     }

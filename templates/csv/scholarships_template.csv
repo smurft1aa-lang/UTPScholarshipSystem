@@ -1,0 +1,3 @@
+name,description,type,budget_min,budget_max,min_fit_percentage,start_date,end_date
+Example Foundation Grant,Financial support for high-achieving students.,scholarship,10000,50000,65,2026-01-01,2026-12-31
+Example Study Loan,Government-backed education loan.,loan,5000,100000,50,2026-01-01,2026-12-31

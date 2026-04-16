@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Services;
 
 /**
@@ -11,7 +13,6 @@ namespace UTP\Services;
 class UserAuth implements \UTP\Contracts\AuthenticatesUsers
 {
     private \PDO $db;
-
     public function __construct(\PDO $db)
     {
         $this->db = $db;
@@ -43,12 +44,9 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         }
 
         $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-
         $stmt = $this->db->prepare("INSERT INTO users (full_name, email, password_hash, ic_number, phone, role, email_verified) VALUES (?, ?, ?, ?, ?, 'student', 0)");
         $stmt->execute([$fullName, $email, $hash, $icNumber, $phone]);
-
         $userId = (int) $this->db->lastInsertId();
-
         if (function_exists('logAudit')) {
             logAudit($userId, 'User Registered', 'User', $userId, "Email: $email");
         }
@@ -65,7 +63,6 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         $_SESSION['role'] = 'student';
         $_SESSION['full_name'] = $fullName;
         $_SESSION['email_verified'] = 0;
-
         if (function_exists('initTelemetry')) {
             initTelemetry();
         }
@@ -83,7 +80,6 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
     public function loginUser(string $email, string $password): array
     {
         $ip = function_exists('getClientIP') ? getClientIP() : ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
-
         if (function_exists('checkRateLimit') && !checkRateLimit($ip)) {
             return ['success' => false, 'error' => 'Too many login attempts. Please try again later.'];
         }
@@ -91,7 +87,6 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         $stmt = $this->db->prepare("SELECT id, full_name, email, password_hash, role, email_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
-
         if (!$user || !password_verify($password, $user['password_hash'])) {
             if (function_exists('recordLoginAttempt')) {
                 recordLoginAttempt($ip);
@@ -111,7 +106,6 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         $_SESSION['role'] = $user['role'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['email_verified'] = $user['email_verified'];
-
         if (function_exists('initTelemetry')) {
             initTelemetry();
         }

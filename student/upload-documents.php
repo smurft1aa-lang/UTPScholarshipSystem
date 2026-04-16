@@ -35,9 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $ext = strtolower(pathinfo($_FILES['document']['name'], PATHINFO_EXTENSION));
                 
-                // Check for PHP files
-                if (preg_match('/\.php/i', $_FILES['document']['name'])) {
-                    $error = 'PHP files are not allowed.';
+                // ── Hardened extension validation ──
+                // Whitelist approach: only allow known-safe extensions
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+                $originalName = $_FILES['document']['name'];
+                
+                // Block double extensions (e.g., "shell.php.jpg", "payload.phtml.png")
+                $dangerousPatterns = '/\.(php|phtml|phar|php[3-8]|shtml|cgi|pl|py|sh|bash|exe|bat|cmd)/i';
+                $hasDoubleExtension = substr_count($originalName, '.') > 1;
+                
+                if (!in_array($ext, $allowedExtensions, true)) {
+                    $error = 'Invalid file extension. Only JPG, PNG, and PDF files are allowed.';
+                } elseif ($hasDoubleExtension && preg_match($dangerousPatterns, $originalName)) {
+                    $error = 'File contains a suspicious double extension and was rejected.';
                 } else {
                     $newName = $userId . '_' . $docType . '_' . time() . '.' . $ext;
                     $targetPath = $uploadDir . '/' . $newName;

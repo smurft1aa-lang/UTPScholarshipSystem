@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * API: Submit Application
  * Updates an existing application with chosen programme and scholarship.
  * Returns JSON for API/fetch clients, or redirects for native form submissions.
  */
+
 require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
@@ -117,9 +120,7 @@ try {
     }
 
     apiSuccess('/student/dashboard.php', 'Application submitted successfully.');
-
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
     \UTP\Services\Telemetry::trackEvent('Application Submission Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
     apiError(500, 'An error occurred. Please try again.');
 }

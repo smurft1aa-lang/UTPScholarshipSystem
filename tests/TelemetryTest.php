@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use UTP\Services\Telemetry;
 
@@ -11,23 +12,19 @@ class TelemetryTest extends TestCase
         usleep(1000);
         $time = Telemetry::endTimer('test_timer');
         $this->assertEquals(0, $time);
-
         putenv('APP_ENV=production');
         Telemetry::startTimer('test_timer');
         usleep(5000);
         $time = Telemetry::endTimer('test_timer');
         $this->assertGreaterThan(0, $time);
-        
         putenv('APP_ENV=testing');
     }
 
     public function testTrackEventCreatesLogFile()
     {
         putenv('APP_ENV=testing');
-        
         $eventName = 'test_event_' . uniqid();
         Telemetry::trackEvent($eventName, ['key' => 'value'], 'INFO');
-        
         $logFile = dirname(__DIR__) . '/logs/app.log';
         if (file_exists($logFile)) {
             $content = file_get_contents($logFile);
@@ -41,12 +38,10 @@ class TelemetryTest extends TestCase
     {
         putenv('APP_ENV=production');
         putenv('SENTRY_DSN=http://public@sentry.test/1');
-        
         Telemetry::init();
         $this->assertTrue(true);
         putenv('APP_ENV=testing');
-        
-        // Clean up handlers registered by Sentry to prevent PHPUnit "risky test" warnings
+// Clean up handlers registered by Sentry to prevent PHPUnit "risky test" warnings
         restore_error_handler();
         restore_exception_handler();
     }

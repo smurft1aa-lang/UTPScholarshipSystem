@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Contracts;
 
 /**
@@ -13,8 +15,7 @@ interface ChecksEligibility
      * @return array<int, array<string, mixed>> Ranked programme results
      */
     public function checkEligibility(int $qualificationId, bool $forceRefresh = false): array;
-
-    /**
+/**
      * @param array<int>        $eligibleProgrammeIds Programme IDs
      * @param array<int, float> $fitPercentages       Programme ID → fit score map
      * @return array<int, array<string, mixed>> Matched scholarships

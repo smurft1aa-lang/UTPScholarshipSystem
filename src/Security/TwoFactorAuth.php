@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Security;
 
 use OTPHP\TOTP;
@@ -14,7 +16,6 @@ use OTPHP\TOTP;
 class TwoFactorAuth
 {
     private \PDO $db;
-
     public function __construct(\PDO $db)
     {
         $this->db = $db;
@@ -32,15 +33,12 @@ class TwoFactorAuth
         $totp = TOTP::generate();
         $totp->setLabel($email);
         $totp->setIssuer('UTP Scholarship System');
-
         $secret = $totp->getSecret();
-
-        // Store the secret (not yet verified — user must confirm with a valid code first)
+// Store the secret (not yet verified — user must confirm with a valid code first)
         $stmt = $this->db->prepare("
             UPDATE users SET totp_secret = ?, totp_enabled = 0 WHERE id = ?
         ");
         $stmt->execute([$secret, $userId]);
-
         return [
             'secret' => $secret,
             'provisioningUri' => $totp->getProvisioningUri(),
@@ -59,16 +57,16 @@ class TwoFactorAuth
         $stmt = $this->db->prepare("SELECT totp_secret FROM users WHERE id = ?");
         $stmt->execute([$userId]);
         $secret = $stmt->fetchColumn();
-
         if (!$secret) {
             return false;
         }
 
         $totp = TOTP::createFromSecret($secret);
-        $valid = $totp->verify($code, null, 1); // Allow 1 time window of drift
+        $valid = $totp->verify($code, null, 1);
+// Allow 1 time window of drift
 
         if ($valid) {
-            // Enable 2FA on first successful verification
+// Enable 2FA on first successful verification
             $stmt = $this->db->prepare("UPDATE users SET totp_enabled = 1 WHERE id = ?");
             $stmt->execute([$userId]);
         }

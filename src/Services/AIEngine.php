@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace UTP\Services;
 
 use UTP\Services\GradeMapper;
@@ -14,7 +16,6 @@ use UTP\Services\GradeMapper;
 class AIEngine implements \UTP\Contracts\ChecksEligibility
 {
     private \PDO $db;
-
     public function __construct(\PDO $db)
     {
         $this->db = $db;
@@ -55,8 +56,7 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             }
 
             $qualType = $qual['qual_type'];
-
-            // Get student grades
+// Get student grades
             $stmt = $this->db->prepare("SELECT subject, grade FROM grades WHERE qualification_id = ?");
             $stmt->execute([$qualificationId]);
             $studentGrades = [];
@@ -68,14 +68,21 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             $stmt = $this->db->prepare("SELECT * FROM programmes WHERE is_active = 1");
             $stmt->execute();
             $programmes = $stmt->fetchAll();
+// ── Pre-load ALL entry requirements for this qual_type in one query ──
+            // This eliminates the N+1 problem (previously 1 query per programme)
+            $stmt = $this->db->prepare("SELECT programme_id, subject, min_grade, weight
+                 FROM entry_requirements WHERE qual_type = ?");
+            $stmt->execute([$qualType]);
+            $allRequirements = $stmt->fetchAll();
+// Group requirements by programme_id for O(1) lookup
+            $requirementsByProgramme = [];
+            foreach ($allRequirements as $req) {
+                $requirementsByProgramme[$req['programme_id']][] = $req;
+            }
 
             $results = [];
-
             foreach ($programmes as $prog) {
-                $stmt = $this->db->prepare("SELECT subject, min_grade, weight FROM entry_requirements WHERE programme_id = ? AND qual_type = ?");
-                $stmt->execute([$prog['id'], $qualType]);
-                $requirements = $stmt->fetchAll();
-
+                $requirements = $requirementsByProgramme[$prog['id']] ?? [];
                 if (empty($requirements)) {
                     continue;
                 }
@@ -86,12 +93,12 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
 
             // Sort: eligible first, then by fit percentage descending
             usort($results, function ($a, $b) {
+
                 if ($a['eligible'] !== $b['eligible']) {
                     return $b['eligible'] - $a['eligible'];
                 }
                 return $b['fit_percentage'] - $a['fit_percentage'];
             });
-
             if (function_exists('endTimer')) {
                 $time = endTimer('ai_eligibility');
                 if ($time > 500 && function_exists('trackEvent')) {
@@ -112,11 +119,7 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             if (function_exists('trackEvent')) {
                 trackEvent('AI Engine Check Failed', ['exception' => $e, 'qualification_id' => $qualificationId], 'ERROR');
             }
-            throw new \RuntimeException(
-                'Eligibility check failed: ' . $e->getMessage(),
-                (int) $e->getCode(),
-                $e
-            );
+            throw new \RuntimeException('Eligibility check failed: ' . $e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 
@@ -138,24 +141,20 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
         $gaps = [];
         $minPassPoints = GradeMapper::getMinPassPoints($qualType);
         $maxPoints = GradeMapper::getMaxPoints($qualType);
-
         foreach ($requirements as $req) {
             $subjectKey = strtolower(trim($req['subject']));
             $weight = floatval($req['weight']);
             $minGradePoints = GradeMapper::gradeToPoints($req['min_grade'], $qualType);
-
             $studentGradeStr = null;
             if (isset($studentGrades[$subjectKey])) {
                 $studentGradeStr = $studentGrades[$subjectKey];
             }
 
             $maxWeightedScore += $maxPoints * $weight;
-
             if ($studentGradeStr !== null) {
                 $studentPoints = GradeMapper::gradeToPoints($studentGradeStr, $qualType);
                 $totalWeightedScore += $studentPoints * $weight;
                 $met = $studentPoints >= $minGradePoints;
-
                 if (!$met) {
                     $allMet = false;
                     $gaps[] = [
@@ -167,38 +166,38 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
                 }
 
                 $subjectResults[] = [
-                    'subject'        => $req['subject'],
-                    'required_grade' => $req['min_grade'],
-                    'student_grade'  => $studentGradeStr,
-                    'met'            => $met,
-                    'weight'         => $weight,
+                'subject'        => $req['subject'],
+                'required_grade' => $req['min_grade'],
+                'student_grade'  => $studentGradeStr,
+                'met'            => $met,
+                'weight'         => $weight,
                 ];
             } else {
-                // Subject not found — check if it's a generic "Other Subject" placeholder
+    // Subject not found — check if it's a generic "Other Subject" placeholder
                 if (strpos($subjectKey, 'other') !== false) {
                     $totalWeightedScore += $minPassPoints * $weight;
                     $subjectResults[] = [
-                        'subject'        => $req['subject'],
-                        'required_grade' => $req['min_grade'],
-                        'student_grade'  => 'N/A (auto-matched)',
-                        'met'            => true,
-                        'weight'         => $weight,
-                    ];
+                    'subject'        => $req['subject'],
+                    'required_grade' => $req['min_grade'],
+                    'student_grade'  => 'N/A (auto-matched)',
+                    'met'            => true,
+                    'weight'         => $weight,
+                        ];
                 } else {
-                    $allMet = false;
-                    $gaps[] = [
-                        'subject'  => $req['subject'],
-                        'required' => $req['min_grade'],
-                        'got'      => 'Not taken',
-                        'message'  => "Missing required subject: {$req['subject']}",
-                    ];
-                    $subjectResults[] = [
-                        'subject'        => $req['subject'],
-                        'required_grade' => $req['min_grade'],
-                        'student_grade'  => 'Not taken',
-                        'met'            => false,
-                        'weight'         => $weight,
-                    ];
+                        $allMet = false;
+                        $gaps[] = [
+                    'subject'  => $req['subject'],
+                    'required' => $req['min_grade'],
+                    'got'      => 'Not taken',
+                    'message'  => "Missing required subject: {$req['subject']}",
+                            ];
+                        $subjectResults[] = [
+                                'subject'        => $req['subject'],
+                                'required_grade' => $req['min_grade'],
+                                'student_grade'  => 'Not taken',
+                                'met'            => false,
+                                'weight'         => $weight,
+                            ];
                 }
             }
         }
@@ -206,13 +205,11 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
         $fitPercentage = $maxWeightedScore > 0
             ? round(($totalWeightedScore / $maxWeightedScore) * 100, 1)
             : 0;
-
-        // Apply STEM-specific bonus (use qualification-aware threshold)
+// Apply STEM-specific bonus (use qualification-aware threshold)
         if (!empty($programme['stem_bonus'])) {
             $stemThreshold = (int) round(GradeMapper::getMaxPoints($qualType) * 0.9);
             $physicsPoints = GradeMapper::gradeToPoints($studentGrades['physics'] ?? '', $qualType);
             $chemistryPoints = GradeMapper::gradeToPoints($studentGrades['chemistry'] ?? '', $qualType);
-
             if ($physicsPoints >= $stemThreshold && $chemistryPoints >= $stemThreshold) {
                 $fitPercentage = min(100, $fitPercentage + 5.0);
             }
@@ -232,7 +229,6 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
         }
 
         $recommendation = $this->generateRecommendation($programme['name'], $allMet, $fitPercentage, $gaps);
-
         return [
             'programme_id'    => $programme['id'],
             'programme_name'  => $programme['name'],
@@ -240,7 +236,7 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             'description'     => $programme['description'],
             'eligible'        => $allMet,
             'fit_percentage'  => $fitPercentage,
-            'confidence_label'=> $confidenceLabel,
+            'confidence_label' => $confidenceLabel,
             'subject_results' => $subjectResults,
             'gaps'            => $gaps,
             'recommendation'  => $recommendation,
@@ -288,7 +284,6 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
         }
 
         $placeholders = str_repeat('?,', count($eligibleProgrammeIds) - 1) . '?';
-
         $stmt = $this->db->prepare("
             SELECT DISTINCT s.*, GROUP_CONCAT(sp.programme_id) as programme_ids
             FROM scholarships s
@@ -301,7 +296,6 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
         ");
         $stmt->execute($eligibleProgrammeIds);
         $scholarships = $stmt->fetchAll();
-
         $matched = [];
         foreach ($scholarships as $sch) {
             $progIds = explode(',', $sch['programme_ids']);
