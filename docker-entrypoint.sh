@@ -55,7 +55,7 @@ php -r "
     \$stmt->execute(['admin@utp.edu.my']);
     \$row = \$stmt->fetch();
     if (\$row && \$row['password_hash'] === 'PLACEHOLDER_HASH_REPLACED_AT_SETUP') {
-        \$hash = password_hash('Admin1234', PASSWORD_DEFAULT);
+        \$hash = password_hash('Admin123@', PASSWORD_DEFAULT);
         \$update = \$pdo->prepare('UPDATE users SET password_hash = ? WHERE email = ?');
         \$update->execute([\$hash, 'admin@utp.edu.my']);
         echo \"Admin password initialized.\n\";

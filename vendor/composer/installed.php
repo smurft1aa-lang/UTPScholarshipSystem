@@ -3,7 +3,7 @@
         'name' => 'utp/scholarship-system',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b3aca8ccbd2d274e83f0d9aac6e407b729f8a491',
+        'reference' => '3cd47d4ef0daac54f02e7fd2b607a27fc3c48886',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -470,6 +470,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'squizlabs/php_codesniffer' => array(
+            'pretty_version' => '3.10.0',
+            'version' => '3.10.0.0',
+            'reference' => '57e09801c2fbae2d257b8b75bebb3deeb7e9deb2',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../squizlabs/php_codesniffer',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
         'staabm/side-effects-detector' => array(
             'pretty_version' => '1.0.5',
             'version' => '1.0.5.0',
@@ -590,7 +599,7 @@
         'utp/scholarship-system' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b3aca8ccbd2d274e83f0d9aac6e407b729f8a491',
+            'reference' => '3cd47d4ef0daac54f02e7fd2b607a27fc3c48886',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

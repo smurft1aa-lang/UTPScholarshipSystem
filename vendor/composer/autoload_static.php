@@ -31,6 +31,10 @@ class ComposerStaticInitd517f5af3456d22965499554185356e4
         array (
             'UTP\\' => 4,
         ),
+        'T' =>
+        array (
+            'Tests\\' => 6,
+        ),
         'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -95,6 +99,10 @@ class ComposerStaticInitd517f5af3456d22965499554185356e4
         'UTP\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Tests\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
         ),
         'Symfony\\Polyfill\\Mbstring\\' =>
         array (
@@ -2528,6 +2536,8 @@ class ComposerStaticInitd517f5af3456d22965499554185356e4
         'Symfony\\Polyfill\\Intl\\Grapheme\\Grapheme' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/Grapheme.php',
         'Symfony\\Polyfill\\Intl\\Normalizer\\Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Normalizer.php',
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
+        'Tests\\DataManagement\\BulkCsvImportTest' => __DIR__ . '/../..' . '/tests/DataManagement/BulkCsvImportTest.php',
+        'Tests\\DataManagement\\DataExportTest' => __DIR__ . '/../..' . '/tests/DataManagement/DataExportTest.php',
         'TheSeer\\Tokenizer\\Exception' => __DIR__ . '/..' . '/theseer/tokenizer/src/Exception.php',
         'TheSeer\\Tokenizer\\NamespaceUri' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUri.php',
         'TheSeer\\Tokenizer\\NamespaceUriException' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUriException.php',
@@ -2547,6 +2557,8 @@ class ComposerStaticInitd517f5af3456d22965499554185356e4
         'UTP\\Security\\TwoFactorAuth' => __DIR__ . '/../..' . '/src/Security/TwoFactorAuth.php',
         'UTP\\Services\\AIEngine' => __DIR__ . '/../..' . '/src/Services/AIEngine.php',
         'UTP\\Services\\AuditLogger' => __DIR__ . '/../..' . '/src/Services/AuditLogger.php',
+        'UTP\\Services\\BulkCsvImporter' => __DIR__ . '/../..' . '/src/Services/BulkCsvImporter.php',
+        'UTP\\Services\\DataExporter' => __DIR__ . '/../..' . '/src/Services/DataExporter.php',
         'UTP\\Services\\GradeMapper' => __DIR__ . '/../..' . '/src/Services/GradeMapper.php',
         'UTP\\Services\\Mailer' => __DIR__ . '/../..' . '/src/Services/Mailer.php',
         'UTP\\Services\\Telemetry' => __DIR__ . '/../..' . '/src/Services/Telemetry.php',
