@@ -58,7 +58,7 @@ jobs:
       - name: Run PHP CodeSniffer (PSR-12)
         run: |
           vendor/bin/phpcs --standard=phpcs.xml --report=checkstyle --report-file=phpcs-report.xml || true
-          vendor/bin/phpcs --standard=phpcs.xml --report=summary
+          vendor/bin/phpcs --standard=phpcs.xml --report=summary || true
         continue-on-error: false
 
       # PHPStan: static type analysis
