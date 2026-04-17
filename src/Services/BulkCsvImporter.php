@@ -290,7 +290,7 @@ class BulkCsvImporter
                 $this->db->commit();
             }
         } catch (\Exception $e) {
-            if ($inTransaction) {
+            if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
             $result['success'] = false;
