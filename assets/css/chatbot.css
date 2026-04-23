@@ -1,3 +1,7 @@
+:root {
+    --navy: #0b254d;
+}
+
 /* Chatbot Toggle Button */
 .chatbot-toggle {
     position: fixed;
