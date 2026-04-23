@@ -17,7 +17,7 @@ use PHPMailer\PHPMailer\Exception;
 class Mailer
 {
     private const UTP_LOGO = 'https://www.utp.edu.my/SiteAssets/UTP-logo2.png';
-/**
+    /**
      * Create a pre-configured PHPMailer instance.
      */
     public static function createMailer(): PHPMailer
@@ -29,7 +29,7 @@ class Mailer
         $mail->Username = getenv('MAIL_USERNAME') ?: '';
         $mail->Password = getenv('MAIL_PASSWORD') ?: '';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = (int)(getenv('MAIL_PORT') ?: 2525);
+        $mail->Port = (int) (getenv('MAIL_PORT') ?: 2525);
         $mail->setFrom(getenv('MAIL_FROM') ?: 'noreply@utp.edu.my', 'UTP Office of Admissions');
         $mail->isHTML(true);
         return $mail;
@@ -49,7 +49,7 @@ class Mailer
         $logo = self::UTP_LOGO;
         $year = date('Y');
         $date = date('j F Y');
-// e.g. "9 April 2026"
+        // e.g. "9 April 2026"
 
         return <<<HTML
 <!DOCTYPE html>
@@ -154,7 +154,7 @@ HTML;
         $systemUrl = getenv('APP_URL') ?: 'http://localhost';
         $token = bin2hex(random_bytes(32));
         try {
-        /** @phpstan-ignore function.notFound */
+            /** @phpstan-ignore function.notFound */
             $db = getDB();
             $db->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
             $stmt = $db->prepare("INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))");
@@ -174,11 +174,20 @@ HTML;
 </p>
 
 <p style="margin:0 0 16px;text-indent:2em;">
-    To complete your registration and gain full access to the system, we kindly ask that you verify your email address by visiting the link provided below:
+    To complete your registration and gain full access to the system, please verify your email address by clicking the button below:
 </p>
 
-<p style="margin:0 0 20px;text-align:center;">
-    <a href="{$verifyUrl}" style="color:#1a1a2e;font-weight:bold;text-decoration:underline;">{$verifyUrl}</a>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;">
+    <tr>
+        <td align="center" style="border-radius:8px;background-color:#e8630a;">
+            <a href="{$verifyUrl}" target="_blank" style="display:inline-block;padding:14px 40px;font-family:'Inter',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:8px;letter-spacing:0.3px;">Verify My Email</a>
+        </td>
+    </tr>
+</table>
+
+<p style="margin:0 0 20px;text-align:center;font-size:11.5px;color:#999;">
+    If the button doesn't work, copy and paste this link into your browser:<br>
+    <a href="{$verifyUrl}" style="color:#666;word-break:break-all;font-size:11px;">{$verifyUrl}</a>
 </p>
 
 <p style="margin:0 0 16px;text-indent:2em;">
@@ -221,7 +230,7 @@ HTML;
         $safeName = htmlspecialchars($userName);
         $safeProg = htmlspecialchars($programmeName);
         $loginUrl = "{$systemUrl}/auth/login.php";
-// Build status-specific paragraphs
+        // Build status-specific paragraphs
         $statusParagraph = '';
         $closingAdvice = '';
         if ($status === 'approved') {
@@ -255,7 +264,7 @@ HTML;
 </p>
 HTML;
         } else {
-        // processing / submitted
+            // processing / submitted
             $statusParagraph = <<<HTML
 <p style="margin:0 0 16px;text-indent:2em;">
     I am writing to acknowledge that your application for the <strong>{$safeProg}</strong> programme has been received by the Admissions Committee and is currently <strong>under review</strong>.
@@ -328,11 +337,20 @@ HTML;
 <p style="margin:0 0 20px;">Dear {$safeName},</p>
 
 <p style="margin:0 0 16px;text-indent:2em;">
-    We received a request to reset the password associated with your account on the UTP Scholarship &amp; Course Eligibility System. If you made this request, please use the link below to set a new password:
+    We received a request to reset the password associated with your account on the UTP Scholarship &amp; Course Eligibility System. If you made this request, please click the button below to set a new password:
 </p>
 
-<p style="margin:0 0 20px;text-align:center;">
-    <a href="{$safeLink}" style="color:#1a1a2e;font-weight:bold;text-decoration:underline;">{$safeLink}</a>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;">
+    <tr>
+        <td align="center" style="border-radius:8px;background-color:#e8630a;">
+            <a href="{$safeLink}" target="_blank" style="display:inline-block;padding:14px 40px;font-family:'Inter',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:8px;letter-spacing:0.3px;">Reset My Password</a>
+        </td>
+    </tr>
+</table>
+
+<p style="margin:0 0 20px;text-align:center;font-size:11.5px;color:#999;">
+    If the button doesn't work, copy and paste this link into your browser:<br>
+    <a href="{$safeLink}" style="color:#666;word-break:break-all;font-size:11px;">{$safeLink}</a>
 </p>
 
 <p style="margin:0 0 16px;text-indent:2em;">

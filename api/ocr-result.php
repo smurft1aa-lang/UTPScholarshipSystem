@@ -36,6 +36,14 @@ if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
     exit;
 }
 
+// ── Per-user OCR rate limit (5 scans per 10 minutes) ────────────────
+if (!checkRateLimit('ocr_' . $_SESSION['user_id'], 5, 10)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'You have reached the OCR scan limit. Please wait a few minutes before trying again.', 'new_csrf_token' => generateCSRFToken()]);
+    exit;
+}
+recordLoginAttempt('ocr_' . $_SESSION['user_id']);
+
 // ── Validate qualification type ─────────────────────────────────────
 $qualType = sanitize($_POST['qual_type'] ?? '');
 if (!in_array($qualType, ['SPM', 'O-Level', 'IGCSE'])) {
@@ -70,11 +78,11 @@ if ($uploadError !== UPLOAD_ERR_OK) {
 // ── MIME type validation ────────────────────────────────────────────
 $finfo = new finfo(FILEINFO_MIME_TYPE);
 $mimeType = $finfo->file($_FILES['result_slip']['tmp_name']);
-$allowedMimes = ['image/jpeg', 'image/png', 'application/pdf'];
+$allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
 
 if (!in_array($mimeType, $allowedMimes)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Invalid file type. Only JPG, PNG, and PDF are allowed.', 'new_csrf_token' => generateCSRFToken()]);
+    echo json_encode(['success' => false, 'error' => 'Invalid file type. JPG, PNG, WebP, HEIC, and PDF are allowed.', 'new_csrf_token' => generateCSRFToken()]);
     exit;
 }
 
@@ -86,7 +94,7 @@ if ($_FILES['result_slip']['size'] > 5242880) {
 }
 
 // ── Image structural validation (same as document upload) ───────────
-if (in_array($mimeType, ['image/jpeg', 'image/png'])) {
+if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp'])) {
     $imageInfo = @getimagesize($_FILES['result_slip']['tmp_name']);
     if ($imageInfo === false) {
         http_response_code(400);
@@ -105,6 +113,10 @@ try {
     );
 
     $userId = $_SESSION['user_id'];
+    
+    // Save to session for audit logging of student corrections later
+    $_SESSION['ocr_last_result'] = $result['grades'];
+
     logAudit($userId, 'OCR Result Scan', 'Qualification', null, "Type: $qualType, Grades found: " . count($result['grades']));
     trackEvent('OCR Result Scan', [
         'user_id'      => $userId,

@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
 initSession();
@@ -40,8 +39,7 @@ if (isLoggedIn() && $_SESSION['user_id'] == $record['user_id']) {
     $_SESSION['email_verified'] = 1;
     $_SESSION['success'] = "Email successfully verified!";
     header("Location: /student/dashboard.php");
-}
-else {
+} else {
     $_SESSION['success'] = "Email successfully verified! You can now log in.";
     header("Location: /auth/login.php");
 }

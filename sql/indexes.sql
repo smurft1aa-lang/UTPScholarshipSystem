@@ -15,11 +15,13 @@ ALTER TABLE entry_requirements ADD INDEX idx_entry_req_prog_qual (programme_id, 
 -- Applications: speed up per-user and status-based queries
 ALTER TABLE applications ADD INDEX idx_applications_user_date (user_id, created_at);
 ALTER TABLE applications ADD INDEX idx_applications_status (status);
+ALTER TABLE applications ADD INDEX idx_status (status);
+ALTER TABLE applications ADD INDEX idx_user_id (user_id);
 
 -- Eligibility Results: speed up result lookups per application
 ALTER TABLE eligibility_results ADD INDEX idx_eligibility_app (application_id);
 ALTER TABLE eligibility_results ADD INDEX idx_eligibility_prog (programme_id, eligible);
-
+ALTER TABLE eligibility_results ADD INDEX idx_programme_id (programme_id);
 -- Audit Log: speed up date-range filtered exports
 ALTER TABLE audit_log ADD INDEX idx_audit_created (created_at);
 ALTER TABLE audit_log ADD INDEX idx_audit_user (user_id);

@@ -129,13 +129,13 @@ class OcrService
         }
 
         if (filesize($filePath) > self::MAX_FILE_SIZE) {
-            throw new \RuntimeException('File size exceeds 1MB limit.');
+            throw new \RuntimeException('File size exceeds 5MB limit.');
         }
 
         Telemetry::startTimer('ocr_api_call');
 
         try {
-            $rawText = $this->callOcrApi($filePath, $mimeType);
+            $rawText = $this->callOcrApi($filePath, $mimeType, $qualType);
         } catch (\Exception $e) {
             Telemetry::trackEvent('OCR API Call Failed', ['error' => $e->getMessage()], 'ERROR');
             throw $e;
@@ -159,19 +159,41 @@ class OcrService
     /**
      * Call the Gemini API and return the extracted text.
      *
-     * @param string $filePath Absolute path to the file
-     * @param string $mimeType MIME type
+     * @param string $filePath  Absolute path to the file
+     * @param string $mimeType  MIME type
+     * @param string $qualType  Qualification type (SPM, O-Level, IGCSE)
      * @return string Extracted text
      */
-    private function callOcrApi(string $filePath, string $mimeType): string
+    private function callOcrApi(string $filePath, string $mimeType, string $qualType): string
     {
         $base64Data = base64_encode(file_get_contents($filePath));
+
+        $validGrades = self::$validGrades[$qualType] ?? self::$validGrades['SPM'];
+        $gradeListStr = implode(', ', $validGrades);
+
+        $prompt = <<<PROMPT
+You are an academic transcript OCR engine. Extract ALL subjects and their grades from this {$qualType} result slip image.
+
+Qualification type: {$qualType}
+Valid grades for this qualification (use ONLY these): {$gradeListStr}
+
+Rules:
+- Return ONLY a valid JSON array of objects. No explanation, no markdown fences.
+- Format: [{"subject": "Subject Name", "grade": "A+"}]
+- Use the exact subject name as printed (Malay or English).
+- Ignore watermarks, stamps, headers, footers, candidate info, and school names.
+- If a grade is unclear, pick the closest valid grade.
+
+Examples:
+SPM input: "MATEMATIK A+, FIZIK A, KIMIA B+" → [{"subject":"Matematik","grade":"A+"},{"subject":"Fizik","grade":"A"},{"subject":"Kimia","grade":"B+"}]
+O-Level input: "Mathematics A, Physics B" → [{"subject":"Mathematics","grade":"A"},{"subject":"Physics","grade":"B"}]
+PROMPT;
 
         $payload = [
             'contents' => [
                 [
                     'parts' => [
-                        ['text' => 'Extract the subjects and grades from this academic transcript. Return ONLY a valid JSON array of objects. Format: [{"subject": "Subject Name", "grade": "A+"}]'],
+                        ['text' => $prompt],
                         [
                             'inlineData' => [
                                 'mimeType' => $mimeType,
@@ -280,8 +302,10 @@ class OcrService
         
         $extractedItems = json_decode(trim($jsonText), true);
 
+        // Fallback: regex line-by-line parser if AI returned non-JSON prose
         if (!is_array($extractedItems)) {
-            return $results; // Fallback if AI failed to return JSON array
+            $extractedItems = $this->regexFallbackParse($rawText, $validGrades);
+            Telemetry::trackEvent('OCR JSON Fallback Used', ['text_len' => strlen($rawText)], 'WARNING');
         }
 
         foreach ($extractedItems as $item) {
@@ -480,5 +504,39 @@ class OcrService
         return null;
     }
 
-}
+    /**
+     * Regex fallback parser for when Gemini returns prose instead of JSON.
+     * Scans line-by-line for "Subject ... Grade" patterns.
+     *
+     * @param  string   $rawText     Raw AI response text
+     * @param  string[] $validGrades Valid grade values for matching
+     * @return array<int, array{subject: string, grade: string}>
+     */
+    private function regexFallbackParse(string $rawText, array $validGrades): array
+    {
+        $items = [];
+        $gradePattern = implode('|', array_map(function ($g) {
+            return preg_quote($g, '/');
+        }, $validGrades));
 
+        $lines = preg_split('/[\r\n]+/', $rawText);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (strlen($line) < 4) {
+                continue;
+            }
+
+            // Pattern: "Subject Name   A+" or "Subject Name : A+" or "Subject Name - A+"
+            if (preg_match('/^(.+?)[\s:;\-–—]+(' . $gradePattern . ')\s*$/i', $line, $m)) {
+                $subject = trim($m[1]);
+                $subject = preg_replace('/^[\d\.\)\]\-\s]+/', '', $subject);
+                $subject = rtrim($subject, ' :;-–—');
+                if (strlen($subject) >= 2) {
+                    $items[] = ['subject' => $subject, 'grade' => strtoupper(trim($m[2]))];
+                }
+            }
+        }
+
+        return $items;
+    }
+}

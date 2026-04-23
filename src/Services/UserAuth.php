@@ -52,7 +52,7 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
         }
 
         if (function_exists('sendVerificationEmail')) {
-            sendVerificationEmail($userId, $email, $fullName);
+            sendVerificationEmail((string) $userId, $email, $fullName);
         }
 
         if (function_exists('initSession')) {
@@ -128,8 +128,8 @@ class UserAuth implements \UTP\Contracts\AuthenticatesUsers
             return null;
         }
         return [
-            'id'        => $_SESSION['user_id'],
-            'role'      => $_SESSION['role'],
+            'id' => $_SESSION['user_id'],
+            'role' => $_SESSION['role'],
             'full_name' => $_SESSION['full_name'],
         ];
     }

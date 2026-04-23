@@ -86,6 +86,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <form method="POST" action="/api/check-eligibility.php" data-validate="true" id="eligibilityForm">
         <?= csrfField() ?>
+        <input type="hidden" name="is_ocr_submission" id="isOcrSubmission" value="0">
 
         <!-- Step 1: Select Qualification -->
         <div class="card mb-6" id="step1">
@@ -150,8 +151,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="ocr-dropzone-content">
                     <div class="ocr-dropzone-icon">📄</div>
                     <p class="ocr-dropzone-text"><strong>Drop your result slip here</strong></p>
-                    <p class="ocr-dropzone-hint">or click to browse — JPG, PNG, PDF (max 5MB)</p>
-                    <input type="file" id="ocrFileInput" accept=".jpg,.jpeg,.png,.pdf" style="display:none;">
+                    <p class="ocr-dropzone-hint">or click to browse — JPG, PNG, WebP, HEIC, PDF (max 5MB)</p>
+                    <input type="file" id="ocrFileInput" accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf" style="display:none;">
+                </div>
+                <!-- Image Preview (Hidden by default) -->
+                <div id="ocrImagePreview" class="hidden" style="margin-top: 15px; text-align: center;">
+                    <img id="ocrPreviewImg" src="" alt="Result Slip Preview" style="max-height: 200px; max-width: 100%; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 </div>
             </div>
 
@@ -178,10 +183,28 @@ require_once __DIR__ . '/../includes/header.php';
                         The AI found the grades below. Please verify and correct any mistakes before submitting.
                     </p>
                 </div>
-                <span class="badge badge-blue" id="ocrCountBadge">0 subjects found</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn btn-outline btn-sm" id="ocrAcceptAllBtn" style="display:none;">✅ Accept All High Confidence</button>
+                    <span class="badge badge-blue" id="ocrCountBadge">0 subjects found</span>
+                </div>
+            </div>
+
+            <!-- Subject warning alert -->
+            <div id="ocrSubjectWarning" class="alert alert-warning hidden" style="margin-bottom:16px;">
+                ⚠️ <strong>Missing Subjects?</strong> The AI detected fewer than 5 subjects. Please review and manually add any missing subjects below.
             </div>
 
             <div class="table-responsive">
+                <style>
+                @media (max-width: 768px) {
+                    #ocrResultsTable thead { display: none; }
+                    #ocrResultsTable tbody tr { display: block; border-bottom: 2px solid var(--border); margin-bottom: 12px; padding-bottom: 12px; }
+                    #ocrResultsTable tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: none; }
+                    #ocrResultsTable tbody td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+                    #ocrResultsTable tbody td select, #ocrResultsTable tbody td input { width: 60%; }
+                    #ocrResultsTable tbody td:last-child { justify-content: flex-end; }
+                }
+                </style>
                 <table class="table" style="width:100%; border-collapse:collapse;" id="ocrResultsTable">
                     <thead>
                         <tr>
@@ -288,12 +311,14 @@ function applyEntryMode() {
         document.getElementById('ocrResultsBody').innerHTML = ''; // Strip OCR data
         updateGradeInputs(selectedQual);
         document.getElementById('submit_container').style.display = 'block';
+        document.getElementById('isOcrSubmission').value = '0';
     } else {
         document.getElementById('step2').classList.add('hidden');
         document.getElementById('ocrUploadCard').classList.remove('hidden');
         document.getElementById('ocrResultsCard').classList.add('hidden');
         document.getElementById('grade_inputs').innerHTML = ''; // Strip manual data to prevent hidden required fields blocking submit
         document.getElementById('submit_container').style.display = 'none';
+        document.getElementById('isOcrSubmission').value = '1';
         // Reset upload state
         resetOcrUpload();
     }
@@ -337,14 +362,26 @@ if (ocrFileInput) {
 
 function handleOcrFile(file) {
     // Client-side validation
-    var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (!allowedTypes.includes(file.type)) {
-        showOcrError('Invalid file type. Please upload a JPG, PNG, or PDF file.');
+    var allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
+    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp|heic|heif|pdf)$/i)) {
+        showOcrError('Invalid file type. Please upload a JPG, PNG, WebP, HEIC, or PDF file.');
         return;
     }
     if (file.size > 5242880) {
         showOcrError('File is larger than 5MB. Please compress or crop your image.');
         return;
+    }
+
+    // Show image preview
+    if (file.type.startsWith('image/') || file.name.match(/\.(jpg|jpeg|png|webp|heic|heif)$/i)) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('ocrPreviewImg').src = e.target.result;
+            document.getElementById('ocrImagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('ocrImagePreview').classList.add('hidden');
     }
 
     // Show loader, hide dropzone
@@ -430,9 +467,41 @@ function renderOcrResults(grades, qualType) {
     var tbody = document.getElementById('ocrResultsBody');
     tbody.innerHTML = '';
 
+    var hasHighConf = false;
+
     grades.forEach(function(item, index) {
         addOcrResultRow(tbody, item, qualType, index);
+        if (item.confidence === 'high' || !item.confidence) {
+            hasHighConf = true;
+        }
     });
+
+    if (grades.length < 5) {
+        document.getElementById('ocrSubjectWarning').classList.remove('hidden');
+    } else {
+        document.getElementById('ocrSubjectWarning').classList.add('hidden');
+    }
+
+    var acceptAllBtn = document.getElementById('ocrAcceptAllBtn');
+    if (acceptAllBtn) {
+        acceptAllBtn.style.display = hasHighConf ? 'block' : 'none';
+        acceptAllBtn.onclick = function() {
+            var rows = document.querySelectorAll('.ocr-result-row');
+            var firstWarningRow = null;
+            rows.forEach(function(row) {
+                var confCell = row.querySelector('td:nth-child(4)').innerHTML;
+                if (confCell.includes('✅')) {
+                    row.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                    row.style.borderLeft = '4px solid #10b981';
+                } else if (!firstWarningRow) {
+                    firstWarningRow = row;
+                }
+            });
+            if (firstWarningRow) {
+                firstWarningRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+    }
 
     // Show submit button
     document.getElementById('submit_container').style.display = 'block';
@@ -449,12 +518,14 @@ function addOcrResultRow(tbody, item, qualType, index) {
     // Column 1: OCR detected text
     var tdDetected = document.createElement('td');
     tdDetected.style.cssText = 'padding:12px 16px; font-size:0.85rem; border-bottom:1px solid var(--border-light); color:var(--text-secondary); font-style:italic;';
+    tdDetected.setAttribute('data-label', 'OCR Detected');
     tdDetected.textContent = item.subject || '—';
     row.appendChild(tdDetected);
 
     // Column 2: Subject dropdown (auto-selected)
     var tdSubject = document.createElement('td');
     tdSubject.style.cssText = 'padding:8px 16px; border-bottom:1px solid var(--border-light);';
+    tdSubject.setAttribute('data-label', 'Matched Subject');
     var subjectSelect = document.createElement('select');
     subjectSelect.name = 'subjects[]';
     subjectSelect.className = 'form-select form-select-sm';
@@ -474,6 +545,7 @@ function addOcrResultRow(tbody, item, qualType, index) {
     // Column 3: Grade dropdown (auto-selected)
     var tdGrade = document.createElement('td');
     tdGrade.style.cssText = 'padding:8px 16px; border-bottom:1px solid var(--border-light);';
+    tdGrade.setAttribute('data-label', 'Grade');
     var gradeSelect = document.createElement('select');
     gradeSelect.name = 'grades[]';
     gradeSelect.className = 'form-select form-select-sm';
@@ -492,6 +564,7 @@ function addOcrResultRow(tbody, item, qualType, index) {
     // Column 4: Confidence icon
     var tdConf = document.createElement('td');
     tdConf.style.cssText = 'padding:12px 16px; border-bottom:1px solid var(--border-light); text-align:center; font-size:1.1rem;';
+    tdConf.setAttribute('data-label', 'Status');
     var confIcon = '✅';
     var confTitle = 'High confidence match';
     if (item.confidence === 'medium') {
@@ -510,6 +583,7 @@ function addOcrResultRow(tbody, item, qualType, index) {
     // Column 5: Remove button
     var tdRemove = document.createElement('td');
     tdRemove.style.cssText = 'padding:8px 16px; border-bottom:1px solid var(--border-light); text-align:center;';
+    tdRemove.setAttribute('data-label', 'Action');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'btn btn-red btn-sm';

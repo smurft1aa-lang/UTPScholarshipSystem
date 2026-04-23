@@ -188,3 +188,38 @@ input, select, textarea,
 .skip-link:focus {
     top: 8px;
 }
+
+/* ── Dark Mode: OCR Component Overrides ────────────────────────── */
+[data-theme="dark"] .ocr-dropzone {
+    background: var(--bg);
+    border-color: var(--border);
+}
+[data-theme="dark"] .ocr-dropzone:hover,
+[data-theme="dark"] .ocr-dropzone.dragover {
+    background: var(--orange-light);
+    border-color: var(--orange);
+}
+[data-theme="dark"] .entry-mode-card.active {
+    background: var(--orange-light);
+}
+[data-theme="dark"] .entry-mode-icon {
+    background: var(--border-light);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .ocr-dropzone {
+        background: var(--bg);
+        border-color: var(--border);
+    }
+    :root:not([data-theme="light"]) .ocr-dropzone:hover,
+    :root:not([data-theme="light"]) .ocr-dropzone.dragover {
+        background: var(--orange-light);
+        border-color: var(--orange);
+    }
+    :root:not([data-theme="light"]) .entry-mode-card.active {
+        background: var(--orange-light);
+    }
+    :root:not([data-theme="light"]) .entry-mode-icon {
+        background: var(--border-light);
+    }
+}

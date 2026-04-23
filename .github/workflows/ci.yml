@@ -65,6 +65,23 @@ jobs:
       - name: Run PHPStan static analysis
         run: vendor/bin/phpstan analyse --no-progress --error-format=github
 
+      # Tech Debt Check: Warn on legacy bridge files
+      - name: Check for deprecated legacy bridge files (Q3 2026 Target)
+        run: |
+          echo "🔍 Checking for deprecated procedural bridge files..."
+          ISSUES=0
+          if grep -rn --include="*.php" "includes/ai_engine.php" --exclude-dir=vendor --exclude-dir=tests .; then
+            echo "::warning::Found includes of deprecated includes/ai_engine.php. Please migrate to \UTP\Services\AIEngine."
+            ISSUES=$((ISSUES + 1))
+          fi
+          if grep -rn --include="*.php" "GradeMapper.php" --exclude-dir=vendor --exclude-dir=tests .; then
+            echo "::warning::Found includes of deprecated GradeMapper.php. Please migrate to OOP \UTP\Services\GradeMapper."
+            ISSUES=$((ISSUES + 1))
+          fi
+          if [ $ISSUES -eq 0 ]; then
+            echo "✅ No legacy bridge file includes detected! Great job."
+          fi
+
   # ═══════════════════════════════════════════════════════════
   # JOB 2: PHPUnit Tests + Code Coverage
   # ═══════════════════════════════════════════════════════════

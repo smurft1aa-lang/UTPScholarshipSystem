@@ -116,12 +116,52 @@ try {
 
     // Save grades
     $stmt = $db->prepare("INSERT INTO grades (qualification_id, subject, grade) VALUES (?, ?, ?)");
+    $submittedGrades = [];
     for ($i = 0; $i < count($subjects); $i++) {
         $subject = sanitize($subjects[$i]);
         $grade = sanitize($grades[$i]);
         if (!empty($subject) && !empty($grade)) {
             $stmt->execute([$qualId, $subject, $grade]);
+            $submittedGrades[$subject] = $grade;
         }
+    }
+
+    // Audit log OCR corrections if applicable
+    $isOcrSubmission = (int)($_POST['is_ocr_submission'] ?? 0) === 1;
+    if ($isOcrSubmission && isset($_SESSION['ocr_last_result'])) {
+        $ocrOriginals = $_SESSION['ocr_last_result'];
+        $corrections = [];
+        
+        // Map original subjects to their matched keys for comparison
+        $originalMap = [];
+        foreach ($ocrOriginals as $orig) {
+            if (!empty($orig['matched_key'])) {
+                $originalMap[$orig['matched_key']] = $orig['grade'];
+            }
+        }
+
+        foreach ($submittedGrades as $sub => $grd) {
+            if (isset($originalMap[$sub])) {
+                if ($originalMap[$sub] !== $grd) {
+                    $corrections[] = "Changed $sub from {$originalMap[$sub]} to $grd";
+                }
+            } else {
+                $corrections[] = "Added manually $sub ($grd)";
+            }
+        }
+        
+        foreach ($originalMap as $origSub => $origGrd) {
+            if (!isset($submittedGrades[$origSub])) {
+                $corrections[] = "Deleted matched subject $origSub (was $origGrd)";
+            }
+        }
+
+        if (!empty($corrections)) {
+            logAudit($userId, 'OCR Result Corrected', 'Qualification', (int) $qualId, count($corrections) . " changes made. Details: " . json_encode($corrections));
+            \UTP\Services\Telemetry::trackEvent('OCR Corrections Made', ['user_id' => $userId, 'corrections_count' => count($corrections)]);
+        }
+        
+        unset($_SESSION['ocr_last_result']);
     }
 
     // Create application

@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
 initSession();
@@ -32,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $password = $_POST['password'] ?? '';
         $confirm = $_POST['confirm_password'] ?? '';
-        
+
         $pwErrors = validatePassword($password);
         if ($password !== $confirm) {
             $error = "Passwords do not match.";
@@ -42,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
             $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$hash, $record['user_id']]);
             $db->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$record['user_id']]);
-            
+
             require_once __DIR__ . '/../includes/audit.php';
             logAudit($record['user_id'], 'Password Reset Successful');
-            
+
             $_SESSION['success'] = "Password reset successfully. You can now log in.";
             header("Location: /auth/login.php");
             exit;
@@ -55,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,29 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 </head>
+
 <body>
     <div class="auth-page">
         <div class="auth-card">
             <h1>Set New Password</h1>
             <p class="subtitle">Please provide a new strong password.</p>
-            <?php if ($error): ?><div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
-            
+            <?php if ($error): ?>
+                <div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
+
             <form method="POST">
                 <?= csrfField() ?>
                 <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
-                
+
                 <div class="form-group">
                     <label class="form-label" for="password">New Password</label>
-                    <input type="password" id="password" name="password" class="form-input" required autocomplete="new-password">
-                    <small style="color:var(--text-muted);">Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character.</small>
+                    <input type="password" id="password" name="password" class="form-input" required
+                        autocomplete="new-password">
+                    <small style="color:var(--text-muted);">Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1
+                        special character.</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="confirm_password">Confirm New Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" required autocomplete="new-password">
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" required
+                        autocomplete="new-password">
                 </div>
                 <button type="submit" class="btn btn-orange btn-block btn-lg">Reset Password</button>
             </form>
         </div>
     </div>
 </body>
+
 </html>

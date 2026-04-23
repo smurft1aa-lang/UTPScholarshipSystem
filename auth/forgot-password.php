@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
+
 
 setSecurityHeaders();
 initSession();
@@ -19,28 +19,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $email = sanitize($_POST['email'] ?? '');
         $ip = getClientIP();
-        
+
         // Rate limit resets (3 per hour)
         if (!checkRateLimit($ip . '_reset', 3, 60)) {
             $error = "Too many reset requests. Please try again later.";
         } else {
             recordLoginAttempt($ip . '_reset');
-            
+
             $db = getDB();
             $stmt = $db->prepare("SELECT id, full_name FROM users WHERE email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
-            
+
             if ($user) {
                 // Delete existing tokens
                 $db->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$user['id']]);
-                
+
                 $token = bin2hex(random_bytes(32));
                 $db->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))")->execute([$user['id'], $token]);
-                
+
                 $appUrl = getenv('APP_URL') ?: 'http://localhost';
                 $resetLink = rtrim($appUrl, '/') . "/auth/reset-password.php?token=" . urlencode($token);
-                
+
                 require_once __DIR__ . '/../includes/mailer.php';
                 try {
                     $mail = createMailer();
@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 </head>
+
 <body>
     <div class="auth-page">
         <div class="auth-card">
@@ -85,13 +87,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
             <h1>Forgot Password</h1>
             <p class="subtitle">Enter your email to receive a reset link</p>
-            <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+            <?php if ($error): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
             <?php if ($success): ?>
                 <div class="alert alert-success">
-                    <?php if (str_contains($success, '<a ')) { echo $success; } else { echo htmlspecialchars($success); } ?>
+                    <?php if (str_contains($success, '<a ')) {
+                        echo $success;
+                    } else {
+                        echo htmlspecialchars($success);
+                    } ?>
                 </div>
             <?php endif; ?>
-            
+
             <form method="POST">
                 <?= csrfField() ?>
                 <div class="form-group">
@@ -106,4 +113,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
+
 </html>

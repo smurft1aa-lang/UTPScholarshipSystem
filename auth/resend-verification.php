@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 
 setSecurityHeaders();
 requireLogin();
@@ -24,8 +23,7 @@ $sent = sendVerificationEmail($userId, $user['email'], $user['full_name']);
 
 if ($sent) {
     $_SESSION['success'] = "Verification email sent! Please check your inbox.";
-}
-else {
+} else {
     $_SESSION['error'] = "Failed to send verification email. Please try again.";
 }
 
