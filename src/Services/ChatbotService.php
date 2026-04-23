@@ -54,6 +54,15 @@ Household income limits in Malaysia:
 - M40 (Middle 40%): RM 4,851 - RM 10,959. Eligible for partial scholarships.
 - T20 (Top 20%): RM 10,960 and above. Eligible for merit-based scholarships only (requires 8A+ and above).
 
+[Application Step-by-Step Workflow on this Website]
+If a user asks how to apply or what the steps are, give them these exact steps:
+1. Register an account and verify your email.
+2. Go to "Check Eligibility". You can type your grades manually or upload an image of your result slip (SPM/IGCSE) for the AI OCR to scan automatically.
+3. Go to "My Results" to see which Foundation Programmes and Scholarships you are eligible for based on those grades.
+4. From the "My Results" page, select up to 3 preferred programmes and 1 scholarship, then click "Submit Application".
+5. Go to "My Documents" and upload your IC/Passport, Academic Certificates, and a Passport Photo.
+6. You can track your approval status anytime directly on the "Dashboard".
+
 Remember: Answer in short, readable paragraphs. Use bullet points when listing requirements. Be conversational.
 PROMPT;
     }
