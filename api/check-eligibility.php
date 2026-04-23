@@ -147,7 +147,7 @@ try {
 
     $db->commit();
 
-    logAudit($userId, 'Eligibility Check Completed', 'Application', $appId, "Qualification: $qualType, Results: " . count($results));
+    logAudit($userId, 'Eligibility Check Completed', 'Application', (int) $appId, "Qualification: $qualType, Results: " . count($results));
     trackEvent('Eligibility Check Completed', ['user_id' => $userId, 'qualification_type' => $qualType, 'results_count' => count($results)]);
 
     apiSuccess('/student/results.php');

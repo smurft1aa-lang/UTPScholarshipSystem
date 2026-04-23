@@ -76,12 +76,12 @@ $stmt->execute($params);
 $totalRecords = $stmt->fetchColumn();
 $totalPages = ceil($totalRecords / $perPage);
 
-// Data query
 $query = "
     SELECT a.*, u.full_name, u.email, u.ic_number, q.qual_type,
            p1.name as prog1_name, p2.name as prog2_name, p3.name as prog3_name, s.name as schol_name,
            (SELECT COUNT(*) FROM eligibility_results er WHERE er.application_id = a.id AND er.eligible = 1) as eligible_count,
-           (SELECT COUNT(*) FROM documents d WHERE d.user_id = a.user_id) as doc_count
+           (SELECT COUNT(*) FROM documents d WHERE d.user_id = a.user_id) as doc_count,
+           (SELECT GROUP_CONCAT(doc_type) FROM documents d WHERE d.user_id = a.user_id) as uploaded_docs
     FROM applications a
     JOIN users u ON a.user_id = u.id
     JOIN qualifications q ON a.qualification_id = q.id
@@ -200,7 +200,29 @@ $applications = $stmt->fetchAll();
             <h2>Review Application #<?= $app['id'] ?></h2>
             <p><strong>Student:</strong> <?= htmlspecialchars($app['full_name']) ?> (<?= htmlspecialchars($app['ic_number']) ?>)</p>
             <p><strong>Qualification:</strong> <?= htmlspecialchars($app['qual_type']) ?> (Eligible for <?= $app['eligible_count'] ?> programmes)</p>
-            <p><strong>Documents:</strong> <?= $app['doc_count'] ?> out of 3 uploaded</p>
+            <div style="margin-top: 8px; margin-bottom: 8px;">
+                <strong>Documents (<?= $app['doc_count'] ?> out of 3 uploaded):</strong>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <?php
+                        $userDocs = $app['uploaded_docs'] ? explode(',', $app['uploaded_docs']) : [];
+                        $validTypes = ['ic' => 'IC Scan', 'photo' => 'Photo', 'certificate' => 'Certificate'];
+                        foreach ($validTypes as $typeKey => $typeLabel):
+                            if (in_array($typeKey, $userDocs)):
+                    ?>
+                        <a href="/admin/download-document.php?user_id=<?= $app['user_id'] ?>&doc_type=<?= $typeKey ?>" target="_blank" class="badge badge-green" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <?= $typeLabel ?>
+                        </a>
+                    <?php 
+                            else:
+                    ?>
+                        <span class="badge badge-red" style="opacity: 0.6; cursor: not-allowed;"><?= $typeLabel ?> (Missing)</span>
+                    <?php 
+                            endif;
+                        endforeach; 
+                    ?>
+                </div>
+            </div>
             
             <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border); margin:12px 0;">
                 <?php if ($app['prog1_name']): ?>

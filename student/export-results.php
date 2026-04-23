@@ -174,7 +174,7 @@ $student = $stmt->fetch();
     <?php if (!empty($r['gaps'])): ?>
         <ul class="gaps-list">
             <?php foreach ($r['gaps'] as $gap): ?>
-                <li><?= htmlspecialchars($gap['subject']) ?>: requires <?= htmlspecialchars($gap['min_grade']) ?>, got <?= htmlspecialchars($gap['student_grade'] ?? 'missing') ?></li>
+                <li><?= htmlspecialchars($gap['message']) ?></li>
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>

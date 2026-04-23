@@ -151,9 +151,9 @@ function updateGradeInputs(qualType) {
     coreSubjects['IGCSE'] = ['English Language', 'Mathematics'];
 
     var optionalSubjects = [
-        'Additional Mathematics', 'Physics', 'Chemistry', 'Biology',
+        'Additional Mathematics', 'Physics', 'Chemistry', 'Biology', 'Science',
         'Pendidikan Islam', 'Pendidikan Moral', 'Prinsip Perakaunan', 'Ekonomi',
-        'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal',
+        'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal', 'Pendidikan Seni Visual', 'Reka Cipta',
         'Other Subject', 'Other Subject I', 'Other Subject II', 'Other Subject III', 'Other Subject IV',
         'Other Non-Language Subject', 'Other Non-Language Subject I', 'Other Non-Language Subject II', 'Other Non-Language Subject III', 'Other Non-Language Subject IV'
     ];
@@ -171,21 +171,18 @@ function updateGradeInputs(qualType) {
     var rowsContainer = document.getElementById('subject_rows');
 
     // Create a function to add a row
-    window.addSubjectRow = function(prefillSubject = '', isCore = false) {
+    window.addSubjectRow = function(prefillSubject, isCore) {
+        prefillSubject = prefillSubject || '';
+        isCore = isCore || false;
+
         var row = document.createElement('div');
         row.className = 'form-row';
-        row.style.marginBottom = '16px';
-        row.style.display = 'grid';
-        row.style.gridTemplateColumns = '2fr 1fr 42px';
-        row.style.gap = '12px';
-        row.style.alignItems = 'flex-start';
+        row.style.cssText = 'margin-bottom:12px; display:grid; grid-template-columns:2fr 1fr 42px; gap:12px; align-items:end;';
 
         var subjCol = document.createElement('div');
-        subjCol.className = 'form-group';
-        subjCol.style.marginBottom = '0';
 
         if (isCore) {
-            subjCol.innerHTML = '<label class="form-label">' + prefillSubject + '</label>' +
+            subjCol.innerHTML = '<label class="form-label" style="margin-bottom:0; padding:10px 0; font-weight:600;">' + prefillSubject + '</label>' +
                                 '<input type="hidden" name="subjects[]" value="' + prefillSubject + '">';
         } else {
             var subjSelect = '<label class="form-label">Subject</label>' +
@@ -199,8 +196,6 @@ function updateGradeInputs(qualType) {
         }
 
         var gradeCol = document.createElement('div');
-        gradeCol.className = 'form-group';
-        gradeCol.style.marginBottom = '0';
 
         var gradeSelect = '<label class="form-label">Grade</label>' +
                           '<select name="grades[]" class="form-select" required>' +
@@ -212,19 +207,14 @@ function updateGradeInputs(qualType) {
         gradeCol.innerHTML = gradeSelect;
 
         var actionCol = document.createElement('div');
-        actionCol.style.display = 'flex';
-        actionCol.style.flexDirection = 'column';
-        actionCol.style.justifyContent = 'flex-end';
-        actionCol.style.height = '100%';
-        
+        actionCol.style.cssText = 'display:flex; align-items:center; justify-content:center; height:42px;';
+
         if (!isCore) {
             var removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.className = 'btn btn-red btn-sm';
             removeBtn.textContent = 'X';
-            removeBtn.style.padding = '8px 12px';
-            removeBtn.style.height = '42px';
-            removeBtn.style.marginTop = '26px'; // Align with select inputs
+            removeBtn.style.cssText = 'padding:8px 12px; height:42px; width:42px; display:flex; align-items:center; justify-content:center;';
             removeBtn.addEventListener('click', function() {
                 row.remove();
             });
