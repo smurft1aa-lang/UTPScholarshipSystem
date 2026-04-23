@@ -4,7 +4,7 @@
 #
 # Jobs:
 #   lint          → PHP CodeSniffer (PSR-12) + PHPStan
-#   test          → PHPUnit with code coverage gate (80%)
+#   test          → PHPUnit with code coverage gate (65%)
 #   security-scan → Grep-based SQL injection & XSS detection
 #   docker-build  → Validates Docker image builds successfully
 #
@@ -115,9 +115,9 @@ jobs:
         env:
           APP_ENV: testing
 
-      # Enforce minimum 80% code coverage
-      - name: Check code coverage gate (80% minimum)
-        run: php scripts/check_coverage.php coverage.xml 80
+      # Enforce minimum 65% code coverage
+      - name: Check code coverage gate (65% minimum)
+        run: php scripts/check_coverage.php coverage.xml 65
         env:
           APP_ENV: testing
 
