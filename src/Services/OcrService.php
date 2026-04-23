@@ -237,14 +237,22 @@ PROMPT;
             $curlError = curl_error($ch);
             curl_close($ch);
 
-            if ($response !== false) {
+            if ($response !== false && $httpCode === 200) {
                 break; // Success!
             }
 
-            // Retry for transient DNS/connection failures
-            $attempt++;
-            if ($attempt < $maxRetries) {
-                sleep(1);
+            // Retry for transient connection failures or Gemini rate limits (429) & high demand overloads (503)
+            if ($response === false || in_array($httpCode, [429, 503])) {
+                $attempt++;
+                if ($attempt < $maxRetries) {
+                    \UTP\Services\Telemetry::trackEvent('Gemini API Retry', ['attempt' => $attempt, 'http_code' => $httpCode], 'WARNING');
+                    // Exponential backoff: wait 2s, then 4s, etc.
+                    sleep(pow(2, $attempt));
+                    continue;
+                }
+            } else {
+                // Other HTTP errors (400, 401, 403, 500) shouldn't be retried
+                break;
             }
         }
 
