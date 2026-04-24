@@ -70,7 +70,7 @@ You can boot the entire system automatically mapping the LAMP stack.
 | `DB_NAME` | Yes | Database name |
 | `DB_USER` | Yes | Database username |
 | `DB_PASS` | Yes | Database password |
-| `GEMINI_API_KEY` | Yes | Google Gemini 2.5 Flash API key for OCR |
+| `GEMINI_API_KEY` | Yes | Google Gemini 3.1 Flash-Preview API key for OCR & Chatbot |
 | `ADMIN_EMAIL` | Yes | Admin login email (defaults to `admin@utp.edu.my`) |
 | `ADMIN_PASSWORD` | Yes | Admin password — set before first run |
 | `APP_ENV` | No | `production` to enable HTTPS redirects and Sentry |
