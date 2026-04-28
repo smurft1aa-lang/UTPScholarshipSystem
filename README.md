@@ -5,11 +5,13 @@ A robust, AI-powered scholarship and course eligibility recommendation system bu
 ## Features
 
 ### Student Portal
-- **AI OCR Result Scanning:** Upload a photo of your SPM/O-Level/IGCSE result slip and let Gemini 2.5 Flash AI automatically extract subjects and grades — no manual typing needed.
+- **AI OCR Result Scanning:** Upload a photo of your SPM/O-Level/IGCSE result slip and let Gemini 3.1 Flash-Lite AI automatically extract subjects and grades — no manual typing needed.
 - **Smart Subject Classification:** Unrecognised subjects are automatically categorised as "Other Subject" (language) or "Other Non-Language Subject" based on AI keyword analysis.
 - **Manual Grade Entry:** Alternatively, enter grades subject-by-subject with real-time dropdown validation.
 - **AI Eligibility Engine:** Calculates fit percentage, provides gap analysis, confidence labels, and natural-language recommendations for each programme.
 - **STEM Bonus Detection:** Students excelling in Physics and Chemistry receive an automatic 5% fit boost for STEM programmes.
+- **AI Assistant Chatbot:** Real-time conversational support for students to ask questions about eligibility, scholarships, and the application process.
+- **Sponsorship Proposal Generation:** Automatically generate a professional, printable sponsorship proposal document based on eligibility results.
 - **Document Management:** Securely upload IC/Passport scans, passport photos, and academic certificates. OCR-scanned result slips are auto-saved as certificates.
 - **Single Submission Policy:** Students may only have one active application at a time. A new submission is allowed only after admin review (approved/rejected).
 - **PDF Export:** Download a printable AI Eligibility Report from the results page.
@@ -70,7 +72,7 @@ You can boot the entire system automatically mapping the LAMP stack.
 | `DB_NAME` | Yes | Database name |
 | `DB_USER` | Yes | Database username |
 | `DB_PASS` | Yes | Database password |
-| `GEMINI_API_KEY` | Yes | Google Gemini 3.1 Flash-Preview API key for OCR & Chatbot |
+| `GEMINI_API_KEY` | Yes | Google Gemini 3.1 Flash-Lite API key for OCR and Chatbot |
 | `ADMIN_EMAIL` | Yes | Admin login email (defaults to `admin@utp.edu.my`) |
 | `ADMIN_PASSWORD` | Yes | Admin password — set before first run |
 | `APP_ENV` | No | `production` to enable HTTPS redirects and Sentry |
@@ -102,8 +104,9 @@ Credentials are loaded from environment variables:
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | `POST` | `/api/check-eligibility.php` | Student | Submit grades and receive programme eligibility results with fit percentages, gap analysis, and scholarship matches |
-| `POST` | `/api/ocr-result.php` | Student | Upload a result slip image for AI-powered OCR grade extraction via Gemini 2.5 Flash |
+| `POST` | `/api/ocr-result.php` | Student | Upload a result slip image for AI-powered OCR grade extraction via Gemini 3.1 Flash-Lite |
 | `POST` | `/api/submit-application.php` | Student | Submit a scholarship application with programme preferences and uploaded documents |
+| `POST` | `/api/chat.php` | Student | AI-powered chatbot assistant for real-time support and queries |
 | `GET`  | `/admin/download-document.php` | Admin | Securely download a student's uploaded document (IC, photo, certificate) |
 | `POST` | `/api/logout.php` | Any | Terminate the current session and redirect to login |
 
@@ -140,7 +143,7 @@ Credentials are loaded from environment variables:
 
 ### Example: OCR Result Scan
 
-**Request:** `multipart/form-data` with `result_slip` (image/PDF), `qual_type`, and `csrf_token`.
+**Request:** `multipart/form-data` with `result_slip` (image/PDF), `qual_type`, and `csrf_token`. (Powered by Gemini 3.1 Flash-Lite)
 
 **Response:**
 ```json
