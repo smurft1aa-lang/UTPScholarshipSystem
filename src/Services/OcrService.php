@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UTP\Services;
 
 /**
- * OCR Service — Gemini 2.5 Flash API Integration
+ * OCR Service — Gemini 3.1 Flash-Lite API Integration
  *
  * Sends uploaded result slip images/PDFs to the Gemini API,
  * extracts text, and parses subject-grade pairs with automatic
@@ -13,7 +13,7 @@ namespace UTP\Services;
  */
 class OcrService
 {
-    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=';
+    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=';
     private const MAX_FILE_SIZE = 5242880; // 5MB
 
     private string $apiKey;

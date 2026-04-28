@@ -6,7 +6,7 @@ namespace UTP\Services;
 
 class ChatbotService
 {
-    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=';
+    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=';
     private string $apiKey;
 
     public function __construct()
@@ -94,12 +94,12 @@ PROMPT;
         while ($attempt < $maxRetries) {
             $ch = curl_init();
             $curlOptions = [
-                CURLOPT_URL            => self::API_URL . $this->apiKey,
-                CURLOPT_POST           => true,
-                CURLOPT_POSTFIELDS     => json_encode($payload),
-                CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                CURLOPT_URL => self::API_URL . $this->apiKey,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 30,
+                CURLOPT_TIMEOUT => 30,
                 CURLOPT_SSL_VERIFYPEER => true,
             ];
 
