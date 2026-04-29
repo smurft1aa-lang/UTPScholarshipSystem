@@ -101,7 +101,7 @@ class InputSanitizer
         header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com; img-src 'self' data: https://api.qrserver.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'unsafe-inline' 'nonce-{$nonce}' https://fonts.googleapis.com; img-src 'self' data: https://api.qrserver.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'");
         header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
     }
 
@@ -116,5 +116,13 @@ class InputSanitizer
             return trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
         }
         return $remoteAddr;
+    }
+
+    /**
+     * Sanitize HTML to allow only safe tags.
+     */
+    public static function sanitizeHtml(string $html): string
+    {
+        return strip_tags($html, '<h1><h2><h3><h4><h5><h6><p><br><ul><ol><li><strong><em><b><i><u><a><table><thead><tbody><tr><th><td><blockquote><div><span>');
     }
 }

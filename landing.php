@@ -15,273 +15,299 @@ $csrfToken = generateCSRFToken();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Universiti Teknologi PETRONAS (UTP) — Apply for foundation programmes, scholarships, and more.">
-    <title>UTP Student Application Portal — Universiti Teknologi PETRONAS</title>
+    <meta name="description" content="Universiti Teknologi PETRONAS (UTP) Scholarship Portal — Apply for scholarships, foundation programmes, and financial aid.">
+    <title>UTP Scholarship Portal — Universiti Teknologi PETRONAS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/landing.css?v=3">
-
+    <link rel="stylesheet" href="/assets/css/landing.css?v=5">
 </head>
-
 <body>
+<div class="page-wrapper">
 
-    <div class="page-wrapper">
-
-        <!-- ── Navbar ── -->
-        <nav class="navbar" id="navbar">
-            <a href="#" class="nav-logo">
-                UTP
+    <!-- Top Utility Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <a href="mailto:scholarship@utp.edu.my">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Ask UTP
             </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#hero">Home</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#services">Programmes</a></li>
-                <li><a href="#success">Success Stories</a></li>
-                <li><a href="#about">Community</a></li>
-            </ul>
-            <div class="nav-actions">
-                <a href="/auth/login.php" class="btn btn-outline-dark">Login</a>
-                <a href="/auth/signup.php" class="btn btn-orange">Sign Up</a>
-                <!-- Mobile Hamburger -->
-                <button class="hamburger" id="mobileNavToggle" aria-label="Toggle Menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </nav>
-
-        <!-- ── Hero ── -->
-        <section class="hero" id="hero">
-            <div class="section-inner">
-                <div class="hero-text animate-on-scroll">
-                    <h1>Unlock Your<br>Potential with<br><span class="highlight">Quality Education</span></h1>
-                    <p>Empowering learners with knowledge, skills, and opportunities for a brighter future.</p>
-                    <a href="/auth/signup.php" class="btn btn-orange" style="padding: 14px 36px; font-size: 1rem;">
-                        Register
-                    </a>
-                </div>
-                <div class="hero-visual animate-on-scroll">
-                    <img src="/assets/images/hero_illustration.png" alt="Students studying together">
-                </div>
-            </div>
-        </section>
-
-        <!-- ── Testimonials ── -->
-        <section class="testimonials" id="testimonials">
-            <div class="section-inner">
-                <h2 class="animate-on-scroll">Testimonials</h2>
-                <div class="testimonials-grid">
-                    <div class="testimonial-card animate-on-scroll">
-                        <div class="testi-header">
-                            <div class="testi-avatar">AF</div>
-                            <div class="testi-info">
-                                <h4>Ahmad Farhan</h4>
-                                <p>Foundation in Engineering</p>
-                            </div>
-                        </div>
-                        <p class="testi-text">My foundation year at UTP gave me the perfect headstart. The lecturers are
-                            incredibly supportive and the facilities are world-class.</p>
-                    </div>
-                    <div class="testimonial-card animate-on-scroll">
-                        <div class="testi-header">
-                            <div class="testi-avatar">NR</div>
-                            <div class="testi-info">
-                                <h4>Nur Rashidah</h4>
-                                <p>Mechanical Engineering</p>
-                            </div>
-                        </div>
-                        <p class="testi-text">The scholarship opportunity at UTP changed my life. I learned practical
-                            skills that prepared me for a global engineering career.</p>
-                    </div>
-                    <div class="testimonial-card animate-on-scroll">
-                        <div class="testi-header">
-                            <div class="testi-avatar">DH</div>
-                            <div class="testi-info">
-                                <h4>Daniel Heng</h4>
-                                <p>Computer Science</p>
-                            </div>
-                        </div>
-                        <p class="testi-text">UTP's CS programme is top-notch. The industry connections and internship
-                            placements really set this university apart.</p>
-                    </div>
-                    <div class="testimonial-card animate-on-scroll">
-                        <div class="testi-header">
-                            <div class="testi-avatar">SA</div>
-                            <div class="testi-info">
-                                <h4>Siti Aminah</h4>
-                                <p>Chemical Engineering</p>
-                            </div>
-                        </div>
-                        <p class="testi-text">From day one, UTP made me feel like I belong. The campus, the community,
-                            and the learning environment are truly exceptional.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ── Explore Courses ── -->
-        <section class="explore-courses" id="services">
-            <div class="section-inner">
-                <div class="explore-visual animate-on-scroll">
-                    <img src="/assets/images/courses_illustration.png" alt="Online courses illustration">
-                </div>
-                <div class="explore-content animate-on-scroll">
-                    <h2>Explore a wide<br>range of courses</h2>
-                    <p>Study at your own pace with online, in-person, or hybrid classes. Personalised guidance and
-                        support to help you achieve your aspirations. Gain practical, real-world knowledge to excel in
-                        your chosen field.</p>
-                    <a href="/auth/signup.php" class="btn btn-orange-outline" style="padding: 12px 32px;">
-                        Register Today
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ── Student Success Stories ── -->
-        <section class="success-stories" id="success">
-            <div class="section-inner">
-                <div class="success-content animate-on-scroll">
-                    <h2>Student Success Stories</h2>
-                    <p>Our students consistently achieve outstanding results, winning national and international awards.
-                        From securing positions at Fortune 500 companies to launching innovative startups, UTP graduates
-                        are making their mark globally.</p>
-                    <a href="/auth/signup.php" class="btn btn-orange-outline" style="padding: 12px 32px;">
-                        Register Today
-                    </a>
-                </div>
-                <div class="success-visual animate-on-scroll">
-                    <img src="/assets/images/success_illustration.png" alt="Student success illustration">
-                </div>
-            </div>
-        </section>
-
-        <!-- ── Join a Global Community ── -->
-        <section class="community" id="about">
-            <div class="section-inner">
-                <div class="community-visual animate-on-scroll">
-                    <img src="/assets/images/community_illustration.png" alt="Global community illustration">
-                </div>
-                <div class="community-content animate-on-scroll">
-                    <h2>Join a Global Community</h2>
-                    <p>Connect with over 10,000 students from 60+ countries. Build lifelong friendships, explore diverse
-                        perspectives, and grow both personally and professionally through vibrant campus activities and
-                        student organisations.</p>
-                    <a href="/auth/signup.php" class="btn btn-orange" style="padding: 12px 32px;">
-                        Join Us
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ── Footer ── -->
-        <footer>
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <a href="#" class="footer-brand">
-                        UTP
-                    </a>
-                    <p class="footer-desc">Empowering the next generation of engineers, technologists, and leaders
-                        through world-class education and research.</p>
-                    <div class="social-icons">
-                        <a href="#" aria-label="Facebook">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                            </svg>
-                        </a>
-                        <a href="#" aria-label="Instagram">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                            </svg>
-                        </a>
-                        <a href="#" aria-label="Twitter">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                            </svg>
-                        </a>
-                        <a href="#" aria-label="LinkedIn">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-                <div class="footer-col">
-                    <h4>Admission</h4>
-                    <ul>
-                        <li><a href="/auth/signup.php">Foundation</a></li>
-                        <li><a href="/auth/signup.php">Undergraduate</a></li>
-                        <li><a href="/auth/signup.php">Postgraduate</a></li>
-                        <li><a href="/auth/signup.php">International</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Academic</h4>
-                    <ul>
-                        <li><a href="/auth/signup.php">Engineering</a></li>
-                        <li><a href="/auth/signup.php">Computer Science</a></li>
-                        <li><a href="/auth/signup.php">Science</a></li>
-                        <li><a href="/auth/signup.php">Management</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="/auth/login.php">Student Portal</a></li>
-                        <li><a href="/auth/signup.php">Scholarships</a></li>
-                        <li><a href="#about">Campus Life</a></li>
-                        <li><a href="#testimonials">FAQs</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-copy">
-                &copy; <?= date('Y') ?> Universiti Teknologi PETRONAS. All Rights Reserved.
-            </div>
-        </footer>
+        </div>
+        <div class="top-bar-right">
+            <a href="https://www.instagram.com/utpofficial/" aria-label="Instagram" target="_blank"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+            <a href="https://www.youtube.com/user/utpofficial" aria-label="YouTube" target="_blank"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+            <a href="https://www.facebook.com/UTPofficial" aria-label="Facebook" target="_blank"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
     </div>
 
-    <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
-        /* ── Mobile Nav ── */
-        const mobileNavToggle = document.getElementById('mobileNavToggle');
-        const navLinksList = document.getElementById('navLinks');
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">
+            <!-- Replace with actual UTP logo: /assets/images/utp_logo.png -->
+            <img src="/assets/images/utp_logo.png" alt="UTP Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+            <span class="nav-logo-text" style="display:none">UTP</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#scholarships">Scholarships</a></li>
+            <li><a href="#programmes">Programmes</a></li>
+            <li><a href="#stories">Success Stories</a></li>
+            <li><a href="#why-utp">Why UTP</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="/auth/login.php" class="btn btn-outline-navy">Login</a>
+            <a href="/auth/signup.php" class="btn btn-gold">Apply Now</a>
+            <button class="hamburger" id="mobileNavToggle" aria-label="Toggle Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
 
-        if (mobileNavToggle && navLinksList) {
-            mobileNavToggle.addEventListener('click', () => {
-                navLinksList.classList.toggle('open');
-            });
-        }
+    <!-- Hero Banner -->
+    <section class="hero" id="hero">
+        <div class="hero-bg">
+            <img src="/assets/images/hero_campus.png" alt="UTP Campus">
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="section-inner">
+            <div class="hero-text animate-on-scroll">
+                <h1>Transforming Minds,<br><span class="highlight">Advancing Industries</span></h1>
+                <p>Transformative learning and mission-driven research in ASEAN's most dynamic ecosystem. Your scholarship journey starts here.</p>
+                <div class="hero-buttons">
+                    <a href="/auth/signup.php" class="btn btn-gold" style="padding:14px 36px">Apply Now</a>
+                    <a href="#scholarships" class="btn btn-white-outline" style="padding:14px 36px">Explore Scholarships</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        /* ── Close nav on link click ── */
-        document.querySelectorAll('.nav-links a').forEach(a => {
-            a.addEventListener('click', () => {
-                document.getElementById('navLinks').classList.remove('open');
-            });
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+        <div class="stats-grid">
+            <div class="stat-item animate-on-scroll">
+                <div class="stat-number">10,000+</div>
+                <div class="stat-label">Students Enrolled</div>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <div class="stat-number">60+</div>
+                <div class="stat-label">Countries Represented</div>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Graduate Employability</div>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <div class="stat-number">Top 5%</div>
+                <div class="stat-label">QS World Ranking</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scholarship Highlights -->
+    <section class="scholarships" id="scholarships">
+        <div class="section-inner">
+            <h2 class="animate-on-scroll">Financial Aid & Scholarships</h2>
+            <p class="section-subtitle animate-on-scroll">UTP offers a range of scholarships to support deserving students. Use our portal to check your eligibility and track your application status.</p>
+            <div class="scholarship-grid">
+                <div class="scholarship-card animate-on-scroll">
+                    <div class="scholarship-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg></div>
+                    <h3>Merit-Based Scholarship</h3>
+                    <p>Awarded to students with outstanding academic achievements and leadership qualities. Covers tuition fees and provides a monthly stipend.</p>
+                    <a href="/auth/signup.php" class="card-link">Check Eligibility →</a>
+                </div>
+                <div class="scholarship-card animate-on-scroll">
+                    <div class="scholarship-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+                    <h3>Need-Based Financial Aid</h3>
+                    <p>Supporting students from underprivileged backgrounds with financial assistance covering tuition, accommodation, and living expenses.</p>
+                    <a href="/auth/signup.php" class="card-link">Apply Now →</a>
+                </div>
+                <div class="scholarship-card animate-on-scroll">
+                    <div class="scholarship-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                    <h3>PETRONAS Sponsorship</h3>
+                    <p>Full sponsorship by PETRONAS covering tuition, accommodation, books, laptop, and monthly allowance for top-performing students.</p>
+                    <a href="/auth/signup.php" class="card-link">Apply Now →</a>
+                </div>
+            </div>
+            <p class="section-disclaimer animate-on-scroll">* This portal helps you check eligibility and submit applications. All scholarships are managed and awarded by Universiti Teknologi PETRONAS.</p>
+        </div>
+    </section>
+
+    <!-- Programmes -->
+    <section class="programmes" id="programmes">
+        <div class="section-inner">
+            <h2 class="animate-on-scroll">Explore Our Programmes</h2>
+            <p class="section-subtitle animate-on-scroll">World-class programmes designed to produce industry-ready graduates.</p>
+            <div class="programme-grid">
+                <a href="/auth/signup.php" class="programme-tile animate-on-scroll">
+                    <div class="programme-tile-icon"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg></div>
+                    <h4>Foundation</h4>
+                    <p>Engineering & Science</p>
+                </a>
+                <a href="/auth/signup.php" class="programme-tile animate-on-scroll">
+                    <div class="programme-tile-icon"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M22 9V7h-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6v-4zm6-6h4v3h-4V7zM6 7h5v5H6V7zm6 4h4v6h-4v-6z"/></svg></div>
+                    <h4>Engineering</h4>
+                    <p>6 Specialisations</p>
+                </a>
+                <a href="/auth/signup.php" class="programme-tile animate-on-scroll">
+                    <div class="programme-tile-icon"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></div>
+                    <h4>Computer Science</h4>
+                    <p>CS & IT Tracks</p>
+                </a>
+                <a href="/auth/signup.php" class="programme-tile animate-on-scroll">
+                    <div class="programme-tile-icon"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></div>
+                    <h4>Science</h4>
+                    <p>Physics & Chemistry</p>
+                </a>
+                <a href="/auth/signup.php" class="programme-tile animate-on-scroll">
+                    <div class="programme-tile-icon"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg></div>
+                    <h4>Management</h4>
+                    <p>Business & Leadership</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="success-stories" id="stories">
+        <div class="section-inner">
+            <h2 class="animate-on-scroll">Success Stories</h2>
+            <p class="section-subtitle animate-on-scroll">Hear from our scholarship recipients who have gone on to achieve great things.</p>
+            <div class="stories-grid">
+                <div class="story-card animate-on-scroll">
+                    <div class="story-header">
+                        <div class="story-avatar">AF</div>
+                        <div class="story-info"><h4>Ahmad Farhan</h4><p>Foundation in Engineering</p></div>
+                    </div>
+                    <p class="story-text">My foundation year at UTP gave me the perfect headstart. The lecturers are incredibly supportive and the facilities are world-class.</p>
+                </div>
+                <div class="story-card animate-on-scroll">
+                    <div class="story-header">
+                        <div class="story-avatar">NR</div>
+                        <div class="story-info"><h4>Nur Rashidah</h4><p>Mechanical Engineering</p></div>
+                    </div>
+                    <p class="story-text">The PETRONAS scholarship changed my life. I learned practical skills that prepared me for a global engineering career at a Fortune 500 company.</p>
+                </div>
+                <div class="story-card animate-on-scroll">
+                    <div class="story-header">
+                        <div class="story-avatar">DH</div>
+                        <div class="story-info"><h4>Daniel Heng</h4><p>Computer Science</p></div>
+                    </div>
+                    <p class="story-text">UTP's CS programme is top-notch. The industry connections and internship placements really set this university apart from others.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose UTP -->
+    <section class="why-utp" id="why-utp">
+        <div class="section-inner">
+            <div class="why-visual animate-on-scroll">
+                <img src="/assets/images/hero_campus.png" alt="UTP Campus Facilities">
+            </div>
+            <div class="why-content animate-on-scroll">
+                <h2>Why Choose UTP?</h2>
+                <ul class="why-list">
+                    <li><span class="why-list-icon"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span>World-class facilities backed by PETRONAS — one of the largest corporations in Southeast Asia</li>
+                    <li><span class="why-list-icon"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span>Strong industry connections with guaranteed internship placements at leading companies</li>
+                    <li><span class="why-list-icon"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span>Global exposure through exchange programmes with 60+ partner universities worldwide</li>
+                    <li><span class="why-list-icon"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span>95% graduate employability rate within 6 months of graduation</li>
+                </ul>
+                <a href="/auth/signup.php" class="btn btn-navy" style="padding:12px 32px">Start Your Application</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+        <h2 class="animate-on-scroll">Ready to Begin Your Journey?</h2>
+        <p class="animate-on-scroll">Join thousands of students who have transformed their futures through UTP scholarships.</p>
+        <a href="/auth/signup.php" class="btn btn-gold animate-on-scroll" style="padding:14px 40px;font-size:1rem">Apply for Scholarship</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-brand">
+                    <img src="/assets/images/utp_logo.png" alt="UTP" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                    <span class="footer-brand-text" style="display:none">UTP</span>
+                </div>
+                <p class="footer-desc">Empowering the next generation of engineers, technologists, and leaders through world-class education and research.</p>
+                <p class="footer-address">Universiti Teknologi PETRONAS<br>32610 Seri Iskandar, Perak, Malaysia<br>Tel: 1-300-22-8887</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/UTPofficial" aria-label="Facebook" target="_blank"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="https://www.instagram.com/utpofficial/" aria-label="Instagram" target="_blank"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                    <a href="https://www.linkedin.com/school/universiti-teknologi-petronas/" aria-label="LinkedIn" target="_blank"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Admission</h4>
+                <ul>
+                    <li><a href="/auth/signup.php">Foundation</a></li>
+                    <li><a href="/auth/signup.php">Undergraduate</a></li>
+                    <li><a href="/auth/signup.php">Postgraduate</a></li>
+                    <li><a href="/auth/signup.php">International</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Academic</h4>
+                <ul>
+                    <li><a href="/auth/signup.php">Engineering</a></li>
+                    <li><a href="/auth/signup.php">Computer Science</a></li>
+                    <li><a href="/auth/signup.php">Science</a></li>
+                    <li><a href="/auth/signup.php">Management</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="/auth/login.php">Student Portal</a></li>
+                    <li><a href="/auth/signup.php">Scholarships</a></li>
+                    <li><a href="#why-utp">Campus Life</a></li>
+                    <li><a href="#stories">FAQs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">&copy; <?= date('Y') ?> Universiti Teknologi PETRONAS. All Rights Reserved.</div>
+            <div class="footer-legal">
+                <a href="#">Privacy Notice</a>
+                <a href="#">Disclaimer</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script nonce="<?= $GLOBALS['csp_nonce'] ?>">
+    /* Mobile Nav */
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const navLinksList = document.getElementById('navLinks');
+    if (mobileNavToggle && navLinksList) {
+        mobileNavToggle.addEventListener('click', () => {
+            navLinksList.classList.toggle('open');
         });
-
-        /* ── Scroll-triggered animations ── */
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.15 });
-
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
+    }
+    /* Close nav on link click */
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.addEventListener('click', () => {
+            document.getElementById('navLinks').classList.remove('open');
         });
-    </script>
+    });
+    /* Scroll-triggered animations */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
+    });
+</script>
 </body>
-
 </html>

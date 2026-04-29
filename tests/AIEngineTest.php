@@ -315,7 +315,7 @@ class AIEngineTest extends TestCase
     {
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Mathematics' => 'A',
-            'Physics'     => 'A',
+            'Physics' => 'A',
         ]);
         $results1 = $this->engine->checkEligibility($qualId);
         $results2 = $this->engine->checkEligibility($qualId);
@@ -328,7 +328,7 @@ class AIEngineTest extends TestCase
     {
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Mathematics' => 'A',
-            'Physics'     => 'A',
+            'Physics' => 'A',
         ]);
         $results1 = $this->engine->checkEligibility($qualId);
         $results2 = $this->engine->checkEligibility($qualId, true);
@@ -339,13 +339,22 @@ class AIEngineTest extends TestCase
     {
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Mathematics' => 'B+',
-            'Physics'     => 'B+',
+            'Physics' => 'B+',
         ]);
         $results = $this->engine->checkEligibility($qualId);
         $this->assertNotEmpty($results);
-        $expected = ['programme_id', 'programme_name', 'category', 'description',
-            'eligible', 'fit_percentage', 'confidence_label', 'subject_results',
-            'gaps', 'recommendation'];
+        $expected = [
+            'programme_id',
+            'programme_name',
+            'category',
+            'description',
+            'eligible',
+            'fit_percentage',
+            'confidence_label',
+            'subject_results',
+            'gaps',
+            'recommendation'
+        ];
         foreach ($expected as $key) {
             $this->assertArrayHasKey($key, $results[0], "Missing key: $key");
         }
@@ -369,7 +378,7 @@ class AIEngineTest extends TestCase
         // Eligible with moderate grades → "Good match" recommendation branch
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Mathematics' => 'B',
-            'Physics'     => 'B',
+            'Physics' => 'B',
         ]);
         $results = $this->engine->checkEligibility($qualId);
         $csResult = null;
@@ -389,7 +398,7 @@ class AIEngineTest extends TestCase
         // Ineligible but high fit → "close to qualifying" branch
         $qualId = $this->createQualificationWithGrades('SPM', [
             'Mathematics' => 'A+',
-            'Physics'     => 'D',  // Below minimum
+            'Physics' => 'D',  // Below minimum
         ]);
         $results = $this->engine->checkEligibility($qualId);
         $csResult = null;

@@ -85,6 +85,19 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
                     </svg>
                     Reports
                 </a>
+                <a href="/admin/generate-proposal.php" class="<?= $currentPage === 'generate-proposal' ? 'active' : '' ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    AI Broadcast
+                </a>
+                <a href="/admin/marketing-templates.php" class="<?= $currentPage === 'marketing-templates' ? 'active' : '' ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <path d="M22 6l-10 7L2 6" />
+                    </svg>
+                    AI Marketing
+                </a>
                 <a href="/admin/audit-log.php" class="<?= $currentPage === 'audit-log' ? 'active' : '' ?>">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path

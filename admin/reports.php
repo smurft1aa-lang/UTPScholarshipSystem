@@ -102,6 +102,25 @@ $stmt = $db->prepare("
 $stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
 $monthlyTrend = $stmt->fetchAll();
 
+// Handle AI Insights Generation
+$aiInsights = null;
+$aiError = null;
+if (isset($_GET['generate_insights']) && $_GET['generate_insights'] === '1') {
+    try {
+        $generator = new \UTP\Services\ProposalGenerator($db);
+        $reportData = [
+            'total_applications' => $totalApps,
+            'application_stats' => $appStats,
+            'programme_stats' => array_slice($progStats, 0, 10), // Limit to top 10 to fit context window
+            'scholarship_distribution' => $schDist,
+            'monthly_trend' => $monthlyTrend
+        ];
+        $aiInsights = $generator->generateReportInsights($dateFrom, $dateTo, $reportData);
+    } catch (Exception $e) {
+        $aiError = "Failed to generate AI insights: " . $e->getMessage();
+    }
+}
+
 // Handle CSV Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv');
@@ -167,6 +186,10 @@ require_once __DIR__ . '/admin_header.php';
         <p>Structured reports on applications, programmes, and scholarships.</p>
     </div>
     <div class="flex gap-2">
+        <a href="?from=<?= urlencode($dateFrom) ?>&to=<?= urlencode($dateTo) ?>&generate_insights=1" class="btn btn-outline btn-sm">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            AI Insights
+        </a>
         <a href="?from=<?= urlencode($dateFrom) ?>&to=<?= urlencode($dateTo) ?>&export=csv" class="btn btn-outline btn-sm">Export CSV</a>
         <button data-action="print" class="btn btn-purple btn-sm">Print Report</button>
     </div>
@@ -193,6 +216,24 @@ require_once __DIR__ . '/admin_header.php';
     <p style="color:var(--text-muted);">Period: <?= date('d M Y', strtotime($dateFrom)) ?> to <?= date('d M Y', strtotime($dateTo)) ?></p>
     <p style="color:var(--text-muted);">Generated: <?= date('d F Y, h:i A') ?></p>
 </div>
+
+<!-- AI Insights Panel -->
+<?php if ($aiError): ?>
+    <div class="alert alert-danger mb-4 no-print"><?= htmlspecialchars($aiError) ?></div>
+<?php endif; ?>
+<?php if ($aiInsights): ?>
+    <div class="card mb-6" style="border-left: 4px solid var(--utp-teal); background: linear-gradient(to right, rgba(0, 161, 177, 0.05), transparent);">
+        <div class="flex-between mb-4">
+            <h3 style="font-size:1.1rem; font-weight:600; color:var(--utp-navy); margin:0; display:flex; align-items:center; gap:8px;">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.8l6.3 12.6H5.7L12 5.8zm-1 5.2h2v4h-2v-4zm0 6h2v2h-2v-2z"/></svg>
+                AI Performance Insights
+            </h3>
+        </div>
+        <div class="raw-html-content" style="font-size:0.95rem; line-height:1.6;">
+            <?= \UTP\Security\InputSanitizer::sanitizeHtml($aiInsights) ?>
+        </div>
+    </div>
+<?php endif; ?>
 
 <!-- Application Statistics -->
 <div class="card mb-6">
