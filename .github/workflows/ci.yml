@@ -82,6 +82,11 @@ jobs:
             echo "✅ No legacy bridge file includes detected! Great job."
           fi
 
+      - name: Verify OpenAPI Spec is in sync
+        run: |
+          vendor/bin/openapi src -o docs/openapi.yaml
+          git diff --exit-code docs/openapi.yaml || { echo "::error::OpenAPI spec is out of sync. Run 'vendor/bin/openapi src -o docs/openapi.yaml' and commit the changes."; exit 1; }
+
   # ═══════════════════════════════════════════════════════════
   # JOB 2: PHPUnit Tests + Code Coverage
   # ═══════════════════════════════════════════════════════════
@@ -163,69 +168,33 @@ jobs:
   # JOB 3: Security Scanning
   # ═══════════════════════════════════════════════════════════
   security-scan:
-    name: Security Scan
+    name: Security Scan (Taint Analysis)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Scan for potential SQL injection patterns
-      # Looks for raw variable interpolation inside SQL strings
-      - name: Scan for SQL injection patterns
-        run: |
-          echo "🔍 Scanning for potential SQL injection patterns..."
-          ISSUES=0
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo
 
-          # Pattern: Direct variable interpolation in SQL strings (e.g., "WHERE id = $id")
-          # Exclude test files, setup.sql (seed data), and vendor
-          if grep -rn --include="*.php" -E '\$_(GET|POST|REQUEST|COOKIE)\[' \
-             --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=tests \
-             -l . | xargs grep -l "->query\|->exec" 2>/dev/null; then
-            echo "⚠️  Found files using superglobals near raw query execution"
-            ISSUES=$((ISSUES + 1))
-          fi
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-          # Pattern: String concatenation in SQL queries
-          if grep -rn --include="*.php" -E "\.(query|exec)\s*\(\s*['\"].*\\\$" \
-             --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=tests . ; then
-            echo "⚠️  Found string interpolation in query/exec calls"
-            ISSUES=$((ISSUES + 1))
-          fi
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
 
-          if [ $ISSUES -eq 0 ]; then
-            echo "✅ No SQL injection patterns detected"
-          else
-            echo "::warning::Found $ISSUES potential SQL injection patterns. Review flagged files."
-          fi
+      - name: Run Psalm Taint Analysis
+        run: vendor/bin/psalm --taint-analysis --report=psalm-report.xml
 
-      # Scan for XSS patterns in output/export files
-      - name: Scan for XSS vectors
-        run: |
-          echo "🔍 Scanning for potential XSS vectors..."
-          ISSUES=0
-
-          # Pattern: echo/print of raw variables without htmlspecialchars/e()
-          if grep -rn --include="*.php" -E 'echo\s+\$_(GET|POST|REQUEST)' \
-             --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=tests . ; then
-            echo "⚠️  Found raw superglobal output"
-            ISSUES=$((ISSUES + 1))
-          fi
-
-          # Pattern: Unescaped PHP output in HTML context
-          if grep -rn --include="*.php" -E '<\?=\s*\$[a-zA-Z_]+\[' \
-             --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=tests \
-             . | grep -v 'htmlspecialchars\|e(' | grep -v '\.css\|\.js' | head -20; then
-            echo "::notice::Review above lines for potential unescaped output"
-          fi
-
-          if [ $ISSUES -eq 0 ]; then
-            echo "✅ No critical XSS patterns detected"
-          else
-            echo "::warning::Found $ISSUES potential XSS patterns. Review flagged files."
-          fi
-
-      # Check for known vulnerable dependencies
       - name: Check Composer audit
         run: composer audit --no-interaction || true
 

@@ -7,8 +7,7 @@ if (!defined('APP_ENV')) {
 }
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_METHOD'] = 'GET';
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/init.php';
 class AuthTest extends TestCase
 {
     protected function setUp(): void

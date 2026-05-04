@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$hash, $record['user_id']]);
             $db->prepare("DELETE FROM password_resets WHERE user_id = ?")->execute([$record['user_id']]);
 
-            require_once __DIR__ . '/../includes/audit.php';
             logAudit($record['user_id'], 'Password Reset Successful');
 
             $_SESSION['success'] = "Password reset successfully. You can now log in.";

@@ -211,6 +211,13 @@ PROMPT;
         $httpCode = 0;
         $curlError = '';
 
+        $circuitKey = 'gemini_circuit_breaker';
+        $failures = function_exists('apcu_fetch') ? (int) apcu_fetch($circuitKey) : 0;
+        
+        if ($failures >= 3) {
+            throw new \RuntimeException('Gemini API is temporarily unavailable (Circuit Breaker active). Please try again later.');
+        }
+
         while ($attempt < $maxRetries) {
             $ch = curl_init();
             $curlOptions = [
@@ -221,7 +228,8 @@ PROMPT;
                     'Content-Type: application/json'
                 ],
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 60,
+                CURLOPT_TIMEOUT => 20, // Reduced from 60 to 20 for faster failover
+                CURLOPT_CONNECTTIMEOUT => 5, // Fast connection timeout
                 CURLOPT_SSL_VERIFYPEER => true,
             ];
 
@@ -238,21 +246,30 @@ PROMPT;
             curl_close($ch);
 
             if ($response !== false && $httpCode === 200) {
+                if (function_exists('apcu_store') && $failures > 0) {
+                    apcu_store($circuitKey, 0); // Reset failures on success
+                }
                 break; // Success!
             }
 
             // Retry for transient connection failures or Gemini rate limits (429) & high demand overloads (503)
-            if ($response === false || in_array($httpCode, [429, 503])) {
+            if ($response === false || in_array($httpCode, [429, 503, 504, 522])) {
                 $attempt++;
                 if ($attempt < $maxRetries) {
                     \UTP\Services\Telemetry::trackEvent('Gemini API Retry', ['attempt' => $attempt, 'http_code' => $httpCode], 'WARNING');
-                    // Exponential backoff: wait 2s, then 4s, etc.
-                    sleep(pow(2, $attempt));
+                    // Exponential backoff: wait 1s, then 2s
+                    sleep(pow(2, $attempt - 1));
                     continue;
                 }
             } else {
                 // Other HTTP errors (400, 401, 403, 500) shouldn't be retried
                 break;
+            }
+        }
+
+        if ($response === false || $httpCode !== 200) {
+            if (function_exists('apcu_inc')) {
+                apcu_inc($circuitKey, 1, $failCount, 60); // Break for 60 seconds after 3 failures
             }
         }
 

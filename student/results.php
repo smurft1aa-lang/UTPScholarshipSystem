@@ -62,7 +62,6 @@ if ($application) {
     }
     
     // Supplement with full AI run to get gaps and confidence labels
-    require_once __DIR__ . '/../includes/ai_engine.php';
     $aiResultsRaw = AIEngine::checkEligibility($application['qualification_id']);
     $aiMap = [];
     foreach ($aiResultsRaw as $air) {

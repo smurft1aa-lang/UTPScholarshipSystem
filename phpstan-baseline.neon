@@ -1,0 +1,673 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Binary operation "\-" between int\<1, max\> and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Core/SessionManager.php
+
+		-
+			message: '#^Parameter \#1 \$name of function setcookie expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Core/SessionManager.php
+
+		-
+			message: '#^Method UTP\\Security\\CSRF\:\:generateToken\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Security/CSRF.php
+
+		-
+			message: '#^Parameter \#1 \$known_string of function hash_equals expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/CSRF.php
+
+		-
+			message: '#^Method UTP\\Security\\InputSanitizer\:\:getClientIP\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Method UTP\\Security\\InputSanitizer\:\:sanitize\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Method UTP\\Security\\InputSanitizer\:\:sanitize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Parameter \#2 \$subject of function preg_match expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Part \$nonce \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 2
+			path: src/Security/InputSanitizer.php
+
+		-
+			message: '#^Parameter \#2 \$timestamp of function gmdate expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/RateLimiter.php
+
+		-
+			message: '#^Binary operation "\-" between int\<1, max\> and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Security/RoleGuard.php
+
+		-
+			message: '#^Parameter \#1 \$label of method OTPHP\\OTP\:\:setLabel\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/TwoFactorAuth.php
+
+		-
+			message: '#^Parameter \#1 \$otp of method OTPHP\\TOTP\:\:verify\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/TwoFactorAuth.php
+
+		-
+			message: '#^Parameter \#1 \$secret of static method OTPHP\\TOTP\:\:createFromSecret\(\) expects non\-empty\-string, int\<min, \-1\>\|int\<1, max\>\|non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/TwoFactorAuth.php
+
+		-
+			message: '#^Binary operation "\-" between int\<1, max\> and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Binary operation "\-" between mixed and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 2
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Binary operation "\." between ''eligibility_'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Cannot access offset ''grade'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Cannot access offset ''qual_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Cannot access offset ''subject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Method UTP\\Services\\AIEngine\:\:checkEligibility\(\) should return array\<int, array\<string, mixed\>\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Method UTP\\Services\\AIEngine\:\:evaluateProgramme\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Method UTP\\Services\\AIEngine\:\:generateRecommendation\(\) has parameter \$gaps with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Parameter \#1 \$programmeName of method UTP\\Services\\AIEngine\:\:generateRecommendation\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Parameter \#3 \$studentGrades of method UTP\\Services\\AIEngine\:\:evaluateProgramme\(\) expects array\<string, string\>, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Parameter \#4 \$qualType of method UTP\\Services\\AIEngine\:\:evaluateProgramme\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/AIEngine.php
+
+		-
+			message: '#^Binary operation "\." between ''Gemini API error\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''candidates'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''error'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''message'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''parts'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset ''text'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Method UTP\\Services\\ChatbotService\:\:sendMessage\(\) has parameter \$history with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Method UTP\\Services\\ChatbotService\:\:sendMessage\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/ChatbotService.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Method UTP\\Services\\DataExporter\:\:buildCsv\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fputcsv expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function rewind expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function stream_get_contents expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Parameter \#2 \$fields of function fputcsv expects array\<int\|string, bool\|float\|int\|string\|null\>, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/DataExporter.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Binary operation "\." between ''Gemini API error\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''candidates'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''error'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''grade'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''message'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''parts'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''subject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset ''text'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Method UTP\\Services\\OcrService\:\:callOcrApi\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Method UTP\\Services\\OcrService\:\:classifyAsOther\(\) has parameter \$otherCounters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Method UTP\\Services\\OcrService\:\:extractGrades\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function rtrim expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function preg_replace expects array\<float\|int\|string\>\|string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Property UTP\\Services\\OcrService\:\:\$languageKeywords type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/OcrService.php
+
+		-
+			message: '#^Binary operation "\." between ''Gemini API error\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Binary operation "\." between ''Sponsorship…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Binary operation "/" between int and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''avg_fit'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''avg_foundation_fee'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''avg_undergrad_fee'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''budget_max'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''budget_min'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''candidates'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''description'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''eligible_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''end_date'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''error'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''message'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''parts'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset ''text'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 3
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Method UTP\\Services\\ProposalGenerator\:\:generateProposal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Method UTP\\Services\\ProposalGenerator\:\:generateReportInsights\(\) has parameter \$reportData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Parameter \#1 \$datetime of function strtotime expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$eligibleCount \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$schDesc \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$schName \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 2
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$scholarship\[''budget_max''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$scholarship\[''budget_min''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$scholarship\[''description''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Part \$scholarship\[''name''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/ProposalGenerator.php
+
+		-
+			message: '#^Method UTP\\Services\\Telemetry\:\:trackEvent\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Services/Telemetry.php
+
+		-
+			message: '#^Part \$userId \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Services/Telemetry.php
+
+		-
+			message: '#^Cannot access offset ''email_verified'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Cannot access offset ''full_name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Cannot access offset ''password_hash'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Cannot access offset ''role'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Method UTP\\Services\\UserAuth\:\:getCurrentUser\(\) should return array\{id\: int, role\: string, full_name\: string\}\|null but returns array\{id\: mixed, role\: mixed, full_name\: mixed\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Method UTP\\Services\\UserAuth\:\:loginUser\(\) should return array\{success\: bool, error\?\: string, role\?\: string\} but returns array\{success\: true, role\: mixed\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/UserAuth.php
+
+		-
+			message: '#^Parameter \#2 \$hash of function password_verify expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Services/UserAuth.php

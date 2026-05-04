@@ -8,11 +8,8 @@ foreach ($it as $file) {
         $orig = $content;
         
         // Match both variations (with and without space)
-        $content = str_replace("require_once __DIR__ . '/../includes/auth.php';", "require_once __DIR__ . '/../includes/init.php';", $content);
-        $content = str_replace("require_once __DIR__ . '/../includes/security.php';", "", $content);
+        $content = str_replace("require_once __DIR__ . '/../includes/init.php';", "require_once __DIR__ . '/../includes/init.php';", $content);
         
-        $content = str_replace("require_once __DIR__ . '/includes/auth.php';", "require_once __DIR__ . '/includes/init.php';", $content);
-        $content = str_replace("require_once __DIR__ . '/includes/security.php';", "", $content);
         
         if ($content !== $orig) {
             file_put_contents($file->getPathname(), $content);

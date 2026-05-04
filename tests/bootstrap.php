@@ -216,5 +216,4 @@ if (!function_exists('sendVerificationEmail')) {
 // Load Composer autoloader for PSR-4 class resolution (src/ namespace)
 require_once __DIR__ . '/../vendor/autoload.php';
 // Load legacy bridge modules that the test bootstrap needs
-require_once __DIR__ . '/../includes/GradeMapper.php';
-require_once __DIR__ . '/../includes/ai_engine.php';
+require_once __DIR__ . '/../includes/init.php';

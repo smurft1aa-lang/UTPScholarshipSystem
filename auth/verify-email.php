@@ -31,7 +31,6 @@ $delete = $db->prepare("DELETE FROM email_verifications WHERE user_id = ?");
 $delete->execute([$record['user_id']]);
 
 // Log verification
-require_once __DIR__ . '/../includes/audit.php';
 logAudit($record['user_id'], 'Email Verified');
 
 // If already logged in, update session

@@ -7,7 +7,6 @@
  * This avoids heavy PDF library dependencies (DOMPDF/TCPDF).
  */
 require_once __DIR__ . '/../includes/init.php';
-require_once __DIR__ . '/../includes/ai_engine.php';
 requireStudent();
 
 $db = getDB();

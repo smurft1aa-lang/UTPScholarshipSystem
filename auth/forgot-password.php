@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $appUrl = getenv('APP_URL') ?: 'http://localhost';
                 $resetLink = rtrim($appUrl, '/') . "/auth/reset-password.php?token=" . urlencode($token);
 
-                require_once __DIR__ . '/../includes/mailer.php';
                 try {
                     $mail = createMailer();
                     $mail->addAddress($email, $user['full_name']);

@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../includes/ai_engine.php';
+require_once __DIR__ . '/../includes/init.php';
 
 /**
  * Eligibility Engine Tests
@@ -53,7 +53,8 @@ class EligibilityTest extends TestCase
     public function test_student_eligible_if_all_subjects_meet_minimum()
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'C', 'Physics' => 'B']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertTrue($prog1['eligible']);
@@ -62,7 +63,8 @@ class EligibilityTest extends TestCase
     public function test_student_ineligible_if_one_subject_below_minimum()
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'D', 'Physics' => 'A']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertFalse($prog1['eligible']);
@@ -71,7 +73,8 @@ class EligibilityTest extends TestCase
     public function test_fit_percentage_is_100_for_all_A_plus()
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A+', 'Physics' => 'A+']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertEquals(100.0, $prog1['fit_percentage']);
@@ -80,7 +83,8 @@ class EligibilityTest extends TestCase
     public function test_fit_percentage_is_0_for_all_F()
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'F', 'Physics' => 'F']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertEquals(0.0, $prog1['fit_percentage']);
@@ -90,7 +94,8 @@ class EligibilityTest extends TestCase
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A']);
 // Physics missing
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertFalse($prog1['eligible']);
@@ -103,7 +108,8 @@ class EligibilityTest extends TestCase
         $db = getDB();
         $db->exec("INSERT INTO entry_requirements (programme_id, qual_type, subject, min_grade, weight) VALUES (1, 'SPM', 'Other Subject', 'C', 0.8)");
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A', 'Physics' => 'A']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
 // Total max points = 10(Math) + 10(Phys) + 8(Other) = 28
@@ -115,14 +121,16 @@ class EligibilityTest extends TestCase
 
     public function test_scholarship_not_matched_below_min_fit_percentage()
     {
-        $scholarships = AIEngine::getMatchingScholarships([1], [1 => 40.0]);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $scholarships = $engine->getMatchingScholarships([1], [1 => 40.0]);
 // Prog 1, Fit 40
         $this->assertEmpty($scholarships); // Test Scholarship requires 70
     }
 
     public function test_scholarship_matched_at_exact_min_fit_percentage()
     {
-        $scholarships = AIEngine::getMatchingScholarships([1], [1 => 70.0]);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $scholarships = $engine->getMatchingScholarships([1], [1 => 70.0]);
 // Prog 1, Fit 70
         $this->assertCount(1, $scholarships);
         $this->assertEquals('Test Scholarship', $scholarships[0]['name']);
@@ -132,7 +140,8 @@ class EligibilityTest extends TestCase
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A+', 'Physics' => 'A']);
 // Fit 95%
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertEquals('Excellent Match', $prog1['confidence_label']);
@@ -142,7 +151,8 @@ class EligibilityTest extends TestCase
     {
         $qualId = $this->createQualAndGrades(['Mathematics' => 'D', 'Physics' => 'E']);
 // Fit 15%
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $prog1 = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($prog1);
         $this->assertEquals('Not Recommended', $prog1['confidence_label']);
@@ -152,7 +162,8 @@ class EligibilityTest extends TestCase
     {
         // C+ = 4. 4*2 = 8. 8/20 = 40%
         $qualId = $this->createQualAndGrades(['Mathematics' => 'C+', 'Physics' => 'C+']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($filtered);
         $this->assertEquals(40.0, $prog1['fit_percentage']);
@@ -163,7 +174,8 @@ class EligibilityTest extends TestCase
     {
         // B = 6. 6*2 = 12. 12/20 = 60%
         $qualId = $this->createQualAndGrades(['Mathematics' => 'B', 'Physics' => 'B']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($filtered);
         $this->assertEquals(60.0, $prog1['fit_percentage']);
@@ -174,7 +186,8 @@ class EligibilityTest extends TestCase
     {
         // A- = 8, B+ = 7. 8+7 = 15. 15/20 = 75%
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A-', 'Physics' => 'B+']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($filtered);
         $this->assertEquals(75.0, $prog1['fit_percentage']);
@@ -185,7 +198,8 @@ class EligibilityTest extends TestCase
     {
         // A = 9. 9*2 = 18. 18/20 = 90%
         $qualId = $this->createQualAndGrades(['Mathematics' => 'A', 'Physics' => 'A']);
-        $results = AIEngine::checkEligibility($qualId);
+        $engine = new \UTP\Services\AIEngine(getDB());
+        $results = $engine->checkEligibility($qualId);
         $filtered = array_filter($results, fn($r) => $r['programme_id'] == 1);
         $prog1 = reset($filtered);
         $this->assertEquals(90.0, $prog1['fit_percentage']);

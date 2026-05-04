@@ -32,10 +32,15 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
      */
     public function checkEligibility(int $qualificationId, bool $forceRefresh = false): array
     {
-        // ── Cache check (user-scoped to prevent cross-user leakage) ──
+        // ── APCu Cache check (user-scoped to prevent cross-user leakage) ──
         $userId = $_SESSION['user_id'] ?? 0;
         $cacheKey = 'eligibility_' . $userId . '_' . $qualificationId;
-        if (!$forceRefresh && isset($_SESSION[$cacheKey]) && is_array($_SESSION[$cacheKey])) {
+        if (!$forceRefresh && function_exists('apcu_fetch')) {
+            $cached = apcu_fetch($cacheKey);
+            if ($cached !== false && is_array($cached)) {
+                return $cached['results'];
+            }
+        } elseif (!$forceRefresh && isset($_SESSION[$cacheKey]) && is_array($_SESSION[$cacheKey])) {
             $cached = $_SESSION[$cacheKey];
             if (isset($cached['timestamp']) && (time() - $cached['timestamp']) < 600) {
                 return $cached['results'];
@@ -116,11 +121,15 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             }
 
             // ── Store in cache ──
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                $_SESSION[$cacheKey] = [
-                    'results' => $results,
-                    'timestamp' => time(),
-                ];
+            $cacheData = [
+                'results' => $results,
+                'timestamp' => time(),
+            ];
+            
+            if (function_exists('apcu_store')) {
+                apcu_store($cacheKey, $cacheData, 600);
+            } elseif (session_status() === PHP_SESSION_ACTIVE) {
+                $_SESSION[$cacheKey] = $cacheData;
             }
 
             return $results;

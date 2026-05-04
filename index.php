@@ -2,8 +2,7 @@
 /**
  * Entry Point — redirects to landing or dashboard
  */
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/init.php';
 
 setSecurityHeaders();
 initSession();
