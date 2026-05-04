@@ -320,7 +320,12 @@ class AIEngineTest extends TestCase
         $results2 = $this->engine->checkEligibility($qualId);
         $this->assertEquals($results1, $results2);
         $userId = $_SESSION['user_id'] ?? 0;
-        $this->assertArrayHasKey('eligibility_' . $userId . '_' . $qualId, $_SESSION);
+        $cacheKey = 'eligibility_' . $userId . '_' . $qualId;
+        if (function_exists('apcu_exists')) {
+            $this->assertTrue(apcu_exists($cacheKey) || isset($_SESSION[$cacheKey]), 'Cache not found in APCu or Session');
+        } else {
+            $this->assertArrayHasKey($cacheKey, $_SESSION);
+        }
     }
 
     public function test_force_refresh_bypasses_cache()

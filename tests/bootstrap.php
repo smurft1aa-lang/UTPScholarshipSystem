@@ -155,6 +155,14 @@ function getDB(): PDO
             file_size INTEGER NOT NULL,
             uploaded_at TEXT DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS proposals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            scholarship_id INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            generated_by INTEGER,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
     ");
 // Seed: Admin user (password: Admin@1234)
     $adminHash = password_hash('Admin@1234', PASSWORD_BCRYPT, ['cost' => 10]);

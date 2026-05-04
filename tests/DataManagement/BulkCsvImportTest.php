@@ -130,6 +130,55 @@ class BulkCsvImportTest extends TestCase
         $this->assertEquals(1, $result['imported']);
     }
 
+    public function testImportScholarshipsDetectsInvalidType(): void
+    {
+        $csvContent = "name,description,type,budget_min,budget_max,min_fit_percentage,start_date,end_date\n";
+        $csvContent .= "Bad Type Grant,Desc,INVALID,5000,50000,60,2026-01-01,2026-12-31\n";
+
+        $file = $this->createTempCsv($csvContent);
+        $result = $this->importer->importScholarships($file);
+
+        $this->assertEquals(1, $result['skipped']);
+        $this->assertStringContainsString('invalid type', strtolower($result['errors'][0]));
+    }
+
+    public function testPreviewCsv(): void
+    {
+        $csvContent = "h1,h2\nv1,v2\nv3,v4\n";
+        $file = $this->createTempCsv($csvContent);
+        
+        $preview = $this->importer->preview($file, 2);
+        
+        $this->assertEquals(['h1', 'h2'], $preview['headers']);
+        $this->assertCount(2, $preview['rows']);
+        $this->assertEquals(['v1', 'v2'], $preview['rows'][0]);
+    }
+
+    public function testProcessImportDetectsColumnCountMismatch(): void
+    {
+        $csvContent = "full_name,email,ic_number,phone\n";
+        $csvContent .= "Alice Tan,alice@test.com,010101010101\n"; // Missing 1 col
+
+        $file = $this->createTempCsv($csvContent);
+        $result = $this->importer->importStudents($file);
+
+        $this->assertEquals(1, $result['skipped']);
+        $this->assertStringContainsString('column count mismatch', strtolower($result['errors'][0]));
+    }
+
+    public function testImportStudentsDetectsDuplicateIC(): void
+    {
+        // 111111111111 exists in bootstrap
+        $csvContent = "full_name,email,ic_number,phone\n";
+        $csvContent .= "IC Dupe,unique@test.com,111111111111,0123456780\n";
+
+        $file = $this->createTempCsv($csvContent);
+        $result = $this->importer->importStudents($file);
+
+        $this->assertEquals(1, $result['skipped']);
+        $this->assertStringContainsString('duplicate ic', strtolower($result['errors'][0]));
+    }
+
     // ─── Helper ────────────────────────────────────────────────
 
     /**
