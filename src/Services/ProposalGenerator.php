@@ -21,7 +21,7 @@ class ProposalGenerator
     /**
      * Send a prompt to the Gemini API and return the response.
      */
-    private function callGemini(string $systemInstruction, string $prompt): string
+    protected function callGemini(string $systemInstruction, string $prompt): string
     {
         $payload = [
             'system_instruction' => [

@@ -128,7 +128,8 @@ class AIEngine implements \UTP\Contracts\ChecksEligibility
             
             if (function_exists('apcu_store')) {
                 apcu_store($cacheKey, $cacheData, 600);
-            } elseif (session_status() === PHP_SESSION_ACTIVE) {
+            }
+            if (session_status() === PHP_SESSION_ACTIVE) {
                 $_SESSION[$cacheKey] = $cacheData;
             }
 

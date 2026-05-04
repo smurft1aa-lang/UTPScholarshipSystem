@@ -62,4 +62,54 @@ class ProposalGeneratorTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->generator->generateMarketingTemplate('email', 1, 'students');
     }
+
+    public function test_generate_proposal_success_with_mock()
+    {
+        $mock = $this->getMockBuilder(ProposalGenerator::class)
+            ->setConstructorArgs([$this->db])
+            ->onlyMethods(['callGemini'])
+            ->getMock();
+
+        $mock->method('callGemini')
+            ->willReturn("<h3>Title</h3><p>Success</p>[INSERT_STATISTICS_BARS]");
+
+        $result = $mock->generateProposal(1, 1);
+        
+        $this->assertArrayHasKey('id', $result);
+        $this->assertStringContainsString('Sponsorship Proposal', $result['title']);
+        $this->assertStringContainsString('ai-stats-bars', $result['content']);
+        
+        // Verify it was saved to DB
+        $stmt = $this->db->prepare("SELECT * FROM proposals WHERE id = ?");
+        $stmt->execute([$result['id']]);
+        $this->assertNotEmpty($stmt->fetch());
+    }
+
+    public function test_generate_report_insights_success_with_mock()
+    {
+        $mock = $this->getMockBuilder(ProposalGenerator::class)
+            ->setConstructorArgs([$this->db])
+            ->onlyMethods(['callGemini'])
+            ->getMock();
+
+        $mock->method('callGemini')
+            ->willReturn("<h3>Report</h3><p>Insight content</p>");
+
+        $result = $mock->generateReportInsights('2026-01-01', '2026-01-31', ['data' => 1]);
+        $this->assertStringContainsString('Report', $result);
+    }
+
+    public function test_generate_marketing_template_success_with_mock()
+    {
+        $mock = $this->getMockBuilder(ProposalGenerator::class)
+            ->setConstructorArgs([$this->db])
+            ->onlyMethods(['callGemini'])
+            ->getMock();
+
+        $mock->method('callGemini')
+            ->willReturn("<h3>Email</h3><p>Dear Student,</p>");
+
+        $result = $mock->generateMarketingTemplate('email', 1, 'students');
+        $this->assertStringContainsString('Dear Student', $result);
+    }
 }
