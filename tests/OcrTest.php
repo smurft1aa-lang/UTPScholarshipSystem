@@ -112,4 +112,51 @@ class OcrTest extends TestCase
         $this->assertEquals('Chemistry', $res[1]['matched_key']);
         $this->assertEquals('B+', $res[1]['grade']);
     }
+
+    public function test_call_ocr_api_throws_on_bad_key()
+    {
+        putenv('GEMINI_API_KEY=bad_key');
+        $service = new OcrService();
+        $reflector = new \ReflectionClass(OcrService::class);
+        $method = $reflector->getMethod('callOcrApi');
+        $method->setAccessible(true);
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'ocr_test_');
+        file_put_contents($tmpFile, 'dummy data');
+
+        $this->expectException(\RuntimeException::class);
+        try {
+            $method->invoke($service, $tmpFile, 'image/jpeg', 'SPM');
+        } finally {
+            unlink($tmpFile);
+        }
+    }
+    
+    public function test_extract_grades_throws_exception_on_invalid_image()
+    {
+        putenv('GEMINI_API_KEY=dummy');
+        $service = new OcrService();
+        
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Uploaded file not found');
+        $service->extractGrades('/invalid/path.jpg', 'image/jpeg', 'SPM');
+    }
+    
+    public function test_extract_grades_hits_api_and_throws()
+    {
+        putenv('GEMINI_API_KEY=dummy_key_123');
+        $service = new OcrService();
+        
+        $tmpFile = tempnam(sys_get_temp_dir(), 'ocr_test_');
+        file_put_contents($tmpFile, 'dummy image data');
+        
+        try {
+            $service->extractGrades($tmpFile, 'image/jpeg', 'SPM');
+            $this->fail('Expected RuntimeException due to invalid API key');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('Gemini', $e->getMessage());
+        } finally {
+            unlink($tmpFile);
+        }
+    }
 }

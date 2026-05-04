@@ -24,4 +24,18 @@ class ChatbotTest extends TestCase
         // This will hit the network but fail quickly because of invalid key
         $service->sendMessage([['role' => 'user', 'parts' => [['text' => 'Hi']]]]);
     }
+
+    public function test_get_system_instruction()
+    {
+        putenv('GEMINI_API_KEY=dummy');
+        $service = new ChatbotService();
+        $reflector = new \ReflectionClass(ChatbotService::class);
+        $method = $reflector->getMethod('getSystemInstruction');
+        $method->setAccessible(true);
+
+        $instruction = $method->invoke($service);
+        $this->assertStringContainsString('UTP (Universiti Teknologi PETRONAS)', $instruction);
+        $this->assertStringContainsString('SPM (Sijil Pelajaran Malaysia)', $instruction);
+        $this->assertStringContainsString('Mathematics', $instruction);
+    }
 }
