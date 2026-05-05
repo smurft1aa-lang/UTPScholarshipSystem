@@ -185,7 +185,7 @@ The GitHub Actions CI pipeline runs on every push to `main`/`newf` and on pull r
 | Job | Description |
 |-----|-------------|
 | **Lint & Static Analysis** | PHP CodeSniffer (PSR-12) + PHPStan Level 5 |
-| **Tests & Coverage** | PHPUnit with 65% minimum coverage gate |
+| **Tests & Coverage** | PHPUnit with 80% minimum coverage gate |
 | **Security Scan** | Grep-based SQL injection & XSS pattern detection |
 | **Docker Build** | Validates production Docker image builds and starts |
 
