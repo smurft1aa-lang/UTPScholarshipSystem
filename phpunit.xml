@@ -16,6 +16,8 @@
         </include>
         <exclude>
             <file>src/Services/Mailer.php</file>
+            <file>src/OpenApiSpec.php</file>
+            <directory>src/Contracts</directory>
         </exclude>
     </source>
     <coverage>
