@@ -33,8 +33,10 @@ class Telemetry
             $resolvedUserId = $userId;
             $resolvedRole = $role ?? 'guest';
             if ($resolvedUserId === null && session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-                $resolvedUserId = (string) $_SESSION['user_id'];
-                $resolvedRole = $_SESSION['role'] ?? 'guest';
+                $sessionId = $_SESSION['user_id'];
+                $resolvedUserId = is_scalar($sessionId) ? strval($sessionId) : null;
+                $sessionRole = $_SESSION['role'] ?? null;
+                $resolvedRole = is_string($sessionRole) ? $sessionRole : 'guest';
             }
 
             if ($resolvedUserId !== null) {
@@ -89,7 +91,8 @@ class Telemetry
         // Resolve user ID: prefer explicit param, then session, then 'SYSTEM'
         $resolvedUserId = $userId;
         if ($resolvedUserId === null && session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-            $resolvedUserId = (string) $_SESSION['user_id'];
+            $sessionId = $_SESSION['user_id'];
+            $resolvedUserId = is_scalar($sessionId) ? strval($sessionId) : null;
         }
         $resolvedUserId ??= 'SYSTEM';
 

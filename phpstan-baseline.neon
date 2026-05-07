@@ -84,11 +84,7 @@ parameters:
 			count: 1
 			path: src/Security/TwoFactorAuth.php
 
-		-
-			message: '#^Parameter \#1 \$secret of static method OTPHP\\TOTP\:\:createFromSecret\(\) expects non\-empty\-string, int\<min, \-1\>\|int\<1, max\>\|non\-falsy\-string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Security/TwoFactorAuth.php
+
 
 		-
 			message: '#^Binary operation "\-" between int\<1, max\> and mixed results in an error\.$#'
@@ -618,11 +614,7 @@ parameters:
 			count: 1
 			path: src/Services/Telemetry.php
 
-		-
-			message: '#^Part \$userId \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: src/Services/Telemetry.php
+
 
 		-
 			message: '#^Cannot access offset ''email_verified'' on mixed\.$#'

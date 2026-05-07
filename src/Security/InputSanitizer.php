@@ -193,7 +193,7 @@ class InputSanitizer
         if (preg_match_all('/(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))/', $attrString, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $attrName = strtolower($match[1]);
-                $attrValue = $match[2] ?: ($match[3] ?: ($match[4] ?? ''));
+                $attrValue = $match[2] ?? $match[3] ?? $match[4] ?? '';
 
                 // Only keep whitelisted attributes
                 if (!in_array($attrName, $allowed, true)) {
@@ -202,7 +202,7 @@ class InputSanitizer
 
                 // Block dangerous URI schemes in href/src attributes
                 if (in_array($attrName, ['href', 'src'], true)) {
-                    $cleanValue = strtolower(trim(preg_replace('/[\x00-\x1f\x7f]/', '', $attrValue)));
+                    $cleanValue = strtolower(trim((string) preg_replace('/[\x00-\x1f\x7f]/', '', $attrValue)));
                     if (preg_match('/^(javascript|data|vbscript)\s*:/i', $cleanValue)) {
                         continue;
                     }

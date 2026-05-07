@@ -60,7 +60,7 @@ class TwoFactorAuth
      * Decrypt a TOTP secret retrieved from the database.
      * Returns the input as-is if it's a legacy plaintext secret.
      */
-    private static function decryptSecret(string $encrypted): ?string
+    private static function decryptSecret(string $encrypted): string
     {
         $key = self::getEncryptionKey();
         $decoded = base64_decode($encrypted, true);
@@ -123,13 +123,13 @@ class TwoFactorAuth
         $stmt = $this->db->prepare("SELECT totp_secret FROM users WHERE id = ?");
         $stmt->execute([$userId]);
         $storedSecret = $stmt->fetchColumn();
-        if (!$storedSecret) {
+        if (!$storedSecret || !is_string($storedSecret)) {
             return false;
         }
 
         // Decrypt the secret from the database
         $secret = self::decryptSecret($storedSecret);
-        if ($secret === null) {
+        if ($secret === '') {
             return false;
         }
 
