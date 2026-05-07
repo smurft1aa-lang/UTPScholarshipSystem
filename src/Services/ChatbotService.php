@@ -6,8 +6,9 @@ namespace UTP\Services;
 
 class ChatbotService
 {
-    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=';
+    private const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
     private string $apiKey;
+    private string $model;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class ChatbotService
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY environment variable is missing.');
         }
+        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite-preview';
     }
 
     /**
@@ -94,7 +96,7 @@ PROMPT;
         while ($attempt < $maxRetries) {
             $ch = curl_init();
             $curlOptions = [
-                CURLOPT_URL => self::API_URL . $this->apiKey,
+                CURLOPT_URL => self::API_BASE . $this->model . ':generateContent?key=' . $this->apiKey,
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($payload),
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json'],

@@ -9,6 +9,10 @@ namespace UTP\Services;
  *
  * Records user actions in the audit_log table for compliance
  * and security monitoring purposes.
+ *
+ * Supports both static and instance usage:
+ *   - Static: AuditLogger::log($db, $userId, $action, ...)
+ *   - Instance: $logger->logAction($userId, $action, ...)
  */
 class AuditLogger
 {
@@ -19,8 +23,12 @@ class AuditLogger
     }
 
     /**
-     * Log an auditable action.
+     * Log an auditable action (static convenience method).
      *
+     * This method is the preferred entry point for one-off audit calls
+     * where constructing an AuditLogger instance is unnecessary.
+     *
+     * @param \PDO        $db         Database connection
      * @param int         $userId     The user performing the action
      * @param string      $action     Human-readable action description
      * @param string|null $targetType The entity type affected (e.g., 'User', 'Application')
@@ -28,11 +36,11 @@ class AuditLogger
      * @param string|null $details    Additional contextual details
      * @return bool True on success, false on failure
      */
-    public function log(int $userId, string $action, ?string $targetType = null, ?int $targetId = null, ?string $details = null): bool
+    public static function log(\PDO $db, int $userId, string $action, ?string $targetType = null, ?int $targetId = null, ?string $details = null): bool
     {
         try {
             $ipAddress = \UTP\Security\InputSanitizer::getClientIP();
-            $stmt = $this->db->prepare("
+            $stmt = $db->prepare("
                 INSERT INTO audit_log (user_id, action, target_type, target_id, details, ip_address) 
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
@@ -49,5 +57,20 @@ class AuditLogger
             error_log("Audit log failed: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Log an auditable action (instance method).
+     *
+     * @param int         $userId     The user performing the action
+     * @param string      $action     Human-readable action description
+     * @param string|null $targetType The entity type affected (e.g., 'User', 'Application')
+     * @param int|null    $targetId   The ID of the affected entity
+     * @param string|null $details    Additional contextual details
+     * @return bool True on success, false on failure
+     */
+    public function logAction(int $userId, string $action, ?string $targetType = null, ?int $targetId = null, ?string $details = null): bool
+    {
+        return self::log($this->db, $userId, $action, $targetType, $targetId, $details);
     }
 }

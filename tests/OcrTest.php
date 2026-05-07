@@ -13,6 +13,15 @@ class OcrTest extends TestCase
         new OcrService(null);
     }
 
+    public function analyticsVariationTest()
+    {
+        putenv('GEMINI_API_KEY=');
+        $this->expectException(\RuntimeException::class);
+        $service = new OcrService(null);
+
+
+
+    }
     public function test_normalize_grade()
     {
         putenv('GEMINI_API_KEY=dummy');
@@ -22,7 +31,7 @@ class OcrTest extends TestCase
         $method->setAccessible(true);
 
         $validGrades = ['A+', 'A', 'B', 'C'];
-        
+
         $this->assertEquals('A+', $method->invoke($service, 'A+', $validGrades));
         $this->assertEquals('A+', $method->invoke($service, 'A +', $validGrades));
         $this->assertEquals('A+', $method->invoke($service, 'a+', $validGrades));
@@ -45,7 +54,7 @@ class OcrTest extends TestCase
         // Fuzzy/Levenshtein
         $res = $method->invoke($service, 'Mathmatics'); // Missing 'e'
         $this->assertEquals('Mathematics', $res['matched_key']);
-        
+
         // Unknown
         $res = $method->invoke($service, 'Unknown Subject XYZ');
         $this->assertEquals('', $res['matched_key']);
@@ -71,7 +80,7 @@ class OcrTest extends TestCase
         $res = $method->invokeArgs($service, ['Cooking', &$counters]);
         $this->assertEquals('Other Non-Language Subject', $res['matched_key']);
         $this->assertEquals(1, $counters['non_language']);
-        
+
         // Non-language 2
         $res = $method->invokeArgs($service, ['Baking', &$counters]);
         $this->assertEquals('Other Non-Language Subject I', $res['matched_key']);
@@ -88,7 +97,7 @@ class OcrTest extends TestCase
 
         $json = '[{"subject": "Fizik", "grade": "A+"}, {"subject": "English", "grade": "B"}]';
         $res = $method->invoke($service, $json, 'SPM');
-        
+
         $this->assertCount(2, $res);
         $this->assertEquals('Physics', $res[0]['matched_key']);
         $this->assertEquals('A+', $res[0]['grade']);
@@ -105,7 +114,7 @@ class OcrTest extends TestCase
 
         $text = "Here are your grades:\nMatematik A+\nKimia : B+";
         $res = $method->invoke($service, $text, 'SPM');
-        
+
         $this->assertCount(2, $res);
         $this->assertEquals('Mathematics', $res[0]['matched_key']);
         $this->assertEquals('A+', $res[0]['grade']);
@@ -131,25 +140,25 @@ class OcrTest extends TestCase
             unlink($tmpFile);
         }
     }
-    
+
     public function test_extract_grades_throws_exception_on_invalid_image()
     {
         putenv('GEMINI_API_KEY=dummy');
         $service = new OcrService();
-        
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Uploaded file not found');
         $service->extractGrades('/invalid/path.jpg', 'image/jpeg', 'SPM');
     }
-    
+
     public function test_extract_grades_hits_api_and_throws()
     {
         putenv('GEMINI_API_KEY=dummy_key_123');
         $service = new OcrService();
-        
+
         $tmpFile = tempnam(sys_get_temp_dir(), 'ocr_test_');
         file_put_contents($tmpFile, 'dummy image data');
-        
+
         try {
             $service->extractGrades($tmpFile, 'image/jpeg', 'SPM');
             $this->fail('Expected RuntimeException due to invalid API key');

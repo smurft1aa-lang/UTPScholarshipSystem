@@ -81,8 +81,8 @@ $audienceLabels = [
 // ─── Handle: Step 1 — Generate Template ───────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'generate') {
     if (!\UTP\Security\CSRF::validateToken($_POST['csrf_token'] ?? '')) {
-        die('Invalid CSRF token');
-    }
+        $error = 'Session expired. Please refresh the page and try again.';
+    } else {
     $templateType = $_POST['template_type'] ?? '';
     $audienceKey = $_POST['target_audience'] ?? '';
     $scholarshipId = (int)($_POST['scholarship_id'] ?? 0);
@@ -98,13 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         $error = "Please fill in all required fields.";
     }
+    } // end CSRF else
 }
 
 // ─── Handle: Step 2 — Broadcast Emails ────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'broadcast') {
     if (!\UTP\Security\CSRF::validateToken($_POST['csrf_token'] ?? '')) {
-        die('Invalid CSRF token');
-    }
+        $error = 'Session expired. Please refresh the page and try again.';
+    } else {
     $emailSubject = $_POST['email_subject'] ?? 'UTP Scholarship Update';
     $emailBody = $_POST['email_body'] ?? '';
     $recipientIds = json_decode($_POST['recipient_ids'] ?? '[]', true);
@@ -160,6 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         $error = "No email content or recipients to broadcast.";
     }
+    } // end CSRF else
 }
 
 require_once __DIR__ . '/admin_header.php';

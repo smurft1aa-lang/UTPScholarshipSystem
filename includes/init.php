@@ -129,8 +129,7 @@ if (!function_exists('getClientIP')) {
 // ─── AuditLogger Bridge ────────────────────────────────────────────
 if (!function_exists('logAudit')) {
     function logAudit($userId, $action, $targetType = null, $targetId = null, $details = null) {
-        $logger = new \UTP\Services\AuditLogger(getDB());
-        return $logger->log($userId, $action, $targetType, $targetId, $details);
+        return \UTP\Services\AuditLogger::log(getDB(), $userId, $action, $targetType, $targetId, $details);
     }
 }
 
@@ -169,23 +168,6 @@ if (!function_exists('getCurrentUser')) {
     }
 }
 
-// ─── Telemetry Bridge ───────────────────────────────────────────────
-if (!function_exists('startTimer')) {
-    function startTimer(string $label): void {
-        \UTP\Services\Telemetry::startTimer($label);
-    }
-}
-if (!function_exists('endTimer')) {
-    function endTimer(string $label): float {
-        return \UTP\Services\Telemetry::endTimer($label);
-    }
-}
-if (!function_exists('trackEvent')) {
-    function trackEvent(string $eventName, array $context = [], string $level = 'INFO'): void {
-        \UTP\Services\Telemetry::trackEvent($eventName, $context, $level);
-    }
-}
-
 // ─── Mailer Bridge ──────────────────────────────────────────────────
 if (!function_exists('createMailer')) {
     function createMailer() { return \UTP\Services\Mailer::createMailer(); }
@@ -198,5 +180,17 @@ if (!function_exists('sendVerificationEmail')) {
 if (!function_exists('sendApplicationStatusEmail')) {
     function sendApplicationStatusEmail(string $userEmail, string $userName, string $status, string $programmeName, string $adminNotes = ''): bool {
         return \UTP\Services\Mailer::sendApplicationStatusEmail($userEmail, $userName, $status, $programmeName, $adminNotes);
+    }
+}
+
+// ─── Status Badge Helper ────────────────────────────────────────────
+if (!function_exists('statusBadgeClass')) {
+    /**
+     * Get the CSS color class for an application status badge.
+     * Centralizes the ternary chain that was duplicated across views.
+     */
+    function statusBadgeClass(string $status): string {
+        $enum = \UTP\Core\ApplicationStatus::tryFrom($status);
+        return $enum ? $enum->badgeClass() : 'gray';
     }
 }

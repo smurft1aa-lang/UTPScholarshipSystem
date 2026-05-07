@@ -175,7 +175,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="stat-label">Application Status</div>
             <div class="stat-value" style="font-size:1.2rem;">
                 <?php if ($latestApp): ?>
-                    <span class="badge badge-<?= $latestApp['status'] === 'approved' ? 'green' : ($latestApp['status'] === 'rejected' ? 'red' : ($latestApp['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
+                    <span class="badge badge-<?= statusBadgeClass($latestApp['status']) ?>">
                         <?= ucfirst($latestApp['status']) ?>
                     </span>
                 <?php else: ?>
@@ -260,7 +260,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="card mt-6">
         <div class="flex-between mb-4">
             <h3 style="font-size:1.05rem;">Latest Application</h3>
-            <span class="badge badge-<?= $latestApp['status'] === 'approved' ? 'green' : ($latestApp['status'] === 'rejected' ? 'red' : ($latestApp['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
+            <span class="badge badge-<?= statusBadgeClass($latestApp['status']) ?>">
                 <?= ucfirst($latestApp['status']) ?>
             </span>
         </div>
@@ -329,7 +329,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?= $app['schol_name'] ? '<span class="badge badge-outline">'.htmlspecialchars($app['schol_name']).'</span>' : '<span style="color:var(--text-muted); font-size:0.85rem;">None</span>' ?>
                         </td>
                         <td>
-                            <span class="badge badge-<?= $app['status'] === 'approved' ? 'green' : ($app['status'] === 'rejected' ? 'red' : ($app['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
+                            <span class="badge badge-<?= statusBadgeClass($app['status']) ?>">
                                 <?= ucfirst($app['status']) ?>
                             </span>
                         </td>

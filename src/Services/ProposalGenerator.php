@@ -5,8 +5,9 @@ namespace UTP\Services;
 
 class ProposalGenerator
 {
-    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=';
+    private const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
     private string $apiKey;
+    private string $model;
     private \PDO $db;
 
     public function __construct(\PDO $db)
@@ -16,10 +17,11 @@ class ProposalGenerator
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY environment variable is missing.');
         }
+        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite-preview';
     }
 
     /**
-     * Send a prompt to the Gemini API and return the response.
+     * Send a prompt to the Gemini API with retry logic (3 attempts, exponential backoff).
      */
     protected function callGemini(string $systemInstruction, string $prompt): string
     {
@@ -32,21 +34,46 @@ class ProposalGenerator
             ]
         ];
 
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => self::API_URL . $this->apiKey,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 45,
-            CURLOPT_SSL_VERIFYPEER => true,
-        ]);
+        $apiUrl = self::API_BASE . $this->model . ':generateContent?key=' . $this->apiKey;
+        $maxRetries = 3;
+        $attempt = 0;
+        $response = false;
+        $httpCode = 0;
+        $curlError = '';
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
+        while ($attempt < $maxRetries) {
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $apiUrl,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 45,
+                CURLOPT_SSL_VERIFYPEER => true,
+            ]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+
+            if ($response !== false && $httpCode === 200) {
+                break;
+            }
+
+            // Retry on transient errors (rate limit, server error, network failure)
+            if ($response === false || in_array($httpCode, [429, 503])) {
+                $attempt++;
+                if ($attempt < $maxRetries) {
+                    Telemetry::trackEvent('ProposalGenerator API Retry', ['attempt' => $attempt, 'http_code' => $httpCode], 'WARNING');
+                    sleep((int) pow(2, $attempt));
+                    continue;
+                }
+            } else {
+                break;
+            }
+        }
 
         if ($response === false) {
             throw new \RuntimeException('Gemini API request failed: ' . $curlError);

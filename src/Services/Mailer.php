@@ -144,8 +144,13 @@ HTML;
 
     /**
      * Send an email verification link to a newly registered user.
+     *
+     * @param string   $userId    The user ID
+     * @param string   $userEmail The user's email address
+     * @param string   $userName  The user's display name
+     * @param \PDO|null $db       Optional database connection (falls back to getDB())
      */
-    public static function sendVerificationEmail(string $userId, string $userEmail, string $userName): bool
+    public static function sendVerificationEmail(string $userId, string $userEmail, string $userName, ?\PDO $db = null): bool
     {
         if (getenv('APP_ENV') === 'testing') {
             return true;
@@ -154,8 +159,7 @@ HTML;
         $systemUrl = getenv('APP_URL') ?: 'http://localhost';
         $token = bin2hex(random_bytes(32));
         try {
-            /** @phpstan-ignore function.notFound */
-            $db = getDB();
+            $db = $db ?? getDB();
             $db->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
             $stmt = $db->prepare("INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))");
             $stmt->execute([$userId, $token]);

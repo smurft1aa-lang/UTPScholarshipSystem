@@ -4,7 +4,7 @@
 #
 # Jobs:
 #   lint          → PHP CodeSniffer (PSR-12) + PHPStan
-#   test          → PHPUnit with code coverage gate (65%)
+#   test          → PHPUnit with code coverage gate (80%)
 #   security-scan → Grep-based SQL injection & XSS detection
 #   docker-build  → Validates Docker image builds successfully
 #
@@ -137,16 +137,16 @@ jobs:
         env:
           APP_ENV: testing
 
-      # Enforce minimum 65% code coverage
-      - name: Check code coverage gate (65% minimum)
-        run: php scripts/check_coverage.php coverage.xml 65
+      # Enforce minimum 80% code coverage
+      - name: Check code coverage gate (80% minimum)
+        run: php scripts/check_coverage.php coverage.xml 80
         env:
           APP_ENV: testing
 
       # Test that Phinx migrations apply cleanly against real MySQL
       - name: Test database migrations
         run: |
-          vendor/bin/phinx migrate -e testing --configuration=phinx.php 2>&1 || true
+          vendor/bin/phinx migrate -e testing --configuration=phinx.php 2>&1
           echo "Migration test completed"
         env:
           DB_HOST: 127.0.0.1
@@ -162,7 +162,7 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
-          retention-days: 14
+          retention-days: 30
 
   # ═══════════════════════════════════════════════════════════
   # JOB 3: Security Scanning
@@ -209,6 +209,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Ensure .env.example documents all required environment variables
+      - name: Validate .env.example completeness
+        run: |
+          REQUIRED_VARS="DB_HOST DB_NAME DB_USER DB_PASS GEMINI_API_KEY APP_ENV"
+          MISSING=""
+          for var in $REQUIRED_VARS; do
+            if ! grep -q "^${var}=" .env.example 2>/dev/null; then
+              MISSING="$MISSING $var"
+            fi
+          done
+          if [ -n "$MISSING" ]; then
+            echo "❌ .env.example is missing required variables:$MISSING"
+            exit 1
+          fi
+          echo "✅ .env.example contains all required variables"
+
       # Validate Dockerfile builds without errors
       - name: Build Docker image
         run: docker build --target production -t utp-scholarship:ci-test .
@@ -222,7 +238,14 @@ jobs:
             -e DB_USER=root \
             -e DB_PASS=test \
             -e APP_ENV=testing \
-            utp-scholarship:ci-test || true
+            utp-scholarship:ci-test
+
+          # Verify container started (fail if it didn't)
+          if ! docker ps --filter name=ci-test --filter status=running | grep -q ci-test; then
+            echo "❌ Container failed to start"
+            docker logs ci-test 2>&1
+            exit 1
+          fi
 
           # Give Apache 5 seconds to start
           sleep 5

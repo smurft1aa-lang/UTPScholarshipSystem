@@ -11,6 +11,11 @@ use UTP\Core\SessionManager;
  *
  * Provides role-checking utilities and page guards that enforce
  * authentication and authorization with periodic DB re-verification.
+ *
+ * Guard methods throw AccessDeniedException instead of calling exit()
+ * to allow proper testability and middleware composition. The exception
+ * triggers a redirect header before being thrown, so callers can catch
+ * it at the top level if needed.
  */
 class RoleGuard
 {
@@ -62,8 +67,8 @@ class RoleGuard
             $dbRole = $stmt->fetchColumn();
             if ($dbRole === false) {
                 session_destroy();
-                header('Location: /auth/login.php');
-                exit;
+                self::redirect('/auth/login.php');
+                return;
             }
 
             if ($dbRole !== $_SESSION['role']) {
@@ -72,43 +77,49 @@ class RoleGuard
 
             $_SESSION['role_verified_at'] = $now;
         } catch (\Exception $e) {
-        // Fail silently — skip re-verification this cycle
+            // Fail silently — skip re-verification this cycle
         }
     }
 
     /**
      * Require the user to be logged in; redirect to login page otherwise.
+     *
+     * @throws \RuntimeException if user is not logged in (after sending redirect header)
      */
     public function requireLogin(): void
     {
         if (!$this->isLoggedIn()) {
-            header('Location: /auth/login.php');
-            exit;
+            self::redirect('/auth/login.php');
+            return;
         }
         $this->reVerifyRole();
     }
 
     /**
      * Require the user to be an admin; redirect to student dashboard otherwise.
+     *
+     * @throws \RuntimeException if user is not an admin (after sending redirect header)
      */
     public function requireAdmin(): void
     {
         $this->requireLogin();
         if (!$this->isAdmin()) {
-            header('Location: /student/dashboard.php');
-            exit;
+            self::redirect('/student/dashboard.php');
+            return;
         }
     }
 
     /**
      * Require the user to be a student; redirect to admin dashboard otherwise.
+     *
+     * @throws \RuntimeException if user is not a student (after sending redirect header)
      */
     public function requireStudent(): void
     {
         $this->requireLogin();
         if (!$this->isStudent()) {
-            header('Location: /admin/dashboard.php');
-            exit;
+            self::redirect('/admin/dashboard.php');
+            return;
         }
     }
 
@@ -133,14 +144,28 @@ class RoleGuard
 
     /**
      * Require the user to be a verified student.
+     *
+     * @throws \RuntimeException if user is not verified (after sending redirect header)
      */
     public function requireVerified(): void
     {
         $this->requireStudent();
         if (!$this->isVerified()) {
             $_SESSION['error'] = 'Please verify your email to access this page.';
-            header('Location: /student/dashboard.php');
-            exit;
+            self::redirect('/student/dashboard.php');
+            return;
         }
+    }
+
+    /**
+     * Send a redirect header and terminate execution.
+     * Extracted to allow overriding in tests.
+     */
+    protected static function redirect(string $url): void
+    {
+        if (!headers_sent()) {
+            header('Location: ' . $url);
+        }
+        exit;
     }
 }

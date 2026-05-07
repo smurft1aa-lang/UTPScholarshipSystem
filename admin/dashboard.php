@@ -207,7 +207,7 @@ $today = date('j');
                         <?php endif; ?>
                     </td>
                     <td>
-                        <span class="badge badge-<?= $app['status'] === 'approved' ? 'green' : ($app['status'] === 'rejected' ? 'red' : ($app['status'] === 'processing' ? 'yellow' : 'blue')) ?>">
+                        <span class="badge badge-<?= statusBadgeClass($app['status']) ?>">
                             <?= ucfirst($app['status']) ?>
                         </span>
                     </td>

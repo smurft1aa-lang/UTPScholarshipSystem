@@ -63,7 +63,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <tr><td style="font-weight:600;">Email</td><td><?= htmlspecialchars($application['email']) ?></td></tr>
                 <tr><td style="font-weight:600;">Phone</td><td><?= htmlspecialchars($application['phone']) ?></td></tr>
                 <tr><td style="font-weight:600;">Qualification</td><td><?= htmlspecialchars($application['qual_type']) ?></td></tr>
-                <tr><td style="font-weight:600;">Application Status</td><td><span class="badge badge-<?= $application['status'] === 'approved' ? 'green' : ($application['status'] === 'rejected' ? 'red' : 'blue') ?>"><?= ucfirst($application['status']) ?></span></td></tr>
+                <tr><td style="font-weight:600;">Application Status</td><td><span class="badge badge-<?= statusBadgeClass($application['status']) ?>"><?= ucfirst($application['status']) ?></span></td></tr>
             </table>
         </div>
 
