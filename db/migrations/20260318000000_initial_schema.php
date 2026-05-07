@@ -20,7 +20,7 @@ final class InitialSchema extends AbstractMigration
               ->addColumn('password_hash', 'string', ['limit' => 255])
               ->addColumn('ic_number', 'string', ['limit' => 14])
               ->addColumn('phone', 'string', ['limit' => 15])
-              ->addColumn('role', 'enum', ['values' => ['student', 'admin'], 'default' => 'student'])
+              ->addColumn('role', 'string', ['limit' => 10, 'default' => 'student'])
               ->addColumn('email_verified', 'boolean', ['default' => false])
               ->addColumn('totp_secret', 'string', ['limit' => 64, 'null' => true])
               ->addColumn('totp_enabled', 'boolean', ['default' => false])
