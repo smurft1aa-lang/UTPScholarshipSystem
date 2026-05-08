@@ -133,13 +133,22 @@ jobs:
 
       # Run PHPUnit tests with coverage report
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
         env:
           APP_ENV: testing
           APP_KEY: ci-test-key-for-encryption-123
-
+          XDEBUG_MODE: coverage
 
       # Enforce minimum 80% code coverage
+      - name: Verify coverage report exists
+        run: |
+          if [ ! -f coverage.xml ]; then
+            echo "::error::coverage.xml was not generated. Ensure Xdebug is installed and XDEBUG_MODE=coverage is set."
+            ls -la coverage.xml 2>&1 || true
+            exit 1
+          fi
+          echo "✅ coverage.xml found ($(wc -c < coverage.xml) bytes)"
+
       - name: Check code coverage gate (80% minimum)
         run: php scripts/check_coverage.php coverage.xml 80
         env:
