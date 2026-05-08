@@ -120,19 +120,6 @@ jobs:
           extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo, pcov
           coverage: pcov
 
-      - name: Verify coverage driver is available
-        run: |
-          echo "=== PHP Version ==="
-          php -v
-          echo "=== Loaded modules (coverage-related) ==="
-          php -m | grep -iE "pcov|xdebug" || echo "(none found)"
-          echo "=== PCOV config ==="
-          php -i | grep -i pcov || echo "(no pcov config)"
-          echo "=== PHPUnit version ==="
-          vendor/bin/phpunit --version || true
-          echo "=== Testing coverage driver detection ==="
-          php -r "echo 'Coverage driver: '; var_dump(extension_loaded('pcov'));"
-
       - name: Cache Composer packages
         uses: actions/cache@v4
         with:
@@ -144,27 +131,23 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
-      # Run PHPUnit tests with coverage report
+      # Step 1: Run tests and dump raw coverage data (serialized PHP)
       - name: Run PHPUnit tests with coverage
         run: |
-          set +e
-          php -d pcov.enabled=1 -d memory_limit=512M vendor/bin/phpunit --colors=never --coverage-clover coverage.xml > phpunit_output.txt 2>&1
-          PHPUNIT_EXIT=$?
-          set -e
-          echo "=== PHPUnit exit code: $PHPUNIT_EXIT ==="
-          echo "=== Last 60 lines of output ==="
-          tail -60 phpunit_output.txt
-          echo "=== Checking coverage.xml ==="
-          ls -la coverage.xml 2>&1 || echo "coverage.xml NOT FOUND"
-          if [ $PHPUNIT_EXIT -ne 0 ]; then
-            echo "::error::PHPUnit exited with code $PHPUNIT_EXIT"
-            exit $PHPUNIT_EXIT
-          fi
+          php -d pcov.enabled=1 -d memory_limit=512M vendor/bin/phpunit \
+            --colors=always \
+            --coverage-php coverage-data.php
+          echo "Coverage data file:"
+          ls -la coverage-data.php
         env:
           APP_ENV: testing
           APP_KEY: ci-test-key-for-encryption-123
 
-      # Enforce minimum 80% code coverage
+      # Step 2: Convert serialized coverage to Clover XML
+      - name: Generate Clover coverage report
+        run: php scripts/convert-coverage.php coverage-data.php coverage.xml
+
+      # Step 3: Enforce minimum 80% code coverage
       - name: Check code coverage gate (80% minimum)
         run: php scripts/check_coverage.php coverage.xml 80
         env:
