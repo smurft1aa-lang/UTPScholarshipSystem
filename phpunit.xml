@@ -20,9 +20,4 @@
             <directory>src/Contracts</directory>
         </exclude>
     </source>
-    <coverage>
-        <report>
-            <clover outputFile="coverage.xml"/>
-        </report>
-    </coverage>
 </phpunit>
