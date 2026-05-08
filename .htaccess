@@ -9,7 +9,7 @@ RewriteEngine On
 #     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
 # </IfModule>
 
-# Block direct access to sensitive directories and files
+# ─── Block direct access to sensitive directories ────────────────────
 RewriteRule ^config/ - [F,L]
 RewriteRule ^includes/ - [F,L]
 RewriteRule ^src/ - [F,L]
@@ -17,10 +17,33 @@ RewriteRule ^sql/ - [F,L]
 RewriteRule ^tests/ - [F,L]
 RewriteRule ^scripts/ - [F,L]
 RewriteRule ^vendor/ - [F,L]
+RewriteRule ^db/ - [F,L]
+RewriteRule ^logs/ - [F,L]
 RewriteRule ^uploads/documents/ - [F,L]
+
+# ─── Block sensitive config & build files ────────────────────────────
 RewriteRule ^\.env - [F,L]
+RewriteRule ^\.git - [F,L]
+RewriteRule ^\.github/ - [F,L]
 RewriteRule ^composer\.(json|lock)$ - [F,L]
+RewriteRule ^package(-lock)?\.json$ - [F,L]
 RewriteRule ^phpunit\.xml$ - [F,L]
+RewriteRule ^phpstan - [F,L]
+RewriteRule ^phpcs\.xml$ - [F,L]
+RewriteRule ^psalm\.xml$ - [F,L]
+RewriteRule ^phinx\.php$ - [F,L]
 RewriteRule ^docker - [F,L]
 RewriteRule ^Makefile$ - [F,L]
-RewriteRule ^\.github/ - [F,L]
+RewriteRule ^cypress - [F,L]
+RewriteRule ^\.php-cs-fixer\.php$ - [F,L]
+
+# ─── Whitelist root-level PHP entry points ───────────────────────────
+# Only index.php, landing.php, and setup-db.php may be executed at the
+# project root. All other *.php files at root level are blocked.
+# PHP files in subdirectories (admin/, auth/, student/, api/) are
+# allowed through because the pattern only matches root-level files.
+RewriteCond %{REQUEST_URI} ^/[^/]+\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/index\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/landing\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/setup-db\.php$ [NC]
+RewriteRule \.php$ - [F,L]

@@ -19,6 +19,9 @@ use UTP\Core\SessionManager;
  */
 class RoleGuard
 {
+    /** Allowed role values — enforced since the v30 enum→string(10) migration. */
+    public const VALID_ROLES = ['student', 'admin'];
+
     private \PDO $db;
     private SessionManager $session;
     public function __construct(\PDO $db, SessionManager $session)
@@ -66,6 +69,13 @@ class RoleGuard
             $stmt->execute([$_SESSION['user_id']]);
             $dbRole = $stmt->fetchColumn();
             if ($dbRole === false) {
+                session_destroy();
+                self::redirect('/auth/login.php');
+                return;
+            }
+
+            // Reject roles not in the allowlist (v30: enum→string migration)
+            if (!is_string($dbRole) || !in_array($dbRole, self::VALID_ROLES, true)) {
                 session_destroy();
                 self::redirect('/auth/login.php');
                 return;

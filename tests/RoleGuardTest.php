@@ -114,4 +114,60 @@ class RoleGuardTest extends TestCase
         $this->roleGuard->reVerifyRole();
         $this->assertTrue(true);
     }
+
+    public function testReVerifyRoleRejectsInvalidRole()
+    {
+        // Simulate a tampered DB row with a role not in the allowlist
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'student';
+        $_SESSION['role_verified_at'] = time() - 120; // force re-check
+
+        $stmt = $this->createMock(\PDOStatement::class);
+        $stmt->method('fetchColumn')->willReturn('superuser'); // invalid role
+        $this->pdo->method('prepare')->willReturn($stmt);
+
+        // RoleGuard::redirect calls exit(), so we use a subclass override
+        $guard = new class ($this->pdo, $this->sessionManager) extends RoleGuard {
+            public bool $redirected = false;
+            public string $redirectUrl = '';
+            protected static function redirect(string $url): void
+            {
+                // Don't actually exit — just record the redirect
+                throw new \RuntimeException("REDIRECT:$url");
+            }
+        };
+
+        try {
+            $guard->reVerifyRole();
+            $this->fail('Expected redirect for invalid role');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('REDIRECT:/auth/login.php', $e->getMessage());
+        }
+    }
+
+    public function testReVerifyRoleAcceptsValidRoles()
+    {
+        foreach (RoleGuard::VALID_ROLES as $validRole) {
+            $_SESSION['user_id'] = 1;
+            $_SESSION['role'] = 'student';
+            $_SESSION['role_verified_at'] = time() - 120;
+
+            $stmt = $this->createMock(\PDOStatement::class);
+            $stmt->method('fetchColumn')->willReturn($validRole);
+            $this->pdo = $this->createMock(\PDO::class);
+            $this->pdo->method('prepare')->willReturn($stmt);
+
+            $guard = new RoleGuard($this->pdo, $this->sessionManager);
+            $guard->reVerifyRole();
+
+            $this->assertEquals($validRole, $_SESSION['role']);
+        }
+    }
+
+    public function testValidRolesConstantContainsExpectedValues()
+    {
+        $this->assertContains('student', RoleGuard::VALID_ROLES);
+        $this->assertContains('admin', RoleGuard::VALID_ROLES);
+        $this->assertCount(2, RoleGuard::VALID_ROLES);
+    }
 }
