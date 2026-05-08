@@ -133,9 +133,11 @@ jobs:
 
       # Run PHPUnit tests with coverage report
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --colors=always
+        run: vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
         env:
           APP_ENV: testing
+          APP_KEY: ci-test-key-for-encryption-123
+
 
       # Enforce minimum 80% code coverage
       - name: Check code coverage gate (80% minimum)
