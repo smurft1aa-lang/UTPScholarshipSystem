@@ -72,7 +72,8 @@ if (!empty($eligibleIds)) {
 }
 
 // Supplement with full AI run to get gaps and confidence labels
-$aiResultsRaw = AIEngine::checkEligibility($application['qualification_id']);
+$aiEngine = new \UTP\Services\AIEngine($db);
+$aiResultsRaw = $aiEngine->checkEligibility($application['qualification_id']);
 $aiMap = [];
 foreach ($aiResultsRaw as $air) {
     $aiMap[$air['programme_id']] = $air;
