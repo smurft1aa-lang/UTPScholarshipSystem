@@ -113,12 +113,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2 with Xdebug
+      - name: Setup PHP 8.2 with PCOV
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo
-          coverage: xdebug
+          coverage: pcov
+
+      - name: Verify coverage driver
+        run: |
+          php -m | grep -i pcov && echo "✅ PCOV loaded" || { echo "::error::PCOV not loaded"; php -m; exit 1; }
 
       - name: Cache Composer packages
         uses: actions/cache@v4
@@ -131,24 +135,14 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
-      # Run PHPUnit tests with coverage report
+      # Run PHPUnit tests with coverage report (PCOV collects coverage automatically)
       - name: Run PHPUnit tests
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
+        run: vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
         env:
           APP_ENV: testing
           APP_KEY: ci-test-key-for-encryption-123
-          XDEBUG_MODE: coverage
 
       # Enforce minimum 80% code coverage
-      - name: Verify coverage report exists
-        run: |
-          if [ ! -f coverage.xml ]; then
-            echo "::error::coverage.xml was not generated. Ensure Xdebug is installed and XDEBUG_MODE=coverage is set."
-            ls -la coverage.xml 2>&1 || true
-            exit 1
-          fi
-          echo "✅ coverage.xml found ($(wc -c < coverage.xml) bytes)"
-
       - name: Check code coverage gate (80% minimum)
         run: php scripts/check_coverage.php coverage.xml 80
         env:
