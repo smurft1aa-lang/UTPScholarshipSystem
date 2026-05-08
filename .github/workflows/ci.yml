@@ -146,7 +146,20 @@ jobs:
 
       # Run PHPUnit tests with coverage report
       - name: Run PHPUnit tests with coverage
-        run: php -d pcov.enabled=1 -d memory_limit=512M vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
+        run: |
+          set +e
+          php -d pcov.enabled=1 -d memory_limit=512M vendor/bin/phpunit --colors=never --coverage-clover coverage.xml > phpunit_output.txt 2>&1
+          PHPUNIT_EXIT=$?
+          set -e
+          echo "=== PHPUnit exit code: $PHPUNIT_EXIT ==="
+          echo "=== Last 60 lines of output ==="
+          tail -60 phpunit_output.txt
+          echo "=== Checking coverage.xml ==="
+          ls -la coverage.xml 2>&1 || echo "coverage.xml NOT FOUND"
+          if [ $PHPUNIT_EXIT -ne 0 ]; then
+            echo "::error::PHPUnit exited with code $PHPUNIT_EXIT"
+            exit $PHPUNIT_EXIT
+          fi
         env:
           APP_ENV: testing
           APP_KEY: ci-test-key-for-encryption-123
