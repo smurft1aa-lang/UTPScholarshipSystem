@@ -64,6 +64,13 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
                     </svg>
                     Applications
                 </a>
+                <a href="/admin/check-eligibility.php" class="<?= $currentPage === 'check-eligibility' ? 'active' : '' ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    Check Eligibility
+                </a>
                 <a href="/admin/programmes.php" class="<?= $currentPage === 'programmes' ? 'active' : '' ?>">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path

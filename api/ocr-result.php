@@ -36,13 +36,18 @@ if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
     exit;
 }
 
+$targetUserId = $_SESSION['user_id'];
+if (isAdmin() && !empty($_POST['student_id'])) {
+    $targetUserId = (int) $_POST['student_id'];
+}
+
 // ── Per-user OCR rate limit (5 scans per 10 minutes) ────────────────
-if (!checkRateLimit('ocr_' . $_SESSION['user_id'], 5, 10)) {
+if (!checkRateLimit('ocr_' . $targetUserId, 5, 10)) {
     http_response_code(429);
     echo json_encode(['success' => false, 'error' => 'You have reached the OCR scan limit. Please wait a few minutes before trying again.', 'new_csrf_token' => generateCSRFToken()]);
     exit;
 }
-recordLoginAttempt('ocr_' . $_SESSION['user_id']);
+recordLoginAttempt('ocr_' . $targetUserId);
 
 // ── Validate qualification type ─────────────────────────────────────
 $qualType = sanitize($_POST['qual_type'] ?? '');
@@ -112,7 +117,7 @@ try {
         $qualType
     );
 
-    $userId = $_SESSION['user_id'];
+    $userId = $targetUserId;
     
     // Save to session for audit logging of student corrections later
     $_SESSION['ocr_last_result'] = $result['grades'];

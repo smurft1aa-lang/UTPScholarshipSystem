@@ -72,6 +72,11 @@ if (empty($subjects) || empty($grades) || count($subjects) !== count($grades)) {
 $db = getDB();
 $userId = $_SESSION['user_id'];
 
+// Allow admin to override the userId if performing check on behalf of a student
+if (isAdmin() && !empty($_POST['student_id'])) {
+    $userId = (int) $_POST['student_id'];
+}
+
 // ── Guard: allow overwrite if status is 'submitted', block if processed ──
 $stmt = $db->prepare("SELECT id, status FROM applications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
 $stmt->execute([$userId]);
@@ -186,10 +191,11 @@ try {
 
     $db->commit();
 
-    logAudit($userId, 'Eligibility Check Completed', 'Application', (int) $appId, "Qualification: $qualType, Results: " . count($results));
+    logAudit($_SESSION['user_id'], 'Eligibility Check Completed', 'Application', (int) $appId, "Qualification: $qualType, Results: " . count($results) . (isAdmin() ? " (on behalf of student $userId)" : ""));
     trackEvent('Eligibility Check Completed', ['user_id' => $userId, 'qualification_type' => $qualType, 'results_count' => count($results)]);
 
-    apiSuccess('/student/results.php');
+    $redirectUrl = isAdmin() ? "/admin/student-results.php?id={$appId}" : '/student/results.php';
+    apiSuccess($redirectUrl);
 } catch (\RuntimeException $e) {
     $db->rollBack();
     \UTP\Services\Telemetry::trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');

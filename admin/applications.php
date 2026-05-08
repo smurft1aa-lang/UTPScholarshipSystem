@@ -243,6 +243,10 @@ $applications = $stmt->fetchAll();
             <?php if ($app['admin_notes']): ?>
                 <p><strong>Previous Notes:</strong> <?= htmlspecialchars($app['admin_notes']) ?></p>
             <?php endif; ?>
+            
+            <div style="margin-top: 16px;">
+                <a href="/admin/student-results.php?id=<?= $app['id'] ?>" class="btn btn-purple btn-sm" target="_blank">View Full Eligibility Report</a>
+            </div>
 
             <form method="POST" style="margin-top:20px;">
                 <?= csrfField() ?>
