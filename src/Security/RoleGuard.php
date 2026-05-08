@@ -69,15 +69,19 @@ class RoleGuard
             $stmt->execute([$_SESSION['user_id']]);
             $dbRole = $stmt->fetchColumn();
             if ($dbRole === false) {
-                session_destroy();
-                self::redirect('/auth/login.php');
+                if (session_status() === PHP_SESSION_ACTIVE) {
+                    session_destroy();
+                }
+                static::redirect('/auth/login.php');
                 return;
             }
 
             // Reject roles not in the allowlist (v30: enum→string migration)
             if (!is_string($dbRole) || !in_array($dbRole, self::VALID_ROLES, true)) {
-                session_destroy();
-                self::redirect('/auth/login.php');
+                if (session_status() === PHP_SESSION_ACTIVE) {
+                    session_destroy();
+                }
+                static::redirect('/auth/login.php');
                 return;
             }
 
@@ -99,7 +103,7 @@ class RoleGuard
     public function requireLogin(): void
     {
         if (!$this->isLoggedIn()) {
-            self::redirect('/auth/login.php');
+            static::redirect('/auth/login.php');
             return;
         }
         $this->reVerifyRole();
@@ -114,7 +118,7 @@ class RoleGuard
     {
         $this->requireLogin();
         if (!$this->isAdmin()) {
-            self::redirect('/student/dashboard.php');
+            static::redirect('/student/dashboard.php');
             return;
         }
     }
@@ -128,7 +132,7 @@ class RoleGuard
     {
         $this->requireLogin();
         if (!$this->isStudent()) {
-            self::redirect('/admin/dashboard.php');
+            static::redirect('/admin/dashboard.php');
             return;
         }
     }
@@ -162,7 +166,7 @@ class RoleGuard
         $this->requireStudent();
         if (!$this->isVerified()) {
             $_SESSION['error'] = 'Please verify your email to access this page.';
-            self::redirect('/student/dashboard.php');
+            static::redirect('/student/dashboard.php');
             return;
         }
     }

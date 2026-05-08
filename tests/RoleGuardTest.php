@@ -133,14 +133,14 @@ class RoleGuardTest extends TestCase
             protected static function redirect(string $url): void
             {
                 // Don't actually exit — just record the redirect
-                throw new \RuntimeException("REDIRECT:$url");
+                throw new \Error("REDIRECT:$url");
             }
         };
 
         try {
             $guard->reVerifyRole();
             $this->fail('Expected redirect for invalid role');
-        } catch (\RuntimeException $e) {
+        } catch (\Error $e) {
             $this->assertStringContainsString('REDIRECT:/auth/login.php', $e->getMessage());
         }
     }
