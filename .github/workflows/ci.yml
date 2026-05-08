@@ -147,7 +147,7 @@ jobs:
       # Run PHPUnit tests with coverage report
       - name: Run PHPUnit tests with coverage
         run: |
-          php -d pcov.enabled=1 vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
+          php -d pcov.enabled=1 -d memory_limit=512M vendor/bin/phpunit --colors=always --coverage-clover coverage.xml
           echo "=== Files generated ==="
           ls -la coverage.xml 2>&1 || echo "coverage.xml NOT found after PHPUnit run"
           ls -la coverage/ 2>&1 || echo "coverage/ directory NOT found"
