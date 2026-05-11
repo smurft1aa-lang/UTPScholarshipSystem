@@ -145,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $error = 'Failed to save the uploaded file. Please try again.';
                                 }
                             }
+                        }
                     }
                 }
             }
