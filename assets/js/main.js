@@ -294,18 +294,35 @@ function showToast(message, type, duration) {
     var icons = { success: '✓', error: '✕', warning: '!', info: 'i' };
 
     var toast = document.createElement('div');
-    toast.className = 'toast toast-' + type;
+    toast.className = 'toast toast-' + (icons[type] ? type : 'info');
     toast.style.setProperty('--toast-duration', (duration / 1000) + 's');
-    toast.innerHTML =
-        '<span class="toast-icon">' + (icons[type] || 'i') + '</span>' +
-        '<span class="toast-message">' + message + '</span>' +
-        '<button class="toast-close" aria-label="Close">&times;</button>' +
-        '<div class="toast-progress"></div>';
+
+    // Build toast content using safe DOM APIs (no innerHTML — prevents XSS)
+    var iconSpan = document.createElement('span');
+    iconSpan.className = 'toast-icon';
+    iconSpan.textContent = icons[type] || 'i';
+
+    var msgSpan = document.createElement('span');
+    msgSpan.className = 'toast-message';
+    msgSpan.textContent = message;
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.innerHTML = '&times;';
+
+    var progressDiv = document.createElement('div');
+    progressDiv.className = 'toast-progress';
+
+    toast.appendChild(iconSpan);
+    toast.appendChild(msgSpan);
+    toast.appendChild(closeBtn);
+    toast.appendChild(progressDiv);
 
     container.appendChild(toast);
 
     // Close button
-    toast.querySelector('.toast-close').addEventListener('click', function() {
+    closeBtn.addEventListener('click', function() {
         removeToast(toast);
     });
 
