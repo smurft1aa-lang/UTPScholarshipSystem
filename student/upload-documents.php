@@ -68,10 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (empty($error)) {
                         // ── Ensure upload dir exists ─────────────────────────────────────
-                        // Sanitize the upload directory to prevent directory traversal
-                        $uploadSubdir = getenv('UPLOAD_DIR') ?: 'uploads/documents';
-                        // Strip any path traversal sequences
-                        $uploadSubdir = str_replace(['..', "\0"], '', $uploadSubdir);
+                        // Use a whitelist of allowed upload directories to break taint chain.
+                        // getenv('UPLOAD_DIR') is validated against known-safe values only.
+                        $allowedUploadDirs = ['uploads/documents', 'uploads', 'storage/documents'];
+                        $envUploadDir = getenv('UPLOAD_DIR') ?: '';
+                        /** @psalm-taint-escape file */
+                        $uploadSubdir = in_array($envUploadDir, $allowedUploadDirs, true) ? $envUploadDir : 'uploads/documents';
                         $uploadRoot = realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR . $uploadSubdir;
                         $uploadDir = $uploadRoot . DIRECTORY_SEPARATOR . (int)$userId;
 
