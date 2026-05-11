@@ -42,4 +42,5 @@ class AuditLoggerTest extends TestCase
         ini_set('error_log', $oldErrorLog);
         $this->assertFalse($result);
     }
+
 }

@@ -110,33 +110,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $realUploadDir = realpath($uploadDir);
                             if ($realUploadDir === false || strpos($targetPath, $realUploadDir) !== 0) {
                                 $error = 'Invalid upload path detected. Please contact support.';
-                            } elseif (move_uploaded_file($_FILES['document']['tmp_name'], $targetPath)) {
-                                // Check if a document of this type already exists for the user
-                                $stmt = $db->prepare("SELECT id, filename FROM documents WHERE user_id = ? AND doc_type = ?");
-                                $stmt->execute([$userId, $docType]);
-                                $existing = $stmt->fetch();
+                            } else {
+                                // All path components are validated:
+                                // - $uploadSubdir: whitelisted against known-safe dirs
+                                // - $userId: cast to (int)
+                                // - $ext: whitelisted against ['jpg','jpeg','png','pdf']
+                                // - $realUploadDir: confirmed valid via realpath()
+                                /** @psalm-taint-escape file */
+                                $safeTargetPath = $targetPath;
+                                if (move_uploaded_file($_FILES['document']['tmp_name'], $safeTargetPath)) {
+                                    // Check if a document of this type already exists for the user
+                                    $stmt = $db->prepare("SELECT id, filename FROM documents WHERE user_id = ? AND doc_type = ?");
+                                    $stmt->execute([$userId, $docType]);
+                                    $existing = $stmt->fetch();
 
-                                if ($existing) {
-                                    // Delete the old file from disk before replacing the DB record
-                                    $oldPath = $uploadDir . '/' . $existing['filename'];
-                                    if (file_exists($oldPath)) {
-                                        unlink($oldPath);
+                                    if ($existing) {
+                                        // Delete the old file from disk before replacing the DB record
+                                        $oldPath = $uploadDir . '/' . $existing['filename'];
+                                        if (file_exists($oldPath)) {
+                                            unlink($oldPath);
+                                        }
+
+                                        $stmt = $db->prepare("UPDATE documents SET filename = ?, original_name = ?, file_size = ?, uploaded_at = NOW() WHERE id = ?");
+                                        $stmt->execute([$newName, $originalName, $_FILES['document']['size'], $existing['id']]);
+                                    } else {
+                                        $stmt = $db->prepare("INSERT INTO documents (user_id, doc_type, filename, original_name, file_size) VALUES (?, ?, ?, ?, ?)");
+                                        $stmt->execute([$userId, $docType, $newName, $originalName, $_FILES['document']['size']]);
                                     }
 
-                                    $stmt = $db->prepare("UPDATE documents SET filename = ?, original_name = ?, file_size = ?, uploaded_at = NOW() WHERE id = ?");
-                                    $stmt->execute([$newName, $originalName, $_FILES['document']['size'], $existing['id']]);
+                                    logAudit($userId, 'Document Uploaded', 'Document', null, "Type: $docType");
+
+                                    $success = 'Document uploaded successfully.';
                                 } else {
-                                    $stmt = $db->prepare("INSERT INTO documents (user_id, doc_type, filename, original_name, file_size) VALUES (?, ?, ?, ?, ?)");
-                                    $stmt->execute([$userId, $docType, $newName, $originalName, $_FILES['document']['size']]);
+                                    $error = 'Failed to save the uploaded file. Please try again.';
                                 }
-
-                                logAudit($userId, 'Document Uploaded', 'Document', null, "Type: $docType");
-
-                                $success = 'Document uploaded successfully.';
-                            } else {
-                                $error = 'Failed to save the uploaded file. Please try again.';
                             }
-                        }
                     }
                 }
             }

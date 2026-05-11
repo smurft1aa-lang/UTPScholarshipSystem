@@ -1,8 +1,9 @@
 <?php
-if(php_sapi_name() != 'cli' ){
+if (php_sapi_name() != 'cli') {
     http_response_code(403);
     exit('Forbidden');
 }
+
 require 'includes/init.php';
 
 $db = getDB();
