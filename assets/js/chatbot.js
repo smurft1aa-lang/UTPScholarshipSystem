@@ -125,7 +125,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Simple markdown parsing for the bot (bold and bullet points)
         if (sender === 'bot') {
-            let formattedText = text
+            // Escape HTML metacharacters first to prevent XSS,
+            // then apply safe formatting on the escaped string.
+            let escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+            let formattedText = escaped
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/\n\*/g, '<br>•')
@@ -148,7 +155,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const indicator = document.createElement('div');
         indicator.className = 'typing-indicator';
-        indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            indicator.appendChild(dot);
+        }
         
         msgDiv.appendChild(indicator);
         messagesContainer.appendChild(msgDiv);
