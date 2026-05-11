@@ -211,8 +211,13 @@ class DataExporter
      */
     public static function sendDownload(string $csv, string $filename): void
     {
+        // Sanitize filename to prevent header injection (TaintedHeader)
+        // Strip path separators, null bytes, and newlines; whitelist safe characters
+        $safeFilename = preg_replace('/[^a-zA-Z0-9_\-.]/', '_', basename($filename));
+        $safeFilename = $safeFilename ?: 'export.csv';
+
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Disposition: attachment; filename="' . $safeFilename . '"');
         header('Cache-Control: no-cache, no-store');
         header('Content-Length: ' . strlen($csv));
         echo $csv;

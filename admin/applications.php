@@ -42,7 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
     }
-    header('Location: /admin/applications.php' . ($statusFilter ? '?status=' . $statusFilter : ''));
+    // Sanitize redirect parameter — only allow known status values in Location header
+    $safeStatus = in_array($statusFilter, ['submitted', 'processing', 'approved', 'rejected'], true) ? $statusFilter : '';
+    header('Location: /admin/applications.php' . ($safeStatus ? '?status=' . urlencode($safeStatus) : ''));
     exit;
 }
 

@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
@@ -45,7 +45,7 @@ jobs:
           tools: cs2pr  # Converts phpcs output to GitHub annotations
 
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -118,7 +118,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php-version }} with PCOV
         uses: shivammathur/setup-php@v2
@@ -128,7 +128,7 @@ jobs:
           coverage: pcov
 
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -175,7 +175,7 @@ jobs:
       # Upload coverage report as artifact
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-php-${{ matrix.php-version }}
           path: coverage.xml
@@ -191,7 +191,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
@@ -200,7 +200,7 @@ jobs:
           extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo
 
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -232,7 +232,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Ensure .env.example documents all required environment variables
       - name: Validate .env.example completeness

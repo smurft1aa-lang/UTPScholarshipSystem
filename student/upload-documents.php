@@ -68,7 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (empty($error)) {
                         // ── Ensure upload dir exists ─────────────────────────────────────
-                        $uploadDir = __DIR__ . '/../' . (getenv('UPLOAD_DIR') ?: 'uploads/documents') . '/' . $userId;
+                        // Sanitize the upload directory to prevent directory traversal
+                        $uploadSubdir = getenv('UPLOAD_DIR') ?: 'uploads/documents';
+                        // Strip any path traversal sequences
+                        $uploadSubdir = str_replace(['..', "\0"], '', $uploadSubdir);
+                        $uploadRoot = realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR . $uploadSubdir;
+                        $uploadDir = $uploadRoot . DIRECTORY_SEPARATOR . (int)$userId;
 
                         if (!is_dir($uploadDir)) {
                             // ── FIX 2: Use 0700 instead of 0755 ─────────────────────────
@@ -96,10 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         } elseif ($hasDoubleExtension && preg_match($dangerousPatterns, $originalName)) {
                             $error = 'File contains a suspicious double extension and was rejected.';
                         } else {
-                            $newName = $userId . '_' . $docType . '_' . time() . '.' . $ext;
+                            $newName = (int)$userId . '_' . $docType . '_' . time() . '.' . $ext;
                             $targetPath = $uploadDir . '/' . $newName;
 
-                            if (move_uploaded_file($_FILES['document']['tmp_name'], $targetPath)) {
+                            // Validate target path is within the upload root (prevents traversal)
+                            $realUploadDir = realpath($uploadDir);
+                            if ($realUploadDir === false || strpos($targetPath, $realUploadDir) !== 0) {
+                                $error = 'Invalid upload path detected. Please contact support.';
+                            } elseif (move_uploaded_file($_FILES['document']['tmp_name'], $targetPath)) {
                                 // Check if a document of this type already exists for the user
                                 $stmt = $db->prepare("SELECT id, filename FROM documents WHERE user_id = ? AND doc_type = ?");
                                 $stmt->execute([$userId, $docType]);

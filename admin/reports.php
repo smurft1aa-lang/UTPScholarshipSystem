@@ -123,8 +123,11 @@ if (isset($_GET['generate_insights']) && $_GET['generate_insights'] === '1') {
 
 // Handle CSV Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    // Sanitize date values for safe use in HTTP header (prevents header injection)
+    $safeDateFrom = preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateFrom) ? $dateFrom : 'unknown';
+    $safeDateTo = preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTo) ? $dateTo : 'unknown';
     header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="utp_performance_report_' . $dateFrom . '_to_' . $dateTo . '.csv"');
+    header('Content-Disposition: attachment; filename="utp_performance_report_' . $safeDateFrom . '_to_' . $safeDateTo . '.csv"');
     
     $out = fopen('php://output', 'w');
     
