@@ -31,7 +31,7 @@ A robust, AI-powered scholarship and course eligibility recommendation system bu
 - **Content Security Policy:** Nonce-based CSP headers on all pages.
 
 ## Prerequisites
-- PHP 8.0 or higher
+- PHP 8.2 or higher
 - MySQL 8.0 or higher
 - Required PHP Extensions: `pdo`, `pdo_mysql`, `mbstring`, `fileinfo`, `curl`
 - Apache/Nginx with URL rewriting enabled (`mod_rewrite` for Apache)

@@ -3,8 +3,7 @@ declare(strict_types=1);
 /**
  * Header partial for student-facing pages
  */
-require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/init.php';
 
 setSecurityHeaders();
 initSession();

@@ -40,7 +40,6 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Entrypoint
-# Entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh && chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
