@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 /**
  * Admin Applications Management
  * View, filter, approve/reject student applications
  */
 require_once __DIR__ . '/../includes/init.php';
+
+requireAdmin();
 
 $db = getDB();
 $statusFilter = $_GET['status'] ?? '';

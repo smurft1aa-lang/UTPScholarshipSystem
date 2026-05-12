@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Admin Structured Performance Reports
  * Application stats, programme popularity, scholarship distribution, grade trends

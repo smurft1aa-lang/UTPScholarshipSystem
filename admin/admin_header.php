@@ -139,7 +139,7 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
             </nav>
             <div class="sidebar-bottom">
                 <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <a href="/api/logout.php" class="btn btn-outline btn-sm" style="flex:1;">Logout</a>
+                    <form method="POST" action="/api/logout.php" style="flex:1;"><?= csrfField() ?><button type="submit" class="btn btn-outline btn-sm" style="width:100%;">Logout</button></form>
                     <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"
                         title="Toggle Light/Dark Mode">
                         <span class="icon-sun">☀️</span>

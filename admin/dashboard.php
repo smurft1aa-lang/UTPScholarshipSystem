@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 /**
  * Admin Dashboard
  * Overview with stats, application status, calendar
  */
 require_once __DIR__ . '/../includes/init.php';
+
+requireAdmin();
 
 // Handle quick status update FIRST (before any output)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {

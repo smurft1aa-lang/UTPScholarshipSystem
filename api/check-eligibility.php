@@ -9,41 +9,10 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../includes/init.php';
+require_once __DIR__ . '/../includes/api_helpers.php';
 
 setSecurityHeaders();
 initSession();
-
-/**
- * Helper: respond with an error in either JSON or redirect format.
- */
-function apiError(int $httpCode, string $message, string $redirectUrl = '/student/check-eligibility.php'): never
-{
-    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
-    if (str_contains($acceptHeader, 'application/json')) {
-        http_response_code($httpCode);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['success' => false, 'error' => $message]);
-    } else {
-        $_SESSION['error'] = $message;
-        header('Location: ' . $redirectUrl);
-    }
-    exit;
-}
-
-/**
- * Helper: respond with success in either JSON or redirect format.
- */
-function apiSuccess(string $redirectUrl): never
-{
-    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
-    if (str_contains($acceptHeader, 'application/json')) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['success' => true, 'redirect' => $redirectUrl]);
-    } else {
-        header('Location: ' . $redirectUrl);
-    }
-    exit;
-}
 
 if (!isLoggedIn()) {
     apiError(403, 'Authentication required.');
@@ -77,41 +46,42 @@ if (isAdmin() && !empty($_POST['student_id'])) {
     $userId = (int) $_POST['student_id'];
 }
 
-// ── Guard: allow overwrite if status is 'submitted', block if processed ──
-$stmt = $db->prepare("SELECT id, status FROM applications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
-$stmt->execute([$userId]);
-$existingApp = $stmt->fetch();
-
-if ($existingApp) {
-    if (in_array($existingApp['status'], ['submitted', 'processing'])) {
-        // Delete draft eligibility results
-        $stmt = $db->prepare("DELETE FROM eligibility_results WHERE application_id = ?");
-        $stmt->execute([$existingApp['id']]);
-
-        // Get the specific qualification ID tied to this draft so we only delete draft grades
-        $stmt = $db->prepare("SELECT qualification_id FROM applications WHERE id = ?");
-        $stmt->execute([$existingApp['id']]);
-        $oldQualId = $stmt->fetchColumn();
-
-        // Delete the draft application itself
-        $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
-        $stmt->execute([$existingApp['id']]);
-
-        // Delete the old qualifications and grades
-        if ($oldQualId) {
-            $stmt = $db->prepare("DELETE FROM grades WHERE qualification_id = ?");
-            $stmt->execute([$oldQualId]);
-
-            $stmt = $db->prepare("DELETE FROM qualifications WHERE id = ?");
-            $stmt->execute([$oldQualId]);
-        }
-    }
-    // If status is 'approved' or 'rejected', we DO NOTHING.
-    // This preserves their historical application and allows them to submit a brand new one.
-}
-
 try {
     $db->beginTransaction();
+
+    // ── Guard: allow overwrite if status is 'submitted', block if processed ──
+    // Moved inside transaction with FOR UPDATE to prevent race conditions
+    $stmt = $db->prepare("SELECT id, status FROM applications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1 FOR UPDATE");
+    $stmt->execute([$userId]);
+    $existingApp = $stmt->fetch();
+
+    if ($existingApp) {
+        if (in_array($existingApp['status'], ['submitted', 'processing'])) {
+            // Delete draft eligibility results
+            $stmt = $db->prepare("DELETE FROM eligibility_results WHERE application_id = ?");
+            $stmt->execute([$existingApp['id']]);
+
+            // Get the specific qualification ID tied to this draft so we only delete draft grades
+            $stmt = $db->prepare("SELECT qualification_id FROM applications WHERE id = ?");
+            $stmt->execute([$existingApp['id']]);
+            $oldQualId = $stmt->fetchColumn();
+
+            // Delete the draft application itself
+            $stmt = $db->prepare("DELETE FROM applications WHERE id = ?");
+            $stmt->execute([$existingApp['id']]);
+
+            // Delete the old qualifications and grades
+            if ($oldQualId) {
+                $stmt = $db->prepare("DELETE FROM grades WHERE qualification_id = ?");
+                $stmt->execute([$oldQualId]);
+
+                $stmt = $db->prepare("DELETE FROM qualifications WHERE id = ?");
+                $stmt->execute([$oldQualId]);
+            }
+        }
+        // If status is 'approved' or 'rejected', we DO NOTHING.
+        // This preserves their historical application and allows them to submit a brand new one.
+    }
 
     // Save qualification
     $stmt = $db->prepare("INSERT INTO qualifications (user_id, qual_type) VALUES (?, ?)");

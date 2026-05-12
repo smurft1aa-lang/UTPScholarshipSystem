@@ -9,44 +9,10 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../includes/init.php';
+require_once __DIR__ . '/../includes/api_helpers.php';
 
 setSecurityHeaders();
 initSession();
-
-/**
- * Helper: respond with an error in either JSON or redirect format.
- */
-function apiError(int $httpCode, string $message, string $redirectUrl = '/student/results.php'): never
-{
-    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
-    if (str_contains($acceptHeader, 'application/json')) {
-        http_response_code($httpCode);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['success' => false, 'error' => $message]);
-    } else {
-        $_SESSION['error'] = $message;
-        header('Location: ' . $redirectUrl);
-    }
-    exit;
-}
-
-/**
- * Helper: respond with success in either JSON or redirect format.
- */
-function apiSuccess(string $redirectUrl, string $message = ''): never
-{
-    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
-    if (str_contains($acceptHeader, 'application/json')) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['success' => true, 'redirect' => $redirectUrl]);
-    } else {
-        if ($message) {
-            $_SESSION['success'] = $message;
-        }
-        header('Location: ' . $redirectUrl);
-    }
-    exit;
-}
 
 if (!isLoggedIn() || !isVerified()) {
     apiError(403, 'Authentication and email verification required.');

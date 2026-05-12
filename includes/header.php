@@ -43,7 +43,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <a href="/student/results.php" class="<?= $currentPage === 'results' ? 'active' : '' ?>">My Results</a>
             <a href="/student/upload-documents.php" class="<?= $currentPage === 'upload-documents' ? 'active' : '' ?>">My Documents</a>
             <a href="/student/my-profile.php" class="<?= $currentPage === 'my-profile' ? 'active' : '' ?>">My Profile</a>
-            <a href="/api/logout.php" class="mobile-signout">Sign Out</a>
+            <form method="POST" action="/api/logout.php" style="display:inline;"><?= csrfField() ?><button type="submit" class="mobile-signout" style="background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0;">Sign Out</button></form>
         </div>
         <div class="navbar-right">
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
@@ -51,7 +51,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                 <span class="icon-sun">☀️</span>
             </button>
             <span class="navbar-user desktop-only"><strong><?= htmlspecialchars($currentUser['full_name']) ?></strong></span>
-            <a href="/api/logout.php" class="btn btn-signout desktop-only">Sign Out</a>
+            <form method="POST" action="/api/logout.php" style="display:inline;" class="desktop-only"><?= csrfField() ?><button type="submit" class="btn btn-signout">Sign Out</button></form>
             <button class="hamburger-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
                 <span></span><span></span><span></span>
             </button>

@@ -147,10 +147,17 @@ class RoleGuard
             return false;
         }
 
+        // Return cached result if available
+        if (isset($_SESSION['email_verified'])) {
+            return (bool) $_SESSION['email_verified'];
+        }
+
         try {
             $stmt = $this->db->prepare("SELECT email_verified FROM users WHERE id = ?");
             $stmt->execute([$_SESSION['user_id']]);
-            return (int) $stmt->fetchColumn() === 1;
+            $verified = (int) $stmt->fetchColumn() === 1;
+            $_SESSION['email_verified'] = $verified;
+            return $verified;
         } catch (\Exception $e) {
             return false;
         }
