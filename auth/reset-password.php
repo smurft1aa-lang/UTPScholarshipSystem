@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($password !== $confirm) {
             $error = "Passwords do not match.";
         } else if (!empty($pwErrors)) {
-            $error = implode('<br>', $pwErrors);
+            $error = implode("\n", $pwErrors);
         } else {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
             $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$hash, $record['user_id']]);
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>Set New Password</h1>
             <p class="subtitle">Please provide a new strong password.</p>
             <?php if ($error): ?>
-                <div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
+                <div class="alert alert-danger"><?= nl2br(htmlspecialchars($error)) ?></div><?php endif; ?>
 
             <form method="POST">
                 <?= csrfField() ?>

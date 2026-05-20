@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $pwErrors = validatePassword($new_pwd);
             if (!empty($pwErrors)) {
-                $error = implode('<br>', $pwErrors);
+                $error = implode("\n", $pwErrors);
             } else {
                 $hash = password_hash($new_pwd, PASSWORD_BCRYPT, ['cost' => 12]);
                 $stmt = $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../includes/header.php';
         <p>View your personal details and change your password.</p>
     </div>
 
-    <?php if ($error): ?><div class="alert alert-danger mb-4"><?= $error ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-danger mb-4"><?= nl2br(htmlspecialchars($error)) ?></div><?php endif; ?>
     <?php if ($success): ?><div class="alert alert-success mb-4"><?= htmlspecialchars($success) ?></div><?php endif; ?>
 
     <div class="grid-2">
