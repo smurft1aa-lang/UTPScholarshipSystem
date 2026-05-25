@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
-    "cypress": "^13.6.0"
+    "cypress": "^15.15.0"
   }
 }
