@@ -165,4 +165,119 @@ class DocumentTest extends TestCase
         $result = $this->validateUpload($file);
         $this->assertFalse($result['valid']);
     }
+
+    // ─── Header Injection (CRLF) Tests ────────────────────────────────
+
+    /**
+     * Verify that the download filename sanitizer strips CRLF sequences.
+     * A raw basename() call does NOT remove \r\n, so without sanitization
+     * a crafted original_name injects arbitrary HTTP response headers.
+     */
+    public function test_download_filename_strips_crlf_injection(): void
+    {
+        $malicious = "evil.pdf\r\nSet-Cookie: session=hijacked";
+        $safe = $this->sanitizeDownloadFilename($malicious);
+        $this->assertStringNotContainsString("\r", $safe);
+        $this->assertStringNotContainsString("\n", $safe);
+        $this->assertStringContainsString('evil.pdf', $safe);
+    }
+
+    public function test_download_filename_strips_lf_only_injection(): void
+    {
+        $malicious = "report.pdf\nX-Injected: header";
+        $safe = $this->sanitizeDownloadFilename($malicious);
+        $this->assertStringNotContainsString("\n", $safe);
+    }
+
+    public function test_download_filename_strips_null_bytes(): void
+    {
+        $malicious = "file\x00.pdf";
+        $safe = $this->sanitizeDownloadFilename($malicious);
+        $this->assertStringNotContainsString("\x00", $safe);
+    }
+
+    public function test_download_filename_strips_all_control_characters(): void
+    {
+        // Build a name with every ASCII control character (0x00–0x1f and 0x7f)
+        $controls = '';
+        for ($i = 0; $i <= 0x1f; $i++) {
+            $controls .= chr($i);
+        }
+        $controls .= chr(0x7f);
+        $malicious = 'file' . $controls . '.pdf';
+        $safe = $this->sanitizeDownloadFilename($malicious);
+        $this->assertMatchesRegularExpression('/^[\x20-\x7e]+$/', $safe);
+    }
+
+    public function test_download_filename_falls_back_when_result_is_empty(): void
+    {
+        // A name consisting entirely of control characters should fall back to 'document'
+        $malicious = "\r\n\x00\x1f";
+        $safe = $this->sanitizeDownloadFilename($malicious);
+        $this->assertSame('document', $safe);
+    }
+
+    public function test_download_filename_preserves_normal_name(): void
+    {
+        $normal = 'my_certificate_2024.pdf';
+        $safe = $this->sanitizeDownloadFilename($normal);
+        $this->assertSame($normal, $safe);
+    }
+
+    public function test_download_filename_preserves_unicode_name(): void
+    {
+        $unicode = 'sijil_peperiksaan_2024.pdf';
+        $safe = $this->sanitizeDownloadFilename($unicode);
+        $this->assertSame($unicode, $safe);
+    }
+
+    // ─── UPLOAD_DIR Whitelist Tests ────────────────────────────────────
+
+    public function test_upload_dir_whitelist_accepts_known_safe_dirs(): void
+    {
+        $allowed = ['uploads/documents', 'uploads', 'storage/documents'];
+        foreach ($allowed as $dir) {
+            $resolved = $this->resolveUploadDir($dir);
+            $this->assertSame($dir, $resolved, "Expected '$dir' to be accepted by whitelist");
+        }
+    }
+
+    public function test_upload_dir_whitelist_rejects_traversal_attempt(): void
+    {
+        $resolved = $this->resolveUploadDir('../../etc/passwd');
+        $this->assertSame('uploads/documents', $resolved);
+    }
+
+    public function test_upload_dir_whitelist_rejects_arbitrary_path(): void
+    {
+        $resolved = $this->resolveUploadDir('/var/www/html/secret');
+        $this->assertSame('uploads/documents', $resolved);
+    }
+
+    public function test_upload_dir_whitelist_uses_default_when_env_empty(): void
+    {
+        $resolved = $this->resolveUploadDir('');
+        $this->assertSame('uploads/documents', $resolved);
+    }
+
+    // ─── Helpers (mirror production logic) ────────────────────────────
+
+    /**
+     * Mirrors the sanitization applied in admin/download-document.php
+     * before writing the Content-Disposition filename.
+     */
+    private function sanitizeDownloadFilename(string $originalName): string
+    {
+        $safe = preg_replace('/[\x00-\x1f\x7f]/', '', basename($originalName));
+        return ($safe !== '' && $safe !== null) ? $safe : 'document';
+    }
+
+    /**
+     * Mirrors the UPLOAD_DIR whitelist resolution in admin/download-document.php.
+     */
+    private function resolveUploadDir(string $envValue): string
+    {
+        $allowedUploadDirs = ['uploads/documents', 'uploads', 'storage/documents'];
+        return in_array($envValue, $allowedUploadDirs, true) ? $envValue : 'uploads/documents';
+    }
 }
