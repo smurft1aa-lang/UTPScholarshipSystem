@@ -317,7 +317,9 @@ function handleOcrFile(file) {
         document.getElementById('ocrLoader').classList.add('hidden');
         if (data.new_csrf_token) {
             csrfToken = data.new_csrf_token;
-            document.querySelector('input[name="csrf_token"]').value = data.new_csrf_token;
+            document.querySelectorAll('input[name="csrf_token"]').forEach(function(el) {
+                el.value = data.new_csrf_token;
+            });
         }
         if (data.success && data.grades) {
             renderOcrResults(data.grades, selectedQual);
@@ -382,7 +384,12 @@ function addOcrResultRow(tbody, item, qualType, index) {
     subjectSelect.innerHTML = '<option value="">Select Subject</option>';
     allSubjects.forEach(s => {
         var opt = document.createElement('option');
-        opt.value = s; opt.textContent = s;
+        opt.value = s;
+        var displayName = s;
+        if (s.indexOf('Other Subject') === 0) {
+            displayName = s.replace('Other Subject', 'Other Language Subject');
+        }
+        opt.textContent = displayName;
         if (item.matched_key === s) opt.selected = true;
         subjectSelect.appendChild(opt);
     });
@@ -430,7 +437,9 @@ function getSubjectList(qualType) {
     var optional = [
         'Additional Mathematics', 'Physics', 'Chemistry', 'Biology', 'Science',
         'Pendidikan Islam', 'Pendidikan Moral', 'Prinsip Perakaunan', 'Ekonomi',
-        'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal', 'Pendidikan Seni Visual', 'Reka Cipta'
+        'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal', 'Pendidikan Seni Visual', 'Reka Cipta',
+        'Other Subject', 'Other Subject I', 'Other Subject II', 'Other Subject III', 'Other Subject IV',
+        'Other Non-Language Subject', 'Other Non-Language Subject I', 'Other Non-Language Subject II', 'Other Non-Language Subject III', 'Other Non-Language Subject IV'
     ];
     return (core[qualType] || []).concat(optional);
 }

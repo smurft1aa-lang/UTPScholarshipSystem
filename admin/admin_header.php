@@ -156,6 +156,16 @@ $initials = strtoupper(substr($currentUser['full_name'], 0, 1));
             </div>
         </aside>
         <div class="admin-main" id="admin-main-content" role="main">
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger mb-6" style="margin-bottom:24px; padding:15px; border-radius:4px; background:#f8d7da; color:#721c24; border:1px solid #f5c6cb;">
+                    <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success mb-6" style="margin-bottom:24px; padding:15px; border-radius:4px; background:#d4edda; color:#155724; border:1px solid #c3e6cb;">
+                    <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+                </div>
+            <?php endif; ?>
 
             <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
                 // Admin Sidebar Toggle Logic

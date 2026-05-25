@@ -219,7 +219,7 @@ class BulkCsvImporter
     {
         $result = ['success' => false, 'imported' => 0, 'skipped' => 0, 'errors' => []];
 
-        $handle = fopen($filePath, 'r');
+        $handle = @fopen($filePath, 'r');
         if (!$handle) {
             $result['errors'][] = 'Failed to open CSV file.';
             return $result;

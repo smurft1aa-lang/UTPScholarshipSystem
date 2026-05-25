@@ -408,8 +408,9 @@ function handleOcrFile(file) {
 
         if (data.new_csrf_token) {
             csrfToken = data.new_csrf_token;
-            var csrfInput = document.querySelector('input[name="csrf_token"]');
-            if (csrfInput) csrfInput.value = data.new_csrf_token;
+            document.querySelectorAll('input[name="csrf_token"]').forEach(function(el) {
+                el.value = data.new_csrf_token;
+            });
         }
 
         if (data.success && data.grades && data.grades.length > 0) {
@@ -534,7 +535,11 @@ function addOcrResultRow(tbody, item, qualType, index) {
     allSubjects.forEach(function(s) {
         var opt = document.createElement('option');
         opt.value = s;
-        opt.textContent = s;
+        var displayName = s;
+        if (s.indexOf('Other Subject') === 0) {
+            displayName = s.replace('Other Subject', 'Other Language Subject');
+        }
+        opt.textContent = displayName;
         if (item.matched_key === s) opt.selected = true;
         subjectSelect.appendChild(opt);
     });

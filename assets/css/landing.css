@@ -206,44 +206,47 @@ img { max-width: 100%; display: block; }
     position: relative;
 }
 
-/* ── Hero ── */
+/* ✨ Hero ✨ */
 .hero {
     position: relative;
-    min-height: 520px;
-    display: flex;
-    align-items: center;
     overflow: hidden;
     background: var(--utp-dark);
 }
 .hero-bg {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    width: 100%;
     z-index: 1;
 }
 .hero-bg img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
 }
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(13,33,55,0.88) 0%, rgba(0,74,153,0.7) 50%, rgba(0,161,177,0.5) 100%);
+    background: linear-gradient(to top, rgba(13,33,55,0.55) 0%, rgba(0,0,0,0) 35%);
     z-index: 2;
 }
 .hero .section-inner {
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 3;
-    padding: 80px 48px;
-    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 48px 32px;
 }
-.hero-text { max-width: 650px; }
+.hero-text { max-width: 650px; display: none; }
 .hero-text h1 {
     font-size: 2.8rem;
     margin-bottom: 18px;
     line-height: 1.15;
     color: #fff;
     text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    visibility: hidden;
 }
 .hero-text h1 .highlight {
     color: var(--utp-gold);
@@ -254,11 +257,13 @@ img { max-width: 100%; display: block; }
     margin-bottom: 32px;
     max-width: 500px;
     line-height: 1.7;
+    visibility: hidden;
 }
 .hero-buttons {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 /* ── Stats Bar ── */
@@ -509,8 +514,7 @@ img { max-width: 100%; display: block; }
 }
 .why-visual img {
     width: 100%;
-    height: 360px;
-    object-fit: cover;
+    height: auto;
 }
 .why-content { flex: 1; }
 .why-content h2 {

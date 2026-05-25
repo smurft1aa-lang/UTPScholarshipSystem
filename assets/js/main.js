@@ -189,7 +189,11 @@ function updateGradeInputs(qualType) {
                              '<select name="subjects[]" class="form-select" required>' +
                              '<option value="" disabled' + (prefillSubject === '' ? ' selected' : '') + '>Select Subject</option>';
             optionalSubjects.forEach(function(s) {
-                subjSelect += '<option value="' + s + '"' + (prefillSubject === s ? ' selected' : '') + '>' + s + '</option>';
+                var displayName = s;
+                if (s.indexOf('Other Subject') === 0) {
+                    displayName = s.replace('Other Subject', 'Other Language Subject');
+                }
+                subjSelect += '<option value="' + s + '"' + (prefillSubject === s ? ' selected' : '') + '>' + displayName + '</option>';
             });
             subjSelect += '</select>';
             subjCol.innerHTML = subjSelect;

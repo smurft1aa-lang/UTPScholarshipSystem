@@ -23,7 +23,7 @@ $csrfToken = generateCSRFToken();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/landing.css?v=5">
+    <link rel="stylesheet" href="/assets/css/landing.css?v=7">
 </head>
 <body>
 <div class="page-wrapper">
@@ -69,17 +69,17 @@ $csrfToken = generateCSRFToken();
     <!-- Hero Banner -->
     <section class="hero" id="hero">
         <div class="hero-bg">
-            <img src="/assets/images/hero_campus.png" alt="UTP Campus">
+            <img src="/assets/images/hero_campus.jpg" alt="UTP Campus">
         </div>
         <div class="hero-overlay"></div>
         <div class="section-inner">
             <div class="hero-text animate-on-scroll">
                 <h1>Transforming Minds,<br><span class="highlight">Advancing Industries</span></h1>
                 <p>Transformative learning and mission-driven research in ASEAN's most dynamic ecosystem. Your scholarship journey starts here.</p>
-                <div class="hero-buttons">
-                    <a href="/auth/signup.php" class="btn btn-gold" style="padding:14px 36px">Apply Now</a>
-                    <a href="#scholarships" class="btn btn-white-outline" style="padding:14px 36px">Explore Scholarships</a>
-                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="/auth/signup.php" class="btn btn-gold" style="padding:14px 36px">Apply Now</a>
+                <a href="#scholarships" class="btn btn-white-outline" style="padding:14px 36px">Explore Scholarships</a>
             </div>
         </div>
     </section>
@@ -205,7 +205,7 @@ $csrfToken = generateCSRFToken();
     <section class="why-utp" id="why-utp">
         <div class="section-inner">
             <div class="why-visual animate-on-scroll">
-                <img src="/assets/images/hero_campus.png" alt="UTP Campus Facilities">
+                <img src="/assets/images/small_hero.jpg" alt="UTP Campus Facilities">
             </div>
             <div class="why-content animate-on-scroll">
                 <h2>Why Choose UTP?</h2>

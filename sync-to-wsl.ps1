@@ -1,5 +1,5 @@
 param(
-    [string]$Source = "e:\UTP Scholarship system",
+    [string]$Source = $PSScriptRoot,
     [string]$Destination = "\\wsl$\Ubuntu\home\azims\utp-scholarship"
 )
 

@@ -70,12 +70,12 @@ $stmt = $db->query("
 $recentApps = $stmt->fetchAll();
 
 // Calendar data
-$year = date('Y');
-$month = date('n');
+$year = (int) date('Y');
+$month = (int) date('n');
 $monthName = date('F Y');
-$daysInMonth = date('t');
-$firstDay = date('w', mktime(0, 0, 0, $month, 1, $year));
-$today = date('j');
+$daysInMonth = (int) date('t');
+$firstDay = (int) date('w', mktime(0, 0, 0, $month, 1, $year));
+$today = (int) date('j');
 ?>
 
 <div class="flex-between mb-6">

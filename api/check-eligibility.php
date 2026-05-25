@@ -14,16 +14,18 @@ require_once __DIR__ . '/../includes/api_helpers.php';
 setSecurityHeaders();
 initSession();
 
+$errorRedirect = isAdmin() ? '/admin/check-eligibility.php' : '/student/dashboard.php';
+
 if (!isLoggedIn()) {
-    apiError(403, 'Authentication required.');
+    apiError(403, 'Authentication required.', $errorRedirect);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    apiError(405, 'Method not allowed. Use POST.');
+    apiError(405, 'Method not allowed. Use POST.', $errorRedirect);
 }
 
 if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
-    apiError(403, 'Invalid form submission.');
+    apiError(403, 'Invalid form submission.', $errorRedirect);
 }
 
 $qualType = sanitize($_POST['qual_type'] ?? '');
@@ -31,11 +33,11 @@ $subjects = $_POST['subjects'] ?? [];
 $grades = $_POST['grades'] ?? [];
 
 if (empty($qualType) || !in_array($qualType, ['SPM', 'O-Level', 'IGCSE'])) {
-    apiError(400, 'Please select a valid qualification type.');
+    apiError(400, 'Please select a valid qualification type.', $errorRedirect);
 }
 
 if (empty($subjects) || empty($grades) || count($subjects) !== count($grades)) {
-    apiError(400, 'Please enter all grades.');
+    apiError(400, 'Please enter all grades.', $errorRedirect);
 }
 
 $db = getDB();
@@ -169,9 +171,9 @@ try {
 } catch (\RuntimeException $e) {
     $db->rollBack();
     \UTP\Services\Telemetry::trackEvent('AI Engine Error', ['exception' => $e, 'user_id' => $userId], 'ERROR');
-    apiError(500, 'Eligibility engine failed. Please try again later.');
+    apiError(500, 'Eligibility engine failed. Please try again later.', $errorRedirect);
 } catch (\Exception $e) {
     $db->rollBack();
     \UTP\Services\Telemetry::trackEvent('Eligibility Check Failed', ['exception' => $e, 'user_id' => $userId], 'ERROR');
-    apiError(500, 'An error occurred. Please try again.');
+    apiError(500, 'An error occurred. Please try again.', $errorRedirect);
 }
