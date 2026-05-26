@@ -1,8 +1,3 @@
-<?php
-// Secure strictly authenticated
-if (!isLoggedIn())
-    return;
-?>
 <link rel="stylesheet" href="/assets/css/chatbot.css">
 
 <!-- Chatbot Toggle Button -->

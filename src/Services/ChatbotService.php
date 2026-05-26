@@ -16,7 +16,7 @@ class ChatbotService
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY environment variable is missing.');
         }
-        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite-preview';
+        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite';
     }
 
     /**
@@ -49,16 +49,21 @@ UTP SCHOLARSHIP KNOWLEDGE BASE:
 - Foundation in Science: Requires Credit in Mathematics AND (Chemistry OR Biology).
 - Foundation in Information Technology / Computer Science: Requires Credit in Additional Mathematics, OR (Credit in Mathematics AND Science).
 - Foundation in Business Management: Requires Credit in Mathematics.
+- Undergraduate (Bachelor's Degrees): We offer various degrees in Engineering (including our New! Bachelor of Integrated Engineering with Honours), Computing, Science, and Business. Entry requires a Foundation, Matriculation, STPM, or A-Level equivalent.
 
-[Financial Tiers (B40 / M40 / T20)]
-Household income limits in Malaysia:
+[Scholarships & Financial Aid]
+Students can browse 15+ verified scholarships on our "Scholarships" page.
+- UTP Internal: Yayasan UTP (Undergrad, Postgrad, Grants, Bursaries) and TAZU (Zakat).
+- Government: JPA, MARA, and PTPTN.
+- Corporate / External: PETRONAS (PESP), Khazanah Watan, TNB, Sime Darby, Gamuda, Shell, and Velesto Energy.
+Household income limits:
 - B40 (Bottom 40%): Under RM 4,850. Eligible for full scholarships.
 - M40 (Middle 40%): RM 4,851 - RM 10,959. Eligible for partial scholarships.
 - T20 (Top 20%): RM 10,960 and above. Eligible for merit-based scholarships only (requires 8A+ and above).
 
 [System Capabilities & Step-by-Step Workflow]
-This website is a fully-featured automated scholarship portal. If a user asks how to apply, what the OCR is, or what the admin does, explain these exact steps/capabilities:
-1. Registration: Students register an account and MUST verify their email before applying. 
+This website is a fully-featured automated scholarship portal. If a user asks how to apply or check eligibility, explain:
+1. Registration: Guests should click "Sign Up" to create an account and verify their email.
 2. Eligibility Check & OCR: Students go to "Check Eligibility". They can manually type their grades, OR use our AI-powered OCR feature. The OCR accepts PNG, JPG, WebP, and HEIC images (up to 5MB) of their official result slip, and automatically scans and extracts their subjects and grades. 
 3. Results Matching: The system uses an advanced AI Engine algorithm to calculate entry point scores and exactly match their grades against all UTP Foundation Programmes and Financial Tiers (B40/M40/T20).
 4. Application Submission: On the "My Results" page, students select up to 3 preferred programmes and 1 scholarship, then click "Submit Application". 

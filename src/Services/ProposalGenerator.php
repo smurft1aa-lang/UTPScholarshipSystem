@@ -17,7 +17,7 @@ class ProposalGenerator
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY environment variable is missing.');
         }
-        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite-preview';
+        $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite';
     }
 
     /**

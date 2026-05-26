@@ -21,12 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// User must be logged in for the dashboard widget
-if (!isLoggedIn()) {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'error' => 'Authentication required.']);
-    exit;
-}
+// Authentication is no longer required for the chatbot, as we allow guests
+// on the landing page to ask questions.
 
 $inputTarget = file_get_contents('php://input');
 $data = json_decode((string)$inputTarget, true);
@@ -37,9 +33,9 @@ if (!isset($data['csrf_token']) || !validateCSRFToken($data['csrf_token'])) {
     exit;
 }
 
-// Per-user Rate Limiter (20 messages per 10 minutes)
-$userId = $_SESSION['user_id'];
-$rateLimitKey = 'chat_' . $userId;
+// Per-user or per-session Rate Limiter (20 messages per 10 minutes)
+$userId = isLoggedIn() ? $_SESSION['user_id'] : 'guest';
+$rateLimitKey = 'chat_' . ($userId === 'guest' ? session_id() : $userId);
 if (!checkRateLimit($rateLimitKey, 20, 10)) {
     http_response_code(429);
     echo json_encode([

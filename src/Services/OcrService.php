@@ -13,7 +13,7 @@ namespace UTP\Services;
  */
 class OcrService
 {
-    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=';
+    private const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
     private const MAX_FILE_SIZE = 5242880; // 5MB
 
     private string $apiKey;
@@ -219,9 +219,11 @@ PROMPT;
         }
 
         while ($attempt < $maxRetries) {
-            $ch = curl_init();
+            $model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite';
+            $apiUrl = self::API_BASE . $model . ':generateContent?key=' . $this->apiKey;
+
+            $ch = curl_init($apiUrl);
             $curlOptions = [
-                CURLOPT_URL => self::API_URL . $this->apiKey,
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($payload),
                 CURLOPT_HTTPHEADER => [

@@ -6,7 +6,7 @@ param(
 Write-Host "Syncing files to WSL..." -ForegroundColor Cyan
 
 # Exclude directories that shouldn't be synced
-$ExcludeDirs = @(".git", "node_modules", "vendor", ".phpunit.cache", ".phpstan.cache", ".phpcs.cache", "uploads", "coverage")
+$ExcludeDirs = @(".git", "node_modules", "vendor", ".phpunit.cache", ".phpstan.cache", ".phpcs.cache", "uploads", "coverage", "logs")
 
 # Robocopy options:
 # /MIR  : Mirrors a directory tree (equivalent to /E plus /PURGE)
