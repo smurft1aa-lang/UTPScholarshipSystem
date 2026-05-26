@@ -9,7 +9,7 @@ $error = '';
 $success = '';
 
 if (isset($_GET['error']) && $_GET['error'] === 'missing_docs') {
-    $error = 'You must securely upload both your IC/Passport scan and Passport Photo before you can access the AI Eligibility Engine.';
+    $error = 'Please upload the required documents.';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -167,8 +167,8 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="container" style="padding-top:32px; padding-bottom:48px;">
     <div class="page-header">
-        <h1>Upload Documents</h1>
-        <p>Please upload the required supporting documents for your application.</p>
+        <h1>Document Vault <span style="font-size:1rem; color:var(--text-muted); font-weight:normal;">(Optional)</span></h1>
+        <p>Store your supporting documents securely here so you have them ready when applying at the official UTP Admissions portal.</p>
     </div>
 
     <?php if ($error): ?>
@@ -177,9 +177,8 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="alert alert-success mb-4"><?= htmlspecialchars($success) ?></div><?php endif; ?>
 
     <div class="card mb-6">
-        <h3 style="margin-bottom:16px;">Required Documents</h3>
-        <p style="color:var(--text-secondary); margin-bottom:20px;">Allowed formats: PDF, JPG, PNG. Max size: 2MB per
-            file.</p>
+        <h3 style="margin-bottom:16px;">Add a Document</h3>
+        <p style="color:var(--text-secondary); margin-bottom:20px;">Allowed formats: PDF, JPG, PNG. Max size: 2MB per file.</p>
 
         <form method="POST" enctype="multipart/form-data">
             <?= csrfField() ?>

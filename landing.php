@@ -24,7 +24,7 @@ $csrfToken = generateCSRFToken();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/landing.css?v=11">
+    <link rel="stylesheet" href="/assets/css/landing.css?v=14">
 </head>
 <body>
 <div class="page-wrapper">
@@ -277,25 +277,36 @@ $csrfToken = generateCSRFToken();
             <div class="stories-grid">
                 <div class="story-card animate-on-scroll">
                     <div class="story-header">
-                        <div class="story-avatar">AF</div>
-                        <div class="story-info"><h4>Ahmad Farhan</h4><p>Foundation in Engineering</p></div>
+                        <div class="story-avatar" style="background-color: var(--utp-navy);">MS</div>
+                        <div class="story-info"><h4>Mohd Sofi</h4><p>Dual-Degree Engineering</p></div>
                     </div>
-                    <p class="story-text">My foundation year at UTP gave me the perfect headstart. The lecturers are incredibly supportive and the facilities are world-class.</p>
+                    <p class="story-text">"Pushing the boundaries of engineering research through a dual-degree with Deakin University, tackling corrosion challenges that impact the oil & gas industry worldwide."</p>
+                    <div class="story-source">Written by UTP Media Team • UTP Official Website</div>
+                    <a href="https://www.utp.edu.my/Pages/Students/Student%20Development%20and%20Services/Stories/UTP-Engineers-Global-Impact-through-Dual-Degree-Partnership-with-Deakin-.aspx" target="_blank" class="story-read-more">Read Full Story ↗</a>
                 </div>
                 <div class="story-card animate-on-scroll">
                     <div class="story-header">
-                        <div class="story-avatar">NR</div>
-                        <div class="story-info"><h4>Nur Rashidah</h4><p>Mechanical Engineering</p></div>
+                        <div class="story-avatar" style="background-color: #7b2cbf;">IS</div>
+                        <div class="story-info"><h4>Irene & Serene</h4><p>Engineering Alumni</p></div>
                     </div>
-                    <p class="story-text">The PETRONAS scholarship changed my life. I learned practical skills that prepared me for a global engineering career at a Fortune 500 company.</p>
+                    <p class="story-text">"The twin sisters excelled at the Asian Downstream Summit 2024, winning the prestigious Young Engineer of the Year and Female Engineer of the Year awards."</p>
+                    <div class="story-source">Written by UTP Media Team • UTP Official Website</div>
                 </div>
                 <div class="story-card animate-on-scroll">
                     <div class="story-header">
-                        <div class="story-avatar">DH</div>
-                        <div class="story-info"><h4>Daniel Heng</h4><p>Computer Science</p></div>
+                        <div class="story-avatar" style="background-color: var(--utp-gold);">PT</div>
+                        <div class="story-info"><h4>PetroBowl Team</h4><p>Petroleum Engineering</p></div>
                     </div>
-                    <p class="story-text">UTP's CS programme is top-notch. The industry connections and internship placements really set this university apart from others.</p>
+                    <p class="story-text">"Crowned Champions of APRQ 2025! A remarkable achievement showcasing our students' resilience and hard work, now set to compete at the Global Championship in Texas."</p>
+                    <div class="story-source">Written by UTP Media Team • UTP Official Website</div>
                 </div>
+            </div>
+            
+            <div class="view-more-container animate-on-scroll">
+                <a href="https://www.utp.edu.my/Pages/Students/Student%20Development%20and%20Services/Stories/More-Stories.aspx" target="_blank" class="btn btn-outline" style="margin-top: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                    View More Stories
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:8px;" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>

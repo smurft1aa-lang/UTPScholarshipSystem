@@ -62,7 +62,8 @@ if ($application) {
     }
     
     // Supplement with full AI run to get gaps and confidence labels
-    $aiResultsRaw = AIEngine::checkEligibility($application['qualification_id']);
+    $aiEngine = new \UTP\Services\AIEngine($db);
+    $aiResultsRaw = $aiEngine->checkEligibility($application['qualification_id']);
     $aiMap = [];
     foreach ($aiResultsRaw as $air) {
         $aiMap[$air['programme_id']] = $air;
@@ -232,85 +233,20 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Scholarships section removed as they are now grouped under each programme -->
 
-        <!-- Application Submission Form -->
-        <?php if (empty($application['programme_id_1'])): ?>
-        <div class="card mt-6" style="border:2px solid var(--orange);">
-            <h2 style="font-size:1.2rem; font-weight:700; color:var(--orange); margin-bottom:16px;">Step 1: Document Preparation</h2>
-            <div style="background:var(--bg-body); padding:16px; border-radius:8px; margin-bottom:24px; font-size:0.9rem;">
-                <p style="margin-bottom:8px;"><strong>Please prepare scanned copies of the following documents in PDF format to be uploaded during the official application process:</strong></p>
-                <ul style="margin-left:20px; color:var(--text-secondary); line-height:1.6;">
-                    <li>Identity Card/MyKad (Crossed IC for UTP use only)</li>
-                    <li>Passport photo (blue background)</li>
-                    <li>Results for the following qualification:</li>
-                    <ul style="margin-left:20px;">
-                        <li>Official Academic Certificate & Transcript for STPM/A-Level/IB/Diploma/Foundation/Matriculation or equivalent</li>
-                        <li>Official SPM Result</li>
-                    </ul>
-                    <li>Results for English proficiency, e.g., SPM, MUET, IELTS, etc.</li>
-                    <li>Proof of processing fee payment – RM50.00 (Non-refundable)</li>
-                </ul>
-            </div>
-
-            <h2 style="font-size:1.2rem; font-weight:700; color:var(--orange); margin-bottom:16px;">Step 2: Online Application Submission</h2>
-            <p style="color:var(--text-secondary); margin-bottom:24px;">For the programme selection section, you are <strong>required/compulsory</strong> to choose exactly three (3) programmes according to your preference.</p>
-            
-            <form method="POST" action="/api/submit-application.php">
-                <?= csrfField() ?>
-                <input type="hidden" name="app_id" value="<?= $application['id'] ?>">
-                
-                <div class="grid-3 mb-4">
-                    <div class="form-group">
-                        <label class="form-label">Choice 1 <span style="color:red;">*</span></label>
-                        <select name="programme_id_1" class="form-select" required>
-                            <option value="">-- 1st Choice --</option>
-                            <?php foreach ($results as $r): if ($r['eligible']): ?>
-                                <option value="<?= $r['programme_id'] ?>"><?= htmlspecialchars($r['programme_name']) ?> (Fit: <?= $r['fit_percentage'] ?>%)</option>
-                            <?php endif; endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Choice 2 <span style="color:red;">*</span></label>
-                        <select name="programme_id_2" class="form-select" required>
-                            <option value="">-- 2nd Choice --</option>
-                            <?php foreach ($results as $r): if ($r['eligible']): ?>
-                                <option value="<?= $r['programme_id'] ?>"><?= htmlspecialchars($r['programme_name']) ?> (Fit: <?= $r['fit_percentage'] ?>%)</option>
-                            <?php endif; endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Choice 3 <span style="color:red;">*</span></label>
-                        <select name="programme_id_3" class="form-select" required>
-                            <option value="">-- 3rd Choice --</option>
-                            <?php foreach ($results as $r): if ($r['eligible']): ?>
-                                <option value="<?= $r['programme_id'] ?>"><?= htmlspecialchars($r['programme_name']) ?> (Fit: <?= $r['fit_percentage'] ?>%)</option>
-                            <?php endif; endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Select Primary Scholarship/Sponsorship (Optional)</label>
-                    <select name="scholarship_id" class="form-select">
-                        <option value="">-- None --</option>
-                        <?php foreach ($scholarships as $s): ?>
-                            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div style="margin-top:24px;">
-                    <button type="submit" class="btn btn-orange btn-lg">Submit Official Application</button>
-                </div>
-            </form>
+        <!-- Ready to Apply? Redirect to Official UTP Admission -->
+        <div class="card mt-6" style="border:2px solid var(--orange); text-align:center; padding:40px;">
+            <h2 style="font-size:1.3rem; font-weight:700; color:var(--orange); margin-bottom:12px;">🎓 Ready to Apply?</h2>
+            <p style="color:var(--text-secondary); margin-bottom:8px; max-width:600px; margin-left:auto; margin-right:auto;">
+                Now that you know which programmes and scholarships you're eligible for, take the next step by submitting your official application through the UTP Admissions Portal.
+            </p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:24px;">
+                Please prepare your IC/MyKad, academic certificates, passport photo, and proof of RM50 processing fee payment.
+            </p>
+            <a href="https://utpdec.microsoftcrmportals.com/admission/" target="_blank" class="btn btn-orange btn-lg" style="display:inline-flex; align-items:center; gap:8px;">
+                Apply at Official UTP Portal
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
         </div>
-        <?php else: ?>
-        <div class="card mt-6 bg-success" style="background:#e8f5e9; border:1px solid #c8e6c9;">
-            <h2 style="font-size:1.2rem; font-weight:700; color:#2e7d32; margin-bottom:8px;">Application Submitted Successfully</h2>
-            <p style="color:#1b5e20;">You have chosen a programme for this application. View your dashboard for status updates.</p>
-        </div>
-        <?php endif; ?>
 
     <?php endif; ?>
 </div>

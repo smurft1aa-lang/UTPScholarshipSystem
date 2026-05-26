@@ -20,41 +20,6 @@ if ($docCount < 2) {
     exit;
 }
 
-// Enforce single active submission — block if a pending application exists
-$stmt = $db->prepare("SELECT id, status, created_at FROM applications WHERE user_id = ? AND status IN ('submitted', 'processing') ORDER BY created_at DESC LIMIT 1");
-$stmt->execute([$_SESSION['user_id']]);
-$pendingApp = $stmt->fetch();
-
-if ($pendingApp) {
-    $pageTitle = 'Application Pending — UTP Scholarship System';
-    require_once __DIR__ . '/../includes/header.php';
-    ?>
-    <div class="container" style="padding-top:48px; padding-bottom:48px;">
-        <div class="card" style="max-width:600px; margin:0 auto; text-align:center; padding:40px;">
-            <div style="font-size:3rem; margin-bottom:16px;">⏳</div>
-            <h2 style="margin-bottom:8px; color:var(--text-primary);">Application Under Review</h2>
-            <p style="color:var(--text-secondary); margin-bottom:24px; line-height:1.6;">
-                You have already submitted an application <strong>(#<?= $pendingApp['id'] ?>)</strong> on 
-                <strong><?= date('d M Y, h:i A', strtotime($pendingApp['created_at'])) ?></strong>.
-                <br><br>
-                Current status: 
-                <span class="badge badge-<?= $pendingApp['status'] === 'processing' ? 'yellow' : 'blue' ?>" style="font-size:0.85rem;">
-                    <?= ucfirst($pendingApp['status']) ?>
-                </span>
-            </p>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:24px;">
-                You may submit a new application once an administrator has reviewed your current submission.
-            </p>
-            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                <a href="/student/results.php" class="btn btn-orange">View My Results</a>
-                <a href="/student/dashboard.php" class="btn btn-outline">Back to Dashboard</a>
-            </div>
-        </div>
-    </div>
-    <?php
-    require_once __DIR__ . '/../includes/footer.php';
-    exit;
-}
 
 $pageTitle = 'Check Eligibility — UTP Scholarship System';
 require_once __DIR__ . '/../includes/header.php';

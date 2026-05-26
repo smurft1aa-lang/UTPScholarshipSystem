@@ -678,6 +678,34 @@ img {
     border-top-color: var(--utp-gold);
 }
 
+.story-read-more {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--utp-navy);
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.story-read-more:hover {
+    color: var(--utp-gold);
+    transform: translateX(4px);
+}
+
+.story-source {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.view-more-container {
+    text-align: center;
+}
+
 .story-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 32px rgba(0, 74, 153, 0.1);
