@@ -13,11 +13,9 @@ A robust, AI-powered scholarship and course eligibility recommendation system bu
 - **AI Assistant Chatbot:** Real-time conversational support for students to ask questions about eligibility, scholarships, and the application process.
 - **Sponsorship Proposal Generation:** Automatically generate a professional, printable sponsorship proposal document based on eligibility results.
 - **Document Management:** Securely upload IC/Passport scans, passport photos, and academic certificates. OCR-scanned result slips are auto-saved as certificates.
-- **Single Submission Policy:** Students may only have one active application at a time. A new submission is allowed only after admin review (approved/rejected).
 - **PDF Export:** Download a printable AI Eligibility Report from the results page.
 
 ### Admin Dashboard
-- **Application Management:** Review, approve, or reject student applications with inline notes and email notifications.
 - **Secure Document Access:** Download student-uploaded documents (IC, Photo, Certificate) directly from the application review modal with full audit logging.
 - **Document Completeness Badges:** Instantly see which documents each applicant has uploaded, with green download badges and red "Missing" indicators.
 - **Reports & Analytics:** Comprehensive statistics, filterable application lists, and paginated data export.
