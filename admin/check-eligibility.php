@@ -49,7 +49,8 @@ require_once __DIR__ . '/admin_header.php';
             <select name="student_id" id="student_id" class="form-select admin-focus" required>
                 <option value="">-- Choose a Student --</option>
                 <?php foreach ($students as $s): ?>
-                    <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['full_name']) ?> (<?= htmlspecialchars($s['email']) ?>)</option>
+                    <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['full_name']) ?>
+                        (<?= htmlspecialchars($s['email']) ?>)</option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -59,21 +60,24 @@ require_once __DIR__ . '/admin_header.php';
     <div class="card mb-6" id="step1">
         <h3 style="margin-bottom:16px; font-size:1.05rem;">Select Qualification</h3>
         <div class="grid-3">
-            <label class="card card-flat qual-card" data-qual="SPM" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
+            <label class="card card-flat qual-card" data-qual="SPM"
+                style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
                 <input type="radio" name="qual_type" value="SPM" class="hidden">
                 <div class="qual-option" style="pointer-events:none;">
                     <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">SPM</strong>
                     <span style="font-size:0.82rem; color:var(--text-secondary);">Sijil Pelajaran Malaysia</span>
                 </div>
             </label>
-            <label class="card card-flat qual-card" data-qual="O-Level" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
+            <label class="card card-flat qual-card" data-qual="O-Level"
+                style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
                 <input type="radio" name="qual_type" value="O-Level" class="hidden">
                 <div class="qual-option" style="pointer-events:none;">
                     <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">O-Level</strong>
                     <span style="font-size:0.82rem; color:var(--text-secondary);">GCE Ordinary Level</span>
                 </div>
             </label>
-            <label class="card card-flat qual-card" data-qual="IGCSE" style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
+            <label class="card card-flat qual-card" data-qual="IGCSE"
+                style="cursor:pointer; text-align:center; padding:20px; border:2px solid var(--border); transition: border-color 0.2s;">
                 <input type="radio" name="qual_type" value="IGCSE" class="hidden">
                 <div class="qual-option" style="pointer-events:none;">
                     <strong style="font-size:1.1rem; display:block; margin-bottom:4px;">IGCSE</strong>
@@ -117,10 +121,12 @@ require_once __DIR__ . '/admin_header.php';
             <div class="ocr-dropzone-content">
                 <div class="ocr-dropzone-icon">📄</div>
                 <p class="ocr-dropzone-text"><strong>Drop result slip here</strong></p>
-                <input type="file" id="ocrFileInput" accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf" style="display:none;">
+                <input type="file" id="ocrFileInput" accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf"
+                    style="display:none;">
             </div>
             <div id="ocrImagePreview" class="hidden" style="margin-top: 15px; text-align: center;">
-                <img id="ocrPreviewImg" src="" alt="Preview" style="max-height: 200px; max-width: 100%; border-radius: 4px;">
+                <img id="ocrPreviewImg" src="" alt="Preview"
+                    style="max-height: 200px; max-width: 100%; border-radius: 4px;">
             </div>
         </div>
 
@@ -131,13 +137,15 @@ require_once __DIR__ . '/admin_header.php';
 
         <div class="hidden" id="ocrErrorBox">
             <div class="alert alert-danger" id="ocrErrorMsg"></div>
-            <button type="button" class="btn btn-outline btn-sm" id="ocrRetryBtn" style="margin-top:8px;">Try Again</button>
+            <button type="button" class="btn btn-outline btn-sm" id="ocrRetryBtn" style="margin-top:8px;">Try
+                Again</button>
         </div>
     </div>
 
     <!-- OCR Results Preview -->
     <div class="card mb-6 hidden" id="ocrResultsCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
             <div>
                 <h3 style="font-size:1.05rem; margin-bottom:4px;">📋 Extracted Grades</h3>
             </div>
@@ -164,7 +172,8 @@ require_once __DIR__ . '/admin_header.php';
 
         <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
             <button type="button" class="btn btn-outline btn-sm" id="ocrAddRowBtn">+ Add Missing Subject</button>
-            <button type="button" class="btn btn-outline btn-sm" id="ocrRescanBtn" style="margin-left:auto;">🔄 Re-scan</button>
+            <button type="button" class="btn btn-outline btn-sm" id="ocrRescanBtn" style="margin-left:auto;">🔄
+                Re-scan</button>
         </div>
     </div>
 
@@ -176,282 +185,283 @@ require_once __DIR__ . '/admin_header.php';
 
     <!-- Submit -->
     <div id="submit_container" style="display:none;">
-        <button type="submit" class="btn btn-purple btn-lg btn-block" id="submit_btn" onclick="return document.getElementById('student_id').value !== '' || alert('Please select a student');">
+        <button type="submit" class="btn btn-purple btn-lg btn-block" id="submit_btn"
+            onclick="return document.getElementById('student_id').value !== '' || alert('Please select a student');">
             Run Eligibility Engine
         </button>
     </div>
 </form>
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
-// ── State ────────────────────────────────────────────────────────────
-var selectedQual = null;
-var entryMode = 'manual';
-var csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    // ── State ──────────────────────────────────────────────────────────── 
+    var selectedQual = null;
+    var entryMode = 'manual';
+    var csrfToken = document.querySelector('input[name="csrf_token"]').value;
 
-// ── Step 1: Qualification Selection ──────────────────────────────────
-document.querySelectorAll('.qual-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-        var input = this.querySelector('input');
-        if (input) input.checked = true;
-        
-        document.querySelectorAll('.qual-card').forEach(function(el) {
-            el.style.borderColor = 'var(--border)';
+    // ── Step 1: Qualification Selection ──────────────────────────────────
+    document.querySelectorAll('.qual-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            var input = this.querySelector('input');
+            if (input) input.checked = true;
+
+            document.querySelectorAll('.qual-card').forEach(function (el) {
+                el.style.borderColor = 'var(--border)';
+            });
+
+            this.style.borderColor = 'var(--purple)'; // Admin color
+            selectedQual = this.getAttribute('data-qual');
+
+            document.getElementById('entryModeCard').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('ocrUploadCard').classList.add('hidden');
+            document.getElementById('ocrResultsCard').classList.add('hidden');
+            document.getElementById('submit_container').style.display = 'none';
+
+            applyEntryMode();
         });
-        
-        this.style.borderColor = 'var(--purple)'; // Admin color
-        selectedQual = this.getAttribute('data-qual');
-
-        document.getElementById('entryModeCard').classList.remove('hidden');
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('ocrUploadCard').classList.add('hidden');
-        document.getElementById('ocrResultsCard').classList.add('hidden');
-        document.getElementById('submit_container').style.display = 'none';
-
-        applyEntryMode();
     });
-});
 
-document.querySelectorAll('.entry-mode-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-        document.querySelectorAll('.entry-mode-card').forEach(function(el) {
-            el.classList.remove('active');
+    document.querySelectorAll('.entry-mode-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            document.querySelectorAll('.entry-mode-card').forEach(function (el) {
+                el.classList.remove('active');
+            });
+            this.classList.add('active');
+            entryMode = this.getAttribute('data-mode');
+            applyEntryMode();
         });
-        this.classList.add('active');
-        entryMode = this.getAttribute('data-mode');
-        applyEntryMode();
     });
-});
 
-function applyEntryMode() {
-    if (!selectedQual) return;
+    function applyEntryMode() {
+        if (!selectedQual) return;
 
-    if (entryMode === 'manual') {
-        document.getElementById('step2').classList.remove('hidden');
-        document.getElementById('ocrUploadCard').classList.add('hidden');
-        document.getElementById('ocrResultsCard').classList.add('hidden');
-        document.getElementById('ocrResultsBody').innerHTML = ''; 
-        updateGradeInputs(selectedQual); // Assume updateGradeInputs is available globally or we will reimplement it simply
-        document.getElementById('submit_container').style.display = 'block';
-        document.getElementById('isOcrSubmission').value = '0';
-    } else {
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('ocrUploadCard').classList.remove('hidden');
-        document.getElementById('ocrResultsCard').classList.add('hidden');
-        document.getElementById('grade_inputs').innerHTML = ''; 
-        document.getElementById('submit_container').style.display = 'none';
-        document.getElementById('isOcrSubmission').value = '1';
-        resetOcrUpload();
+        if (entryMode === 'manual') {
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('ocrUploadCard').classList.add('hidden');
+            document.getElementById('ocrResultsCard').classList.add('hidden');
+            document.getElementById('ocrResultsBody').innerHTML = '';
+            updateGradeInputs(selectedQual); // Assume updateGradeInputs is available globally or we will reimplement it simply
+            document.getElementById('submit_container').style.display = 'block';
+            document.getElementById('isOcrSubmission').value = '0';
+        } else {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('ocrUploadCard').classList.remove('hidden');
+            document.getElementById('ocrResultsCard').classList.add('hidden');
+            document.getElementById('grade_inputs').innerHTML = '';
+            document.getElementById('submit_container').style.display = 'none';
+            document.getElementById('isOcrSubmission').value = '1';
+            resetOcrUpload();
+        }
     }
-}
 
-// Minimal updateGradeInputs since we don't have the student JS loaded here
-function updateGradeInputs(qualType) {
-    var subjects = getSubjectList(qualType);
-    var grades = getGradeList(qualType);
-    var html = '<div class="grid-2">';
-    
-    subjects.slice(0, 10).forEach(function(subj, idx) {
-        html += '<div class="form-group flex" style="align-items:center; gap:12px;">';
-        html += '<select name="subjects[]" class="form-select admin-focus" style="flex:2;"><option value="'+subj+'">'+subj+'</option></select>';
-        html += '<select name="grades[]" class="form-select admin-focus" style="flex:1;" required><option value="">Grade</option>';
-        grades.forEach(function(g) { html += '<option value="'+g+'">'+g+'</option>'; });
-        html += '</select></div>';
-    });
-    html += '</div>';
-    document.getElementById('grade_inputs').innerHTML = html;
-}
+    // Minimal updateGradeInputs since we don't have the student JS loaded here
+    function updateGradeInputs(qualType) {
+        var subjects = getSubjectList(qualType);
+        var grades = getGradeList(qualType);
+        var html = '<div class="grid-2">';
 
-// ── OCR Upload Handling ──────────────────────────────────────────────
-var ocrDropzone = document.getElementById('ocrDropzone');
-var ocrFileInput = document.getElementById('ocrFileInput');
+        subjects.slice(0, 10).forEach(function (subj, idx) {
+            html += '<div class="form-group flex" style="align-items:center; gap:12px;">';
+            html += '<select name="subjects[]" class="form-select admin-focus" style="flex:2;"><option value="' + subj + '">' + subj + '</option></select>';
+            html += '<select name="grades[]" class="form-select admin-focus" style="flex:1;" required><option value="">Grade</option>';
+            grades.forEach(function (g) { html += '<option value="' + g + '">' + g + '</option>'; });
+            html += '</select></div>';
+        });
+        html += '</div>';
+        document.getElementById('grade_inputs').innerHTML = html;
+    }
 
-if (ocrDropzone) {
-    ocrDropzone.addEventListener('click', function() {
-        if (!document.getElementById('student_id').value) {
-            alert("Please select a student first!");
+    // ── OCR Upload Handling ──────────────────────────────────────────────
+    var ocrDropzone = document.getElementById('ocrDropzone');
+    var ocrFileInput = document.getElementById('ocrFileInput');
+
+    if (ocrDropzone) {
+        ocrDropzone.addEventListener('click', function () {
+            if (!document.getElementById('student_id').value) {
+                alert("Please select a student first!");
+                return;
+            }
+            ocrFileInput.click();
+        });
+    }
+
+    if (ocrFileInput) {
+        ocrFileInput.addEventListener('change', function () {
+            if (this.files.length > 0) handleOcrFile(this.files[0]);
+        });
+    }
+
+    function handleOcrFile(file) {
+        var studentId = document.getElementById('student_id').value;
+        if (!studentId) {
+            alert("Please select a student before uploading.");
             return;
         }
-        ocrFileInput.click();
-    });
-}
 
-if (ocrFileInput) {
-    ocrFileInput.addEventListener('change', function() {
-        if (this.files.length > 0) handleOcrFile(this.files[0]);
-    });
-}
+        if (file.type.startsWith('image/') || file.name.match(/\.(jpg|jpeg|png|webp|heic|heif)$/i)) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('ocrPreviewImg').src = e.target.result;
+                document.getElementById('ocrImagePreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
 
-function handleOcrFile(file) {
-    var studentId = document.getElementById('student_id').value;
-    if (!studentId) {
-        alert("Please select a student before uploading.");
-        return;
-    }
+        document.getElementById('ocrDropzone').classList.add('hidden');
+        document.getElementById('ocrErrorBox').classList.add('hidden');
+        document.getElementById('ocrLoader').classList.remove('hidden');
 
-    if (file.type.startsWith('image/') || file.name.match(/\.(jpg|jpeg|png|webp|heic|heif)$/i)) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('ocrPreviewImg').src = e.target.result;
-            document.getElementById('ocrImagePreview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
+        var formData = new FormData();
+        formData.append('result_slip', file);
+        formData.append('qual_type', selectedQual);
+        formData.append('student_id', studentId);
+        formData.append('csrf_token', csrfToken);
 
-    document.getElementById('ocrDropzone').classList.add('hidden');
-    document.getElementById('ocrErrorBox').classList.add('hidden');
-    document.getElementById('ocrLoader').classList.remove('hidden');
-
-    var formData = new FormData();
-    formData.append('result_slip', file);
-    formData.append('qual_type', selectedQual);
-    formData.append('student_id', studentId);
-    formData.append('csrf_token', csrfToken);
-
-    fetch('/api/ocr-result.php', {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(data => {
-        document.getElementById('ocrLoader').classList.add('hidden');
-        if (data.new_csrf_token) {
-            csrfToken = data.new_csrf_token;
-            document.querySelectorAll('input[name="csrf_token"]').forEach(function(el) {
-                el.value = data.new_csrf_token;
+        fetch('/api/ocr-result.php', {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('ocrLoader').classList.add('hidden');
+                if (data.new_csrf_token) {
+                    csrfToken = data.new_csrf_token;
+                    document.querySelectorAll('input[name="csrf_token"]').forEach(function (el) {
+                        el.value = data.new_csrf_token;
+                    });
+                }
+                if (data.success && data.grades) {
+                    renderOcrResults(data.grades, selectedQual);
+                } else {
+                    showOcrError(data.error || 'OCR processing failed.');
+                }
+            })
+            .catch(err => {
+                document.getElementById('ocrLoader').classList.add('hidden');
+                showOcrError('Network error.');
             });
-        }
-        if (data.success && data.grades) {
-            renderOcrResults(data.grades, selectedQual);
-        } else {
-            showOcrError(data.error || 'OCR processing failed.');
-        }
-    })
-    .catch(err => {
+    }
+
+    function showOcrError(msg) {
+        document.getElementById('ocrDropzone').classList.add('hidden');
         document.getElementById('ocrLoader').classList.add('hidden');
-        showOcrError('Network error.');
+        document.getElementById('ocrErrorBox').classList.remove('hidden');
+        document.getElementById('ocrErrorMsg').textContent = msg;
+    }
+
+    function resetOcrUpload() {
+        document.getElementById('ocrDropzone').classList.remove('hidden');
+        document.getElementById('ocrLoader').classList.add('hidden');
+        document.getElementById('ocrErrorBox').classList.add('hidden');
+        document.getElementById('ocrResultsCard').classList.add('hidden');
+        if (ocrFileInput) ocrFileInput.value = '';
+    }
+
+    document.getElementById('ocrRetryBtn')?.addEventListener('click', resetOcrUpload);
+    document.getElementById('ocrRescanBtn')?.addEventListener('click', function () {
+        document.getElementById('ocrResultsCard').classList.add('hidden');
+        document.getElementById('ocrUploadCard').classList.remove('hidden');
+        resetOcrUpload();
     });
-}
 
-function showOcrError(msg) {
-    document.getElementById('ocrDropzone').classList.add('hidden');
-    document.getElementById('ocrLoader').classList.add('hidden');
-    document.getElementById('ocrErrorBox').classList.remove('hidden');
-    document.getElementById('ocrErrorMsg').textContent = msg;
-}
+    // ── Render OCR Results ───────────────────────────────────────────────
+    function renderOcrResults(grades, qualType) {
+        document.getElementById('ocrUploadCard').classList.add('hidden');
+        document.getElementById('ocrResultsCard').classList.remove('hidden');
+        document.getElementById('ocrCountBadge').textContent = grades.length + ' subjects';
 
-function resetOcrUpload() {
-    document.getElementById('ocrDropzone').classList.remove('hidden');
-    document.getElementById('ocrLoader').classList.add('hidden');
-    document.getElementById('ocrErrorBox').classList.add('hidden');
-    document.getElementById('ocrResultsCard').classList.add('hidden');
-    if (ocrFileInput) ocrFileInput.value = '';
-}
+        var tbody = document.getElementById('ocrResultsBody');
+        tbody.innerHTML = '';
+        grades.forEach(function (item, index) { addOcrResultRow(tbody, item, qualType, index); });
 
-document.getElementById('ocrRetryBtn')?.addEventListener('click', resetOcrUpload);
-document.getElementById('ocrRescanBtn')?.addEventListener('click', function() {
-    document.getElementById('ocrResultsCard').classList.add('hidden');
-    document.getElementById('ocrUploadCard').classList.remove('hidden');
-    resetOcrUpload();
-});
+        document.getElementById('submit_container').style.display = 'block';
+    }
 
-// ── Render OCR Results ───────────────────────────────────────────────
-function renderOcrResults(grades, qualType) {
-    document.getElementById('ocrUploadCard').classList.add('hidden');
-    document.getElementById('ocrResultsCard').classList.remove('hidden');
-    document.getElementById('ocrCountBadge').textContent = grades.length + ' subjects';
+    function addOcrResultRow(tbody, item, qualType, index) {
+        var allSubjects = getSubjectList(qualType);
+        var gradeList = getGradeList(qualType);
+        var row = document.createElement('tr');
 
-    var tbody = document.getElementById('ocrResultsBody');
-    tbody.innerHTML = '';
-    grades.forEach(function(item, index) { addOcrResultRow(tbody, item, qualType, index); });
+        var tdDetected = document.createElement('td');
+        tdDetected.textContent = item.subject || '—';
+        row.appendChild(tdDetected);
 
-    document.getElementById('submit_container').style.display = 'block';
-}
+        var tdSubject = document.createElement('td');
+        var subjectSelect = document.createElement('select');
+        subjectSelect.name = 'subjects[]';
+        subjectSelect.className = 'form-select admin-focus form-select-sm';
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        allSubjects.forEach(s => {
+            var opt = document.createElement('option');
+            opt.value = s;
+            var displayName = s;
+            if (s.indexOf('Other Subject') === 0) {
+                displayName = s.replace('Other Subject', 'Other Language Subject');
+            }
+            opt.textContent = displayName;
+            if (item.matched_key === s) opt.selected = true;
+            subjectSelect.appendChild(opt);
+        });
+        tdSubject.appendChild(subjectSelect);
+        row.appendChild(tdSubject);
 
-function addOcrResultRow(tbody, item, qualType, index) {
-    var allSubjects = getSubjectList(qualType);
-    var gradeList = getGradeList(qualType);
-    var row = document.createElement('tr');
+        var tdGrade = document.createElement('td');
+        var gradeSelect = document.createElement('select');
+        gradeSelect.name = 'grades[]';
+        gradeSelect.className = 'form-select admin-focus form-select-sm';
+        gradeSelect.innerHTML = '<option value="">Grade</option>';
+        gradeList.forEach(g => {
+            var opt = document.createElement('option');
+            opt.value = g; opt.textContent = g;
+            if (item.grade === g) opt.selected = true;
+            gradeSelect.appendChild(opt);
+        });
+        tdGrade.appendChild(gradeSelect);
+        row.appendChild(tdGrade);
 
-    var tdDetected = document.createElement('td');
-    tdDetected.textContent = item.subject || '—';
-    row.appendChild(tdDetected);
+        var tdConf = document.createElement('td');
+        tdConf.innerHTML = item.confidence === 'high' ? '✅' : '⚠️';
+        row.appendChild(tdConf);
 
-    var tdSubject = document.createElement('td');
-    var subjectSelect = document.createElement('select');
-    subjectSelect.name = 'subjects[]';
-    subjectSelect.className = 'form-select admin-focus form-select-sm';
-    subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-    allSubjects.forEach(s => {
-        var opt = document.createElement('option');
-        opt.value = s;
-        var displayName = s;
-        if (s.indexOf('Other Subject') === 0) {
-            displayName = s.replace('Other Subject', 'Other Language Subject');
-        }
-        opt.textContent = displayName;
-        if (item.matched_key === s) opt.selected = true;
-        subjectSelect.appendChild(opt);
+        var tdRemove = document.createElement('td');
+        tdRemove.innerHTML = '<button type="button" class="btn btn-red btn-sm">✕</button>';
+        tdRemove.querySelector('button').onclick = () => row.remove();
+        row.appendChild(tdRemove);
+
+        tbody.appendChild(row);
+    }
+
+    document.getElementById('ocrAddRowBtn')?.addEventListener('click', function () {
+        var tbody = document.getElementById('ocrResultsBody');
+        addOcrResultRow(tbody, { subject: '', matched_key: '', grade: '', confidence: 'none' }, selectedQual, tbody.children.length);
     });
-    tdSubject.appendChild(subjectSelect);
-    row.appendChild(tdSubject);
 
-    var tdGrade = document.createElement('td');
-    var gradeSelect = document.createElement('select');
-    gradeSelect.name = 'grades[]';
-    gradeSelect.className = 'form-select admin-focus form-select-sm';
-    gradeSelect.innerHTML = '<option value="">Grade</option>';
-    gradeList.forEach(g => {
-        var opt = document.createElement('option');
-        opt.value = g; opt.textContent = g;
-        if (item.grade === g) opt.selected = true;
-        gradeSelect.appendChild(opt);
-    });
-    tdGrade.appendChild(gradeSelect);
-    row.appendChild(tdGrade);
+    // ── Subject & Grade Lists ────────────────────────────────────────────
+    function getSubjectList(qualType) {
+        var core = {
+            'SPM': ['Bahasa Melayu', 'English', 'Mathematics', 'Sejarah'],
+            'O-Level': ['English Language', 'Mathematics'],
+            'IGCSE': ['English Language', 'Mathematics']
+        };
+        var optional = [
+            'Additional Mathematics', 'Physics', 'Chemistry', 'Biology', 'Science',
+            'Pendidikan Islam', 'Pendidikan Moral', 'Prinsip Perakaunan', 'Ekonomi',
+            'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal', 'Pendidikan Seni Visual', 'Reka Cipta',
+            'Other Subject', 'Other Subject I', 'Other Subject II', 'Other Subject III', 'Other Subject IV',
+            'Other Non-Language Subject', 'Other Non-Language Subject I', 'Other Non-Language Subject II', 'Other Non-Language Subject III', 'Other Non-Language Subject IV'
+        ];
+        return (core[qualType] || []).concat(optional);
+    }
 
-    var tdConf = document.createElement('td');
-    tdConf.innerHTML = item.confidence === 'high' ? '✅' : '⚠️';
-    row.appendChild(tdConf);
-
-    var tdRemove = document.createElement('td');
-    tdRemove.innerHTML = '<button type="button" class="btn btn-red btn-sm">✕</button>';
-    tdRemove.querySelector('button').onclick = () => row.remove();
-    row.appendChild(tdRemove);
-
-    tbody.appendChild(row);
-}
-
-document.getElementById('ocrAddRowBtn')?.addEventListener('click', function() {
-    var tbody = document.getElementById('ocrResultsBody');
-    addOcrResultRow(tbody, { subject: '', matched_key: '', grade: '', confidence: 'none' }, selectedQual, tbody.children.length);
-});
-
-// ── Subject & Grade Lists ────────────────────────────────────────────
-function getSubjectList(qualType) {
-    var core = {
-        'SPM': ['Bahasa Melayu', 'English', 'Mathematics', 'Sejarah'],
-        'O-Level': ['English Language', 'Mathematics'],
-        'IGCSE': ['English Language', 'Mathematics']
-    };
-    var optional = [
-        'Additional Mathematics', 'Physics', 'Chemistry', 'Biology', 'Science',
-        'Pendidikan Islam', 'Pendidikan Moral', 'Prinsip Perakaunan', 'Ekonomi',
-        'Perniagaan', 'Sains Komputer', 'Grafik Komunikasi Teknikal', 'Pendidikan Seni Visual', 'Reka Cipta',
-        'Other Subject', 'Other Subject I', 'Other Subject II', 'Other Subject III', 'Other Subject IV',
-        'Other Non-Language Subject', 'Other Non-Language Subject I', 'Other Non-Language Subject II', 'Other Non-Language Subject III', 'Other Non-Language Subject IV'
-    ];
-    return (core[qualType] || []).concat(optional);
-}
-
-function getGradeList(qualType) {
-    var grades = {
-        'SPM': ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G'],
-        'O-Level': ['A*', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'U'],
-        'IGCSE': ['A*', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'U']
-    };
-    return grades[qualType] || [];
-}
+    function getGradeList(qualType) {
+        var grades = {
+            'SPM': ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G'],
+            'O-Level': ['A*', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'U'],
+            'IGCSE': ['A*', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'U']
+        };
+        return grades[qualType] || [];
+    }
 </script>
 
 <?php require_once __DIR__ . '/admin_footer.php'; ?>

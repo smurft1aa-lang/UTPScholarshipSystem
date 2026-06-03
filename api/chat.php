@@ -21,11 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Authentication is no longer required for the chatbot, as we allow guests
-// on the landing page to ask questions.
-
 $inputTarget = file_get_contents('php://input');
-$data = json_decode((string)$inputTarget, true);
+$data = json_decode((string) $inputTarget, true);
 
 if (!isset($data['csrf_token']) || !validateCSRFToken($data['csrf_token'])) {
     http_response_code(403);
@@ -39,8 +36,8 @@ $rateLimitKey = 'chat_' . ($userId === 'guest' ? session_id() : $userId);
 if (!checkRateLimit($rateLimitKey, 20, 10)) {
     http_response_code(429);
     echo json_encode([
-        'success' => false, 
-        'error' => 'You are sending messages too quickly. Please wait a few minutes.', 
+        'success' => false,
+        'error' => 'You are sending messages too quickly. Please wait a few minutes.',
         'new_csrf_token' => generateCSRFToken()
     ]);
     exit;
@@ -62,10 +59,10 @@ foreach ($history as $msg) {
     if (!isset($msg['role']) || !isset($msg['parts'][0]['text'])) {
         continue;
     }
-    
+
     $role = $msg['role'] === 'model' ? 'model' : 'user';
     $text = substr($msg['parts'][0]['text'], 0, 1000); // Max 1000 chars per message to prevent abuse
-    
+
     $sanitizedHistory[] = [
         'role' => $role,
         'parts' => [
@@ -97,8 +94,8 @@ try {
     \UTP\Services\Telemetry::trackEvent('Chatbot API Error', ['error' => $e->getMessage()], 'ERROR');
     http_response_code(500);
     echo json_encode([
-        'success' => false, 
-        'error' => 'I am sorry, but I am having trouble connecting to the network right now. Please try again later.', 
+        'success' => false,
+        'error' => 'I am sorry, but I am having trouble connecting to the network right now. Please try again later.',
         'new_csrf_token' => generateCSRFToken()
     ]);
 }

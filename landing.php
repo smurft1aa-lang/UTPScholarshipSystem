@@ -112,7 +112,7 @@ $csrfToken = generateCSRFToken();
     <section class="scholarships" id="scholarships">
         <div class="section-inner">
             <h2 class="animate-on-scroll">Financial Aid & Scholarships</h2>
-            <p class="section-subtitle animate-on-scroll">UTP offers a range of scholarships to support deserving students. Use our portal to check your eligibility and track your application status.</p>
+            <p class="section-subtitle animate-on-scroll">UTP offers a range of scholarships to support deserving students. Use our portal to check your eligibility.</p>
             <div class="scholarship-grid">
                 <div class="scholarship-card animate-on-scroll">
                     <div class="scholarship-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg></div>

@@ -34,8 +34,4 @@
         </button>
     </div>
 </div>
-
-
-
-
 <script src="/assets/js/chatbot.js"></script>
