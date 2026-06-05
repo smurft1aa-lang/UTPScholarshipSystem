@@ -6,74 +6,171 @@ initSession();
 
 $csrfToken = generateCSRFToken();
 
-// Scholarship data array — all real, verified scholarships & sponsorships
-$scholarships = [
-    [
-        'name' => 'PETRONAS Education Sponsorship Programme (PESP)',
-        'type' => 'corporate',
-        'badge' => 'Corporate',
-        'desc' => 'The premier PETRONAS sponsorship covering full tuition fees, accommodation, books, laptop, and monthly allowance for Foundation and Undergraduate studies at UTP and other approved universities.',
-        'requirements' => ['Malaysian citizen', 'Current year SPM with minimum 8A', 'Strong co-curricular & leadership involvement', 'Pass PETRONAS selection assessment & interview'],
-        'coverage' => ['Full tuition fees', 'Accommodation & living allowance', 'Books & laptop allowance', 'Monthly stipend'],
-        'website' => ['url' => 'https://www.petronasedup.com.my', 'label' => 'petronasedup.com.my'],
-        'email' => 'edup@petronas.com',
-        'phone' => null,
-    ],
-    [
-        'name' => 'Yayasan UTP Scholarship (Undergraduate)',
-        'type' => 'internal',
-        'badge' => 'UTP Internal',
-        'desc' => 'Awarded to deserving Malaysian students with excellent academic results and active extracurricular involvement. Supports students from low-income households to pursue undergraduate studies at UTP.',
-        'requirements' => ['Malaysian citizen', 'Minimum 8A in SPM', 'Monthly household income ≤ RM4,000', 'Active in extracurricular activities', 'Not a holder of any other scholarship'],
-        'coverage' => ['Full tuition fee waiver', 'Monthly living allowance', 'Book & material allowance'],
-        'website' => ['url' => 'https://www.utp.edu.my', 'label' => 'utp.edu.my'],
-        'email' => 'yayasan_utp@utp.edu.my',
-        'phone' => '05-368 8000',
-    ],
-    [
-        'name' => 'YUTP Education Grant',
-        'type' => 'internal',
-        'badge' => 'UTP Internal',
-        'desc' => 'Partial financial assistance for outstanding active UTP students from low to middle-income families. Designed to bridge the gap for students who demonstrate strong academic performance but face financial constraints.',
-        'requirements' => ['Malaysian citizen', 'Active UTP student', 'Monthly household income ≤ RM10,000', 'Min CGPA 3.50 (Foundation/Matriculation/STPM)', 'Not a holder of any other scholarship'],
-        'coverage' => ['Partial tuition fee assistance', 'Covers study-related expenses'],
-        'website' => ['url' => 'https://www.utp.edu.my', 'label' => 'utp.edu.my'],
-        'email' => 'yayasan_utp@utp.edu.my',
-        'phone' => '05-368 8000',
-    ],
-    [
-        'name' => 'YUTP Student Support Fund (Bursary)',
-        'type' => 'internal',
-        'badge' => 'UTP Internal',
-        'desc' => 'One-off financial assistance for UTP students facing temporary financial difficulties. Ensures that financial pressure does not disrupt academic performance. Available for PTPTN loan holders and self-sponsored students.',
-        'requirements' => ['Malaysian citizen', 'PTPTN or self-sponsored student only', 'Monthly household income ≤ RM6,000', 'Minimum semester GPA of 2.75'],
-        'coverage' => ['One-time financial grant', 'Covers immediate academic-related expenses'],
-        'website' => null,
-        'email' => 'nursakinah.salim@utp.edu.my',
-        'phone' => '05-368 8000',
-    ],
-    [
-        'name' => 'Yayasan UTP Prestigious Scholarship (Postgraduate)',
-        'type' => 'internal',
-        'badge' => 'UTP Internal',
-        'desc' => 'A highly competitive scholarship for top-tier postgraduate students at UTP. Targets candidates with strong academic records and demonstrated commitment to extracurricular and community service.',
-        'requirements' => ['Malaysian citizen', 'Min CGPA 3.25 in Bachelor\'s Degree', 'For Master\'s: CGPA 3.25 (coursework) or 1 published journal article (research)', 'Active in extracurricular activities & community service', 'Not a holder of any other scholarship'],
-        'coverage' => ['Full tuition fee waiver', 'Monthly stipend', 'Research allowance'],
-        'website' => ['url' => 'https://www.utp.edu.my', 'label' => 'utp.edu.my'],
-        'email' => 'yayasan_utp@utp.edu.my',
-        'phone' => '05-368 8000',
-    ],
-    [
+// ─── UTP Financial Aid (Yayasan UTP) ───
+$utpFinancialAid = [
+    'tazu' => [
         'name' => 'Tabung Amanah Zakat UTP (TAZU)',
-        'type' => 'internal',
-        'badge' => 'UTP Internal',
+        'subtitle' => 'For UTP Malaysian Muslim Students',
         'desc' => 'Zakat-funded financial assistance specifically for Malaysian Muslim students at UTP. Provides academic grants and bursaries to help with tuition and living expenses through zakat (alms) distribution.',
-        'requirements' => ['Malaysian Muslim', 'Active full-time UTP student', 'No disciplinary or crime records', 'Min GPA/CGPA 2.00 – 3.00 (varies by scheme)', 'Per capita income below RM3,243'],
-        'coverage' => ['Academic grant', 'Living expense support', 'Bursary for immediate needs'],
-        'website' => ['url' => 'https://www.utp.edu.my', 'label' => 'utp.edu.my'],
+        'points' => [
+            'Types of Aids, Criteria & Eligibility — <a href="https://www.utp.edu.my" target="_blank">View Details</a>',
+            'Follow us: <a href="https://www.facebook.com/TAZUUTP" target="_blank">Facebook</a>, <a href="https://www.instagram.com/tazuutp" target="_blank">Instagram</a>',
+            'Open for Foundation & Undergraduate students every semester.',
+        ],
+        'semesters' => ['January semester', 'May semester', 'September semester'],
         'email' => 'zakat@utp.edu.my',
         'phone' => '05-368 8027',
     ],
+    'yutp' => [
+        'name' => 'Yayasan Universiti Teknologi PETRONAS (YUTP)',
+        'subtitle' => null,
+        'desc' => 'Yayasan UTP provides various scholarships and financial aid for deserving Malaysian students with excellent academic results and active extracurricular involvement.',
+        'points' => [
+            'Types of Fund, Criteria & Eligibility — <a href="https://www.utp.edu.my" target="_blank">View Details</a>',
+            'Follow us: <a href="https://www.facebook.com/yaborutp" target="_blank">Facebook</a>, <a href="https://www.instagram.com/yaborutp" target="_blank">Instagram</a>',
+            'Open for Foundation & Undergraduate active students every semester.',
+        ],
+        'sub_items' => [
+            [
+                'name' => 'YUTP Scholarship',
+                'note' => 'Required to apply via PESP Application. Shortlisted candidates will be contacted.',
+            ],
+            [
+                'name' => 'YUTP Education Grant',
+                'semesters' => [
+                    ['sem' => 'January semester', 'date' => 'Open 26 January 2026'],
+                    ['sem' => 'May semester', 'date' => 'Open 18 May 2026'],
+                    ['sem' => 'September semester', 'date' => 'Coming soon'],
+                ],
+            ],
+            [
+                'name' => 'YUTP Student Support Fund Bursary',
+                'semesters' => [
+                    ['sem' => 'January semester', 'date' => null],
+                    ['sem' => 'May semester', 'date' => null],
+                    ['sem' => 'September semester', 'date' => null],
+                ],
+            ],
+        ],
+        'email' => 'yayasan_utp@utp.edu.my',
+        'phone' => '05-368 8000',
+    ],
+];
+
+// ─── External Financial Aid ───
+$externalAid = [
+    'ptptn' => [
+        'name' => 'PTPTN Study Loan (Perbadanan Tabung Pendidikan Tinggi Nasional)',
+        'desc' => 'The National Higher Education Fund provides study loans for Malaysian students pursuing diploma or degree programmes at accredited institutions. Graduates who obtain First-Class Honours may apply for full loan repayment exemption.',
+        'status' => 'Open every semester',
+        'semesters' => [
+            [
+                'sem' => 'January Semester',
+                'date' => 'Open 1 January 2026 – 29 February 2026',
+                'guide_url' => 'https://www.utp.edu.my/PublishingImages/Pages/Students/Financial-Aid/Slide%20MyPTPTN%20_JAN%202026.pdf',
+                'guide_label' => 'Jan 2026 PTPTN Guide',
+            ],
+            [
+                'sem' => 'May Semester',
+                'date' => 'Open 1 May 2026 – 30 June 2026',
+                'guide_url' => 'https://www.utp.edu.my/PublishingImages/Pages/Students/Financial-Aid/Slide%20MyPTPTN_SEM.%20MAY%202026.pdf',
+                'guide_label' => 'May 2026 PTPTN Guide',
+            ],
+            [
+                'sem' => 'September Semester',
+                'date' => 'Open 1 September 2026 – 31 October 2026',
+                'guide_url' => null,
+                'guide_label' => null,
+            ],
+        ],
+        'apply_url' => 'https://www.ptptn.gov.my/pinjaman-pendidikan/',
+        'note' => 'Foundation students can apply only in their first semester (the remaining study period must be at least one year).',
+        'phone' => '03-2193 3000',
+    ],
+];
+
+// ─── For SPM Leavers ───
+$spmLeavers = [
+    [
+        'name' => 'Yayasan UTP Full Scholarship',
+        'status' => 'Closed',
+        'application_period' => '9 April 2026 – 15 April 2026 (Extended to 19 April 2026)',
+        'apply_url' => 'https://docs.google.com/forms/d/e/1FAIpQLSe7lac08rbV_X5IBa0c3IEGX9-RQi0m7W0M8983bz09a-Fr8g/viewform',
+        'desc' => 'Full scholarship for outstanding SPM leavers covering tuition, accommodation, and living allowance at UTP.',
+    ],
+    [
+        'name' => 'PETRONAS Education Sponsorship Programme (PESP)',
+        'status' => 'Closed',
+        'application_period' => '31 March 2026 (12 PM) – 10 April 2026 (5 PM)',
+        'apply_url' => 'https://www.petronasedup.com.my',
+        'desc' => 'The premier PETRONAS sponsorship covering full tuition fees, accommodation, books, laptop, and monthly allowance for Foundation and Undergraduate studies.',
+    ],
+];
+
+// ─── Yayasan UTP Scholarship Details (expanded for Hero section) ───
+// Application windows: status is computed automatically from current date.
+// Add/edit open_periods each year to keep this up-to-date.
+$yutpScholarships = [
+    [
+        'name' => 'Yayasan UTP Scholarship',
+        'open_periods' => [
+            ['start' => '2026-05-15', 'end' => '2026-05-31'],
+            ['start' => '2026-09-01', 'end' => '2026-09-30'],
+            ['start' => '2027-01-15', 'end' => '2027-01-31'],
+        ],
+    ],
+    [
+        'name' => 'Yayasan UTP UEM Scholarship',
+        'open_periods' => [
+            ['start' => '2026-05-15', 'end' => '2026-05-31'],
+            ['start' => '2026-09-01', 'end' => '2026-09-30'],
+            ['start' => '2027-01-15', 'end' => '2027-01-31'],
+        ],
+    ],
+    [
+        'name' => 'Yayasan UTP Talent Scholarship',
+        'open_periods' => [
+            ['start' => '2026-05-15', 'end' => '2026-05-31'],
+            ['start' => '2026-09-01', 'end' => '2026-09-30'],
+            ['start' => '2027-01-15', 'end' => '2027-01-31'],
+        ],
+    ],
+    [
+        'name' => 'Yayasan UTP B40 Scholarship',
+        'open_periods' => [
+            ['start' => '2026-05-15', 'end' => '2026-05-31'],
+            ['start' => '2026-09-01', 'end' => '2026-09-30'],
+            ['start' => '2027-01-15', 'end' => '2027-01-31'],
+        ],
+    ],
+];
+
+// Compute status for each scholarship based on today's date
+$today = date('Y-m-d');
+foreach ($yutpScholarships as &$ys) {
+    $ys['status'] = 'Closed';
+    foreach ($ys['open_periods'] as $period) {
+        if ($today >= $period['start'] && $today <= $period['end']) {
+            $ys['status'] = 'Open';
+            break;
+        }
+    }
+}
+unset($ys); // break reference
+
+// ─── Others (External Sponsorships) ───
+$otherSponsors = [
+    ['name' => 'Yayasan Telekom Malaysia', 'url' => 'https://www.tm.com.my/YayasanTM/Pages/Our-Scholar.aspx', 'label' => 'Our Scholar Info'],
+    ['name' => 'MIDF Education Scholarship Programme', 'url' => 'https://www.midf.com.my/midf-education-scholarship-programme', 'label' => 'Scholarship Info'],
+    ['name' => 'MCMC Scholarship', 'url' => 'https://www.mcmc.gov.my/academy/en/scholarships-1', 'label' => 'Scholarship Info'],
+    ['name' => 'Yayasan Bank Rakyat (PPBU)', 'url' => 'https://www.yayasanbankrakyat.com.my/index.php/ppbu/', 'label' => 'PPBU Info'],
+    ['name' => 'Perak State Government Sponsorship', 'url' => null, 'label' => null],
+    ['name' => 'Yayasan Terengganu', 'url' => null, 'label' => null],
+    ['name' => 'Yayasan Pahang', 'url' => null, 'label' => null],
+];
+
+// ─── Government & Corporate Scholarships (retained from original) ───
+$majorScholarships = [
     [
         'name' => 'JPA Scholarship (Jabatan Perkhidmatan Awam)',
         'type' => 'government',
@@ -95,17 +192,6 @@ $scholarships = [
         'website' => ['url' => 'https://www.mara.gov.my', 'label' => 'mara.gov.my'],
         'email' => null,
         'phone' => '03-2691 5111',
-    ],
-    [
-        'name' => 'PTPTN Study Loan (Perbadanan Tabung Pendidikan Tinggi Nasional)',
-        'type' => 'government',
-        'badge' => 'Government',
-        'desc' => 'The National Higher Education Fund provides study loans for Malaysian students pursuing diploma or degree programmes at accredited institutions. Graduates who obtain First-Class Honours may apply for full loan repayment exemption.',
-        'requirements' => ['Malaysian citizen, aged 45 or below', 'Official offer letter from UTP', 'Course accredited by MQA', 'Active Simpan SSPN (Prime or Plus) account', 'At least one semester of study remaining'],
-        'coverage' => ['Tuition fees (needs-based amount)', 'Living expenses allowance', 'First-Class Honours loan exemption eligible'],
-        'website' => ['url' => 'https://www.ptptn.gov.my', 'label' => 'ptptn.gov.my'],
-        'email' => null,
-        'phone' => '03-2193 3000',
     ],
     [
         'name' => 'Khazanah Watan Scholarship',
@@ -175,7 +261,17 @@ $scholarships = [
     ],
 ];
 
-$totalCount = count($scholarships);
+// ─── Inquiries Contact ───
+$inquiryContact = [
+    'name' => 'Tajul Ariffin Bin Shamsuddin',
+    'role' => 'Manager, Marketing & Sponsorship',
+    'department' => 'Business Planning, Marketing & Performance Department',
+    'email' => 'tajul.ariffin@utp.edu.my',
+    'phone' => '05-368 8000',
+];
+
+// Total count for display
+$totalAidCount = count($utpFinancialAid) + count($externalAid) + count($spmLeavers) + count($otherSponsors) + count($majorScholarships);
 
 // SVG icon helpers
 $iconCheck = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>';
@@ -184,20 +280,379 @@ $iconGlobe = '<svg width="14" height="14" fill="none" stroke="currentColor" stro
 $iconMail = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>';
 $iconPhone = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>';
 $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+$iconCalendar = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+$iconUser = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+$iconExternalLink = '<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>';
+$iconGrad = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10l-10-6L2 10l10 6 10-6z"/><path d="M6 12v5c0 0 3 3 6 3s6-3 6-3v-5"/></svg>';
+$iconInfo = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse all scholarships, sponsorships, and financial aid available for UTP students. View requirements and contact details.">
+    <meta name="description" content="Complete financial aid information for UTP students — scholarships, sponsorships, PTPTN loans, bursaries, zakat assistance, and external sponsorship programmes.">
     <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
-    <title>Scholarships & Sponsorships — UTP Scholarship Portal</title>
+    <title>Financial Aid — UTP Scholarship Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="/assets/css/landing.css?v=9">
+    <link rel="stylesheet" href="/assets/css/landing.css?v=10">
+    <style nonce="<?= $GLOBALS['csp_nonce'] ?>">
+        /* ── Financial Aid Accordion Sections ── */
+        .fa-section {
+            max-width: 1200px;
+            margin: 0 auto 24px;
+        }
+        .fa-accordion-header {
+            background: linear-gradient(135deg, #005594 0%, #006bb3 100%);
+            padding: 18px 28px;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .fa-accordion-header:hover {
+            background: linear-gradient(135deg, #004a99 0%, #005594 100%);
+            box-shadow: 0 6px 24px rgba(0, 74, 153, 0.2);
+        }
+        .fa-accordion-header .fa-toggle-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .fa-accordion-header .fa-toggle-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+        .fa-section.open .fa-accordion-header .fa-toggle-icon {
+            transform: rotate(180deg);
+            background: rgba(255,255,255,0.35);
+        }
+        .fa-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease;
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+            padding: 0 28px;
+            border: 1px solid #e8edf2;
+            border-top: none;
+            margin-top: -8px;
+        }
+        .fa-section.open .fa-accordion-body {
+            max-height: 5000px;
+            padding: 28px;
+        }
+
+        /* ── Sub-items inside accordion ── */
+        .fa-sub-block {
+            background: var(--utp-light);
+            border-radius: 10px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--utp-navy);
+        }
+        .fa-sub-block:last-child { margin-bottom: 0; }
+        .fa-sub-block h4 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--utp-dark);
+            margin-bottom: 8px;
+        }
+        .fa-sub-block p {
+            font-size: 0.88rem;
+            color: var(--utp-muted);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+        .fa-sub-block ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px;
+        }
+        .fa-sub-block li {
+            font-size: 0.85rem;
+            color: var(--utp-text);
+            padding: 4px 0 4px 18px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .fa-sub-block li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--utp-navy);
+            font-weight: 700;
+        }
+        .fa-sub-block li.sub-item {
+            padding-left: 36px;
+        }
+        .fa-sub-block li.sub-item::before {
+            content: '○';
+            left: 18px;
+            color: var(--utp-teal);
+        }
+        .fa-sub-block a {
+            color: var(--utp-navy);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .fa-sub-block a:hover {
+            color: var(--utp-teal);
+            text-decoration: underline;
+        }
+
+        /* ── Status badges ── */
+        .fa-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .fa-status-open {
+            background: rgba(46,125,50,0.1);
+            color: #2e7d32;
+        }
+        .fa-status-closed {
+            background: rgba(198,40,40,0.1);
+            color: #c62828;
+        }
+        .fa-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .fa-status-open .fa-status-dot { background: #2e7d32; }
+        .fa-status-closed .fa-status-dot { background: #c62828; }
+
+        /* ── Application period info ── */
+        .fa-app-period {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--utp-muted);
+            margin-top: 6px;
+        }
+        .fa-app-period svg { flex-shrink: 0; color: var(--utp-navy); }
+
+        /* ── SPM Leavers Grid ── */
+        .fa-spm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .fa-spm-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Others list ── */
+        .fa-others-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .fa-others-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid #eef1f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .fa-others-list li:last-child { border-bottom: none; }
+        .fa-others-list .fa-sponsor-name {
+            font-weight: 600;
+            color: var(--utp-dark);
+            font-size: 0.92rem;
+        }
+        .fa-others-list .fa-sponsor-link {
+            font-size: 0.82rem;
+            color: var(--utp-navy);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+        .fa-others-list .fa-sponsor-link:hover {
+            color: var(--utp-teal);
+        }
+
+        /* ── Inquiry card ── */
+        .fa-inquiry-card {
+            background: linear-gradient(135deg, var(--utp-light) 0%, #e8f0fe 100%);
+            border-radius: 12px;
+            padding: 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            border: 1px solid #d4e0f0;
+        }
+        .fa-inquiry-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--utp-navy), var(--utp-teal));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .fa-inquiry-info h4 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--utp-dark);
+            margin-bottom: 4px;
+        }
+        .fa-inquiry-info p {
+            font-size: 0.82rem;
+            color: var(--utp-muted);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .fa-inquiry-info .fa-contact-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--utp-text);
+            margin-bottom: 6px;
+        }
+        .fa-inquiry-info .fa-contact-row svg { flex-shrink: 0; color: var(--utp-navy); }
+        .fa-inquiry-info a { color: var(--utp-navy); font-weight: 600; transition: color 0.2s; text-decoration: none; }
+        .fa-inquiry-info a:hover { color: var(--utp-teal); }
+
+        /* ── Section divider ── */
+        .fa-divider {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .fa-divider::before,
+        .fa-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #dce3ec;
+        }
+        .fa-divider span {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--utp-dark);
+            white-space: nowrap;
+        }
+
+        /* ── Postgraduate block ── */
+        .fa-postgrad-block {
+            background: linear-gradient(135deg, #f0f4ff 0%, var(--utp-light) 100%);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid #d4e0f0;
+        }
+        .fa-postgrad-block h4 {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--utp-dark);
+            margin-bottom: 10px;
+        }
+        .fa-postgrad-block p {
+            font-size: 0.88rem;
+            color: var(--utp-muted);
+            line-height: 1.65;
+        }
+        .fa-postgrad-block ul {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0;
+        }
+        .fa-postgrad-block li {
+            font-size: 0.85rem;
+            color: var(--utp-text);
+            padding: 4px 0 4px 18px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .fa-postgrad-block li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--utp-navy);
+            font-weight: 700;
+        }
+
+        /* ── Updated As Of ── */
+        .fa-updated {
+            font-size: 0.82rem;
+            color: var(--utp-muted);
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        /* ── YUTP Scholarship Mini Cards ── */
+        .fa-mini-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .fa-mini-card {
+            background: var(--utp-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+        .fa-mini-card:hover {
+            border-color: var(--utp-navy);
+            box-shadow: 0 4px 16px rgba(0,74,153,0.08);
+            transform: translateY(-2px);
+        }
+        .fa-mini-card h5 {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--utp-dark);
+            margin-bottom: 6px;
+        }
+    </style>
 </head>
 <body>
 <div class="page-wrapper">
@@ -226,7 +681,7 @@ $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" st
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="/landing.php">Home</a></li>
-            <li><a href="/scholarships.php" class="active-link">Scholarships</a></li>
+            <li><a href="/scholarships.php" class="active-link">Financial Aid</a></li>
             <li><a href="/landing.php#programmes">Programmes</a></li>
             <li><a href="/landing.php#stories">Success Stories</a></li>
             <li><a href="/landing.php#why-utp">Why UTP</a></li>
@@ -245,30 +700,235 @@ $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" st
         <div class="sch-breadcrumb">
             <a href="/landing.php">Home</a>
             <span>›</span>
-            <span class="current">Scholarships & Sponsorships</span>
+            <a href="/landing.php">Students</a>
+            <span>›</span>
+            <span class="current">Financial Aid</span>
         </div>
-        <h1>Scholarships & <span>Sponsorships</span></h1>
-        <p>Explore all available financial aid, scholarships, and sponsorships for studying at Universiti Teknologi PETRONAS. Click any card to expand or collapse details.</p>
+        <h1>Financial <span>Aid</span></h1>
+        <p style="margin-bottom: 18px;">Sponsorship / Loan</p>
+        <p>The university provides guidance and support to students in applying for financial aid, sponsorships, and educational loans throughout their studies. Assistance is available for opportunities offered by the government agencies, state foundations, corporate organisations and the university itself.</p>
     </section>
+
+    <!-- Open for Application Banner -->
+    <div style="background: #fff; padding: 32px 48px; text-align: center; border-bottom: 1px solid #e8edf2;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h2 style="font-family: 'Nunito', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--utp-dark); margin-bottom: 4px;">Open for Application</h2>
+            <p class="fa-updated">*Updated as of <?= date('j F Y') ?></p>
+
+            <!-- YUTP Scholarship Mini Cards -->
+            <div class="fa-mini-cards">
+                <?php foreach ($yutpScholarships as $ys): ?>
+                <div class="fa-mini-card">
+                    <h5><?= htmlspecialchars($ys['name']) ?></h5>
+                    <span class="fa-status fa-status-<?= $ys['status'] === 'Open' ? 'open' : 'closed' ?>">
+                        <span class="fa-status-dot"></span>
+                        <?= htmlspecialchars($ys['status']) ?>
+                    </span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--utp-muted);">Application Period: 15 May 2026 – 31 May 2026 &nbsp;|&nbsp; <a href="https://utpdec.microsoftcrmportals.com/admission/" target="_blank" style="color: var(--utp-navy); font-weight: 600;">Apply to UTP →</a></p>
+        </div>
+    </div>
 
     <!-- Filter Tabs -->
     <div class="sch-filters">
         <div class="sch-filter-inner">
-            <button class="sch-filter-btn active" data-filter="all" id="filterAll">All (<?= $totalCount ?>)</button>
-            <button class="sch-filter-btn" data-filter="internal" id="filterInternal">UTP Internal</button>
-            <button class="sch-filter-btn" data-filter="government" id="filterGovernment">Government</button>
-            <button class="sch-filter-btn" data-filter="corporate" id="filterCorporate">Corporate / External</button>
+            <button class="sch-filter-btn active" data-filter="all" id="filterAll">All Financial Aid</button>
+            <button class="sch-filter-btn" data-filter="utp" id="filterUTP">UTP Internal</button>
+            <button class="sch-filter-btn" data-filter="external" id="filterExternal">External & PTPTN</button>
+            <button class="sch-filter-btn" data-filter="spm" id="filterSPM">SPM Leavers</button>
+            <button class="sch-filter-btn" data-filter="corporate" id="filterCorporate">Corporate & Government</button>
         </div>
     </div>
 
-    <!-- Scholarship Listings -->
+    <!-- Financial Aid Listings -->
     <section class="sch-listings">
         <div class="sch-listings-inner">
-            <p class="sch-count" id="schCount">Showing <strong><?= $totalCount ?></strong> scholarships & sponsorships</p>
 
-            <?php foreach ($scholarships as $i => $sch): ?>
-            <div class="sch-card animate-on-scroll collapsed" data-type="<?= htmlspecialchars($sch['type']) ?>">
-                <div class="sch-card-header" onclick="toggleCard(this)">
+            <!-- ═══ SECTION 1: UTP Financial Aid ═══ -->
+            <div class="fa-section open animate-on-scroll" data-category="utp" id="secUTPAid">
+                <div class="fa-accordion-header">
+                    <span><?= $iconGrad ?> &nbsp;UTP Financial Aid</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <!-- TAZU -->
+                    <div class="fa-sub-block">
+                        <h4>TABUNG AMANAH ZAKAT UTP (TAZU)</h4>
+                        <p style="font-weight: 600; color: var(--utp-dark); margin-bottom: 6px;">For UTP Malaysian Muslim Students</p>
+                        <ul>
+                            <?php foreach ($utpFinancialAid['tazu']['points'] as $pt): ?>
+                            <li><?= $pt ?></li>
+                            <?php endforeach; ?>
+                            <?php foreach ($utpFinancialAid['tazu']['semesters'] as $sem): ?>
+                            <li class="sub-item"><?= htmlspecialchars($sem) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+
+                    <!-- YUTP -->
+                    <div class="fa-sub-block">
+                        <h4>YAYASAN UNIVERSITI TEKNOLOGI PETRONAS (YUTP)</h4>
+                        <ul>
+                            <?php foreach ($utpFinancialAid['yutp']['points'] as $pt): ?>
+                            <li><?= $pt ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+
+                        <?php foreach ($utpFinancialAid['yutp']['sub_items'] as $sub): ?>
+                        <div style="margin-top: 16px; padding-left: 12px; border-left: 2px solid var(--utp-teal); padding-top: 8px; padding-bottom: 4px;">
+                            <p style="font-weight: 700; color: var(--utp-dark); margin-bottom: 4px; font-size: 0.9rem;"><?= htmlspecialchars($sub['name']) ?></p>
+                            <?php if (isset($sub['note'])): ?>
+                            <p style="font-size: 0.82rem; color: var(--utp-muted);"><?= $sub['note'] ?></p>
+                            <?php endif; ?>
+                            <?php if (isset($sub['semesters'])): ?>
+                            <ul>
+                                <?php foreach ($sub['semesters'] as $sem): ?>
+                                <li class="sub-item"><?= htmlspecialchars($sem['sem']) ?><?= $sem['date'] ? ' — ' . htmlspecialchars($sem['date']) : '' ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 2: External Financial Aid (PTPTN) ═══ -->
+            <div class="fa-section animate-on-scroll" data-category="external" id="secExternal">
+                <div class="fa-accordion-header">
+                    <span><?= $iconDollar ?> &nbsp;External Financial Aid</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <?php $pt = $externalAid['ptptn']; ?>
+                    <div class="fa-sub-block">
+                        <h4><?= htmlspecialchars($pt['name']) ?></h4>
+                        <p><?= htmlspecialchars($pt['desc']) ?></p>
+                        <p style="margin-bottom: 12px;">
+                            <span class="fa-status fa-status-open"><span class="fa-status-dot"></span> <?= htmlspecialchars($pt['status']) ?></span>
+                        </p>
+
+                        <?php foreach ($pt['semesters'] as $sem): ?>
+                        <div style="margin-bottom: 10px; padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #eef1f5;">
+                            <div style="font-weight: 600; color: var(--utp-dark); font-size: 0.88rem; margin-bottom: 2px;"><?= htmlspecialchars($sem['sem']) ?></div>
+                            <div style="font-size: 0.82rem; color: var(--utp-muted);"><?= htmlspecialchars($sem['date']) ?></div>
+                            <?php if ($sem['guide_url']): ?>
+                            <a href="<?= htmlspecialchars($sem['guide_url']) ?>" target="_blank" style="font-size: 0.8rem; color: var(--utp-navy); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;"><?= $iconExternalLink ?> <?= htmlspecialchars($sem['guide_label']) ?></a>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+
+                        <p style="font-size: 0.82rem; color: #c62828; font-style: italic; margin-top: 10px;">* <?= htmlspecialchars($pt['note']) ?></p>
+                        <div style="margin-top: 10px;">
+                            <a href="<?= htmlspecialchars($pt['apply_url']) ?>" target="_blank" class="btn btn-navy" style="padding: 10px 24px; font-size: 0.85rem;">Apply for PTPTN Loan →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 3: For SPM Leavers ═══ -->
+            <div class="fa-section animate-on-scroll" data-category="spm" id="secSPM">
+                <div class="fa-accordion-header">
+                    <span><?= $iconGrad ?> &nbsp;For SPM Leavers</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <div class="fa-spm-grid">
+                        <?php foreach ($spmLeavers as $spm): ?>
+                        <div class="fa-sub-block">
+                            <h4><?= htmlspecialchars($spm['name']) ?></h4>
+                            <p><?= htmlspecialchars($spm['desc']) ?></p>
+                            <p style="margin-bottom: 6px;">
+                                <span class="fa-status fa-status-<?= $spm['status'] === 'Open' ? 'open' : 'closed' ?>">
+                                    <span class="fa-status-dot"></span> <?= htmlspecialchars($spm['status']) ?>
+                                </span>
+                            </p>
+                            <div class="fa-app-period"><?= $iconCalendar ?> <?= htmlspecialchars($spm['application_period']) ?></div>
+                            <?php if ($spm['apply_url']): ?>
+                            <div style="margin-top: 12px;">
+                                <a href="<?= htmlspecialchars($spm['apply_url']) ?>" target="_blank" style="font-size: 0.82rem; color: var(--utp-navy); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"><?= $iconExternalLink ?> Application Form</a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 4: Others (External Sponsorships) ═══ -->
+            <div class="fa-section animate-on-scroll" data-category="external" id="secOthers">
+                <div class="fa-accordion-header">
+                    <span><?= $iconGlobe ?> &nbsp;Others</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <ul class="fa-others-list">
+                        <?php foreach ($otherSponsors as $os): ?>
+                        <li>
+                            <span class="fa-sponsor-name"><?= htmlspecialchars($os['name']) ?></span>
+                            <?php if ($os['url']): ?>
+                            <a href="<?= htmlspecialchars($os['url']) ?>" target="_blank" class="fa-sponsor-link"><?= $iconExternalLink ?> <?= htmlspecialchars($os['label']) ?></a>
+                            <?php endif; ?>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 5: Postgraduate Assistantship ═══ -->
+            <div class="fa-section animate-on-scroll" data-category="utp" id="secPostgrad">
+                <div class="fa-accordion-header">
+                    <span><?= $iconGrad ?> &nbsp;Postgraduate Assistantship</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <div class="fa-postgrad-block">
+                        <h4>Graduate Assistantship (GA) Programme</h4>
+                        <p>UTP offers Graduate Assistantship positions for postgraduate students pursuing Master's or PhD programmes. GAs receive tuition fee waivers and monthly stipends in exchange for teaching or research assistance.</p>
+                        <ul>
+                            <li>Available for full-time postgraduate students (Master's by Research & PhD)</li>
+                            <li>Monthly stipend provided</li>
+                            <li>Tuition fee waiver (full or partial)</li>
+                            <li>Research-related allowance may be provided</li>
+                            <li>Contact the Centre for Graduate Studies for application details</li>
+                        </ul>
+                        <div style="margin-top: 14px;">
+                            <a href="https://www.utp.edu.my/Pages/Academic/Centre-of-Graduate-Studies.aspx" target="_blank" style="font-size: 0.85rem; color: var(--utp-navy); font-weight: 600; display: inline-flex; align-items: center; gap: 5px;"><?= $iconExternalLink ?> Centre for Graduate Studies</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 6: Inquiries ═══ -->
+            <div class="fa-section animate-on-scroll" data-category="all" id="secInquiries">
+                <div class="fa-accordion-header">
+                    <span><?= $iconInfo ?> &nbsp;Inquiries</span>
+                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="fa-accordion-body">
+                    <div class="fa-inquiry-card">
+                        <div class="fa-inquiry-avatar"><?= $iconUser ?></div>
+                        <div class="fa-inquiry-info">
+                            <h4><?= htmlspecialchars($inquiryContact['name']) ?></h4>
+                            <p><?= htmlspecialchars($inquiryContact['role']) ?><br><?= htmlspecialchars($inquiryContact['department']) ?></p>
+                            <div class="fa-contact-row"><?= $iconMail ?> <a href="mailto:<?= htmlspecialchars($inquiryContact['email']) ?>"><?= htmlspecialchars($inquiryContact['email']) ?></a></div>
+                            <div class="fa-contact-row"><?= $iconPhone ?> <?= htmlspecialchars($inquiryContact['phone']) ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Divider ═══ -->
+            <div class="fa-divider">
+                <span>Government & Corporate Scholarships</span>
+            </div>
+
+            <!-- ═══ Major Scholarships (JPA, MARA, Corporate) ═══ -->
+            <?php foreach ($majorScholarships as $i => $sch): ?>
+            <div class="sch-card animate-on-scroll collapsed" data-type="<?= htmlspecialchars($sch['type']) ?>" data-category="corporate">
+                <div class="sch-card-header">
                     <div class="sch-card-header-left">
                         <h3 class="sch-card-title"><?= htmlspecialchars($sch['name']) ?></h3>
                         <span class="sch-badge sch-badge-<?= htmlspecialchars($sch['type']) ?>"><?= htmlspecialchars($sch['badge']) ?></span>
@@ -361,7 +1021,7 @@ $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" st
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="/auth/login.php">Student Portal</a></li>
-                    <li><a href="/scholarships.php">Scholarships</a></li>
+                    <li><a href="/scholarships.php">Financial Aid</a></li>
                     <li><a href="/landing.php#why-utp">Campus Life</a></li>
                     <li><a href="/landing.php#stories">FAQs</a></li>
                 </ul>
@@ -378,19 +1038,21 @@ $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" st
 </div>
 
 <script nonce="<?= $GLOBALS['csp_nonce'] ?>">
-    /* Toggle card expand/collapse */
-    function toggleCard(header) {
-        const card = header.closest('.sch-card');
-        card.classList.toggle('collapsed');
-    }
+    /* Toggle accordion section */
+    document.querySelectorAll('.fa-accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const section = header.closest('.fa-section');
+            section.classList.toggle('open');
+        });
+    });
 
-    /* Expand / Collapse All buttons */
-    function expandAll() {
-        document.querySelectorAll('.sch-card').forEach(c => c.classList.remove('collapsed'));
-    }
-    function collapseAll() {
-        document.querySelectorAll('.sch-card').forEach(c => c.classList.add('collapsed'));
-    }
+    /* Toggle card expand/collapse */
+    document.querySelectorAll('.sch-card-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const card = header.closest('.sch-card');
+            card.classList.toggle('collapsed');
+        });
+    });
 
     /* Mobile Nav */
     const mobileNavToggle = document.getElementById('mobileNavToggle');
@@ -408,24 +1070,40 @@ $iconChevron = '<svg width="16" height="16" fill="none" stroke="currentColor" st
 
     /* Filter Tabs */
     const filterBtns = document.querySelectorAll('.sch-filter-btn');
+    const faSections = document.querySelectorAll('.fa-section');
     const schCards = document.querySelectorAll('.sch-card');
-    const schCount = document.getElementById('schCount');
+    const faDivider = document.querySelector('.fa-divider');
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const filter = btn.dataset.filter;
-            let visible = 0;
+
+            // Show/hide accordion sections
+            faSections.forEach(sec => {
+                const cat = sec.dataset.category;
+                if (filter === 'all' || cat === filter || cat === 'all') {
+                    sec.style.display = '';
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+
+            // Show/hide scholarship cards
             schCards.forEach(card => {
-                if (filter === 'all' || card.dataset.type === filter) {
+                const cat = card.dataset.category;
+                if (filter === 'all' || filter === 'corporate' || cat === filter) {
                     card.style.display = '';
-                    visible++;
                 } else {
                     card.style.display = 'none';
                 }
             });
-            schCount.innerHTML = 'Showing <strong>' + visible + '</strong> scholarship' + (visible !== 1 ? 's & sponsorships' : '');
+
+            // Show/hide divider
+            if (faDivider) {
+                faDivider.style.display = (filter === 'all' || filter === 'corporate') ? '' : 'none';
+            }
         });
     });
 

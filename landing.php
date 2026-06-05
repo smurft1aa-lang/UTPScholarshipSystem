@@ -54,7 +54,7 @@ $csrfToken = generateCSRFToken();
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="#hero">Home</a></li>
-            <li><a href="/scholarships.php">Scholarships</a></li>
+            <li><a href="/scholarships.php">Financial Aid</a></li>
             <li><a href="#programmes">Programmes</a></li>
             <li><a href="#stories">Success Stories</a></li>
             <li><a href="#why-utp">Why UTP</a></li>
@@ -81,7 +81,7 @@ $csrfToken = generateCSRFToken();
             </div>
             <div class="hero-buttons">
                 <a href="/auth/signup.php" class="btn btn-gold" style="padding:14px 36px">Check your eligibility</a>
-                <a href="/scholarships.php" class="btn btn-white-outline" style="padding:14px 36px">Explore Scholarships</a>
+                <a href="/scholarships.php" class="btn btn-white-outline" style="padding:14px 36px">Explore Financial Aid</a>
             </div>
         </div>
     </section>
@@ -374,7 +374,7 @@ $csrfToken = generateCSRFToken();
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="/auth/login.php">Student Portal</a></li>
-                    <li><a href="/scholarships.php">Scholarships</a></li>
+                    <li><a href="/scholarships.php">Financial Aid</a></li>
                     <li><a href="#why-utp">Campus Life</a></li>
                     <li><a href="#stories">FAQs</a></li>
                 </ul>
