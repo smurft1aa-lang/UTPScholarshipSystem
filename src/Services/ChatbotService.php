@@ -34,6 +34,9 @@ class ChatbotService
             $stmt = $this->db->query(
                 "SELECT name, description, type FROM scholarships WHERE is_active = 1 ORDER BY name"
             );
+            if ($stmt === false) {
+                return "Students can browse verified scholarships on our \"Scholarships\" page. For the latest list, visit the Scholarships page on our website.";
+            }
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
             if (empty($rows)) {
