@@ -78,7 +78,7 @@ if (empty($sanitizedHistory)) {
 }
 
 try {
-    $chatbotService = new \UTP\Services\ChatbotService();
+    $chatbotService = new \UTP\Services\ChatbotService(getDB());
     $reply = $chatbotService->sendMessage($sanitizedHistory);
 
     // Track the query for analytics

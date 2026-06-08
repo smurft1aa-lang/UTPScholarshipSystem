@@ -9,38 +9,38 @@ $csrfToken = generateCSRFToken();
 // ─── UTP Financial Aid (Yayasan UTP) ───
 $utpFinancialAid = [
     'tazu' => [
-        'name' => 'Tabung Amanah Zakat UTP (TAZU)',
+        'name' => 'TABUNG AMANAH ZAKAT UTP (TAZU)',
         'subtitle' => 'For UTP Malaysian Muslim Students',
-        'desc' => 'Zakat-funded financial assistance specifically for Malaysian Muslim students at UTP. Provides academic grants and bursaries to help with tuition and living expenses through zakat (alms) distribution.',
+        'desc' => '',
         'points' => [
-            'Types of Aids, Criteria & Eligibility — <a href="https://www.utp.edu.my" target="_blank">View Details</a>',
-            'Follow us: <a href="https://www.facebook.com/TAZUUTP" target="_blank">Facebook</a>, <a href="https://www.instagram.com/tazuutp" target="_blank">Instagram</a>',
-            'Open for Foundation & Undergraduate students every semester.',
+            'Types of Aids, Criteria & Eligibility',
+            'Follow us: Facebook, Instagram',
+            'Open for Foundation & Undergraduate students every semester.'
         ],
         'semesters' => ['January semester', 'May semester', 'September semester'],
-        'email' => 'zakat@utp.edu.my',
-        'phone' => '05-368 8027',
+        'email' => '',
+        'phone' => '',
     ],
     'yutp' => [
-        'name' => 'Yayasan Universiti Teknologi PETRONAS (YUTP)',
+        'name' => 'YAYASAN UNIVERSITI TEKNOLOGI PETRONAS (YUTP)',
         'subtitle' => null,
-        'desc' => 'Yayasan UTP provides various scholarships and financial aid for deserving Malaysian students with excellent academic results and active extracurricular involvement.',
+        'desc' => '',
         'points' => [
-            'Types of Fund, Criteria & Eligibility — <a href="https://www.utp.edu.my" target="_blank">View Details</a>',
-            'Follow us: <a href="https://www.facebook.com/yaborutp" target="_blank">Facebook</a>, <a href="https://www.instagram.com/yaborutp" target="_blank">Instagram</a>',
-            'Open for Foundation & Undergraduate active students every semester.',
+            'Types of Fund, Criteria & Eligibilty',
+            'Follow us: Facebook, Instagram',
+            'Open for Foundation & Undergraduate active students every semester'
         ],
         'sub_items' => [
             [
                 'name' => 'YUTP Scholarship',
-                'note' => 'Required to apply via PESP Application. Shortlisted candidates will be contacted.',
+                'note' => 'required to apply PESP Application. Shorlisted candidates will be contacted',
             ],
             [
                 'name' => 'YUTP Education Grant',
                 'semesters' => [
                     ['sem' => 'January semester', 'date' => 'Open 26 January 2026'],
                     ['sem' => 'May semester', 'date' => 'Open 18 May 2026'],
-                    ['sem' => 'September semester', 'date' => 'Coming soon'],
+                    ['sem' => 'September semester', 'date' => ''],
                 ],
             ],
             [
@@ -52,59 +52,63 @@ $utpFinancialAid = [
                 ],
             ],
         ],
-        'email' => 'yayasan_utp@utp.edu.my',
-        'phone' => '05-368 8000',
+        'email' => '',
+        'phone' => '',
     ],
 ];
 
 // ─── External Financial Aid ───
 $externalAid = [
     'ptptn' => [
-        'name' => 'PTPTN Study Loan (Perbadanan Tabung Pendidikan Tinggi Nasional)',
-        'desc' => 'The National Higher Education Fund provides study loans for Malaysian students pursuing diploma or degree programmes at accredited institutions. Graduates who obtain First-Class Honours may apply for full loan repayment exemption.',
-        'status' => 'Open every semester',
+        'name' => 'PTPTN',
+        'desc' => '',
+        'status' => 'Open every semester:',
         'semesters' => [
             [
-                'sem' => 'January Semester',
-                'date' => 'Open 1 January 2026 – 29 February 2026',
-                'guide_url' => 'https://www.utp.edu.my/PublishingImages/Pages/Students/Financial-Aid/Slide%20MyPTPTN%20_JAN%202026.pdf',
-                'guide_label' => 'Jan 2026 PTPTN Guide',
+                'sem' => 'January semester',
+                'date' => 'Open: 1 January 2026 - 29 February 2026',
+                'guide_url' => '#',
+                'guide_label' => 'Slide MyPTPTN _JAN 2026.pdf',
             ],
             [
-                'sem' => 'May Semester',
-                'date' => 'Open 1 May 2026 – 30 June 2026',
-                'guide_url' => 'https://www.utp.edu.my/PublishingImages/Pages/Students/Financial-Aid/Slide%20MyPTPTN_SEM.%20MAY%202026.pdf',
-                'guide_label' => 'May 2026 PTPTN Guide',
+                'sem' => 'May semester',
+                'date' => 'Open: 1 May 2026 - 30 June 2026',
+                'guide_url' => '#',
+                'guide_label' => 'Slide MyPTPTN_SEM. MAY 2026.pdf',
             ],
             [
-                'sem' => 'September Semester',
-                'date' => 'Open 1 September 2026 – 31 October 2026',
+                'sem' => 'September semester',
+                'date' => 'Open: 1 September 2026 - 31 October 2026',
                 'guide_url' => null,
                 'guide_label' => null,
             ],
         ],
-        'apply_url' => 'https://www.ptptn.gov.my/pinjaman-pendidikan/',
-        'note' => 'Foundation students can apply only in their first semester (the remaining study period must be at least one year).',
-        'phone' => '03-2193 3000',
+        'apply_url' => 'https://www.ptptn.gov.my/gateway/',
+        'note' => 'Foundation students can apply only in the first semester as the remaining study period should be one (1) year',
+        'phone' => '',
     ],
+];
+
+// ─── External Scholarships (Undergraduate) ───
+$externalScholarships = [
 ];
 
 // ─── For SPM Leavers ───
 $spmLeavers = [
-    [
-        'name' => 'Yayasan UTP Full Scholarship',
-        'status' => 'Closed',
-        'application_period' => '9 April 2026 – 15 April 2026 (Extended to 19 April 2026)',
-        'apply_url' => 'https://docs.google.com/forms/d/e/1FAIpQLSe7lac08rbV_X5IBa0c3IEGX9-RQi0m7W0M8983bz09a-Fr8g/viewform',
-        'desc' => 'Full scholarship for outstanding SPM leavers covering tuition, accommodation, and living allowance at UTP.',
-    ],
-    [
-        'name' => 'PETRONAS Education Sponsorship Programme (PESP)',
-        'status' => 'Closed',
-        'application_period' => '31 March 2026 (12 PM) – 10 April 2026 (5 PM)',
-        'apply_url' => 'https://www.petronasedup.com.my',
-        'desc' => 'The premier PETRONAS sponsorship covering full tuition fees, accommodation, books, laptop, and monthly allowance for Foundation and Undergraduate studies.',
-    ],
+
+    'YAYASAN UTP FULL SCHOLARSHIP *Closed',
+    'PETRONAS EDUCATION SPONSORSHIP PROGRAMME (PESP)',
+    'YAYASAN TM - FUTURE LEADERS SCHOLARSHIP',
+    'JABATAN PERKHIDMATAN AWAM (JPA) - LSPM',
+    'JABATAN PERKHIDMATAN AWAM: PROGRAM KHAS JPA-MARA (PKJM)',
+    'YAYASAN DAYA DIRI SCHOLARSHIP',
+    'TAZU - YAYASAN TERENGGANU (For Anak Terengganu)',
+    'LEMBAGA ZAKAT SELANGOR (For Asnaf Selangor)',
+    'MAJLIS AGAMA ISLAM DAN ADAT MELAYU PERAK (For Asnaf Perak)',
+    'YAYASAN PENDIDIKAN MAIDAM (For Anak Terengganu)',
+    'YAYASAN SABAH (For Anak Sabah)',
+    'ANTARA STEEL MILL SCHOLARSHIP (For Anak Sabah & Labuan)',
+    'YUTP - PTTEP SCHOLARSHIP (For Sabahan & Sarawakian)',
 ];
 
 // ─── Yayasan UTP Scholarship Details (expanded for Hero section) ───
@@ -160,13 +164,26 @@ unset($ys); // break reference
 
 // ─── Others (External Sponsorships) ───
 $otherSponsors = [
-    ['name' => 'Yayasan Telekom Malaysia', 'url' => 'https://www.tm.com.my/YayasanTM/Pages/Our-Scholar.aspx', 'label' => 'Our Scholar Info'],
-    ['name' => 'MIDF Education Scholarship Programme', 'url' => 'https://www.midf.com.my/midf-education-scholarship-programme', 'label' => 'Scholarship Info'],
-    ['name' => 'MCMC Scholarship', 'url' => 'https://www.mcmc.gov.my/academy/en/scholarships-1', 'label' => 'Scholarship Info'],
-    ['name' => 'Yayasan Bank Rakyat (PPBU)', 'url' => 'https://www.yayasanbankrakyat.com.my/index.php/ppbu/', 'label' => 'PPBU Info'],
-    ['name' => 'Perak State Government Sponsorship', 'url' => null, 'label' => null],
-    ['name' => 'Yayasan Terengganu', 'url' => null, 'label' => null],
-    ['name' => 'Yayasan Pahang', 'url' => null, 'label' => null],
+
+    'Yayasan Telekom Malaysia',
+    'MIDF Education Scholarship Programme',
+    'MCMC Scholarship',
+    'Perak State Government',
+    'Yayasan Bank Rakyat',
+    'Yayasan Terengganu',
+    'Yayasan Pahang',
+    'Yayasan Sabah',
+    'Sarawak Energy Berhad',
+    'Sarawak Shell Berhad',
+    'Yayasan Tenaga Nasional',
+    'Intel Technologies Sdn.Bhd',
+    'UWC Scholarship',
+    'Gadang Scholarship',
+    'Indus Education Fund (IEF)',
+    'P Ganendra Scholarship',
+    'Shopcoupons',
+    'Majlis Amanah Rakyat (MARA) TESP: General Criteria & Apply (Application Guidelines)',
+    'Generali Malaysia Volare Scholarship',
 ];
 
 // ─── Government & Corporate Scholarships (retained from original) ───
@@ -271,7 +288,7 @@ $inquiryContact = [
 ];
 
 // Total count for display
-$totalAidCount = count($utpFinancialAid) + count($externalAid) + count($spmLeavers) + count($otherSponsors) + count($majorScholarships);
+$totalAidCount = count($utpFinancialAid) + count($externalAid) + count($externalScholarships) + count($spmLeavers) + count($otherSponsors) + count($majorScholarships);
 
 // SVG icon helpers
 $iconCheck = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>';
@@ -828,6 +845,9 @@ $iconInfo = '<svg width="14" height="14" fill="none" stroke="currentColor" strok
                 </div>
             </div>
 
+
+
+            
             <!-- ═══ SECTION 3: For SPM Leavers ═══ -->
             <div class="fa-section animate-on-scroll" data-category="spm" id="secSPM">
                 <div class="fa-accordion-header">
@@ -835,29 +855,18 @@ $iconInfo = '<svg width="14" height="14" fill="none" stroke="currentColor" strok
                     <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
                 </div>
                 <div class="fa-accordion-body">
-                    <div class="fa-spm-grid">
+                    <ul class="fa-others-list">
                         <?php foreach ($spmLeavers as $spm): ?>
-                        <div class="fa-sub-block">
-                            <h4><?= htmlspecialchars($spm['name']) ?></h4>
-                            <p><?= htmlspecialchars($spm['desc']) ?></p>
-                            <p style="margin-bottom: 6px;">
-                                <span class="fa-status fa-status-<?= $spm['status'] === 'Open' ? 'open' : 'closed' ?>">
-                                    <span class="fa-status-dot"></span> <?= htmlspecialchars($spm['status']) ?>
-                                </span>
-                            </p>
-                            <div class="fa-app-period"><?= $iconCalendar ?> <?= htmlspecialchars($spm['application_period']) ?></div>
-                            <?php if ($spm['apply_url']): ?>
-                            <div style="margin-top: 12px;">
-                                <a href="<?= htmlspecialchars($spm['apply_url']) ?>" target="_blank" style="font-size: 0.82rem; color: var(--utp-navy); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;"><?= $iconExternalLink ?> Application Form</a>
-                            </div>
-                            <?php endif; ?>
-                        </div>
+                        <li>
+                            <span class="fa-sponsor-name"><?= htmlspecialchars($spm) ?></span>
+                        </li>
                         <?php endforeach; ?>
-                    </div>
+                    </ul>
                 </div>
             </div>
 
-            <!-- ═══ SECTION 4: Others (External Sponsorships) ═══ -->
+            
+            <!-- ═══ SECTION 4: Others ═══ -->
             <div class="fa-section animate-on-scroll" data-category="external" id="secOthers">
                 <div class="fa-accordion-header">
                     <span><?= $iconGlobe ?> &nbsp;Others</span>
@@ -867,37 +876,10 @@ $iconInfo = '<svg width="14" height="14" fill="none" stroke="currentColor" strok
                     <ul class="fa-others-list">
                         <?php foreach ($otherSponsors as $os): ?>
                         <li>
-                            <span class="fa-sponsor-name"><?= htmlspecialchars($os['name']) ?></span>
-                            <?php if ($os['url']): ?>
-                            <a href="<?= htmlspecialchars($os['url']) ?>" target="_blank" class="fa-sponsor-link"><?= $iconExternalLink ?> <?= htmlspecialchars($os['label']) ?></a>
-                            <?php endif; ?>
+                            <span class="fa-sponsor-name"><?= htmlspecialchars($os) ?></span>
                         </li>
                         <?php endforeach; ?>
                     </ul>
-                </div>
-            </div>
-
-            <!-- ═══ SECTION 5: Postgraduate Assistantship ═══ -->
-            <div class="fa-section animate-on-scroll" data-category="utp" id="secPostgrad">
-                <div class="fa-accordion-header">
-                    <span><?= $iconGrad ?> &nbsp;Postgraduate Assistantship</span>
-                    <span class="fa-toggle-icon"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
-                </div>
-                <div class="fa-accordion-body">
-                    <div class="fa-postgrad-block">
-                        <h4>Graduate Assistantship (GA) Programme</h4>
-                        <p>UTP offers Graduate Assistantship positions for postgraduate students pursuing Master's or PhD programmes. GAs receive tuition fee waivers and monthly stipends in exchange for teaching or research assistance.</p>
-                        <ul>
-                            <li>Available for full-time postgraduate students (Master's by Research & PhD)</li>
-                            <li>Monthly stipend provided</li>
-                            <li>Tuition fee waiver (full or partial)</li>
-                            <li>Research-related allowance may be provided</li>
-                            <li>Contact the Centre for Graduate Studies for application details</li>
-                        </ul>
-                        <div style="margin-top: 14px;">
-                            <a href="https://www.utp.edu.my/Pages/Academic/Centre-of-Graduate-Studies.aspx" target="_blank" style="font-size: 0.85rem; color: var(--utp-navy); font-weight: 600; display: inline-flex; align-items: center; gap: 5px;"><?= $iconExternalLink ?> Centre for Graduate Studies</a>
-                        </div>
-                    </div>
                 </div>
             </div>
 

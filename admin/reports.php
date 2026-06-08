@@ -2,7 +2,7 @@
 declare(strict_types=1);
 /**
  * Admin Structured Performance Reports
- * Application stats, programme popularity, scholarship distribution, grade trends
+ * Eligibility check stats, programme popularity, scholarship distribution, grade trends
  */
 require_once __DIR__ . '/../includes/init.php';
 requireAdmin();
@@ -13,12 +13,22 @@ $db = getDB();
 $dateFrom = $_GET['from'] ?? date('Y-01-01');
 $dateTo = $_GET['to'] ?? date('Y-12-31');
 
-// Application statistics
-$stmt = $db->prepare("SELECT status, COUNT(*) as cnt FROM applications WHERE created_at BETWEEN ? AND ? GROUP BY status");
+// Eligibility check statistics
+$stmt = $db->prepare("SELECT COUNT(*) FROM applications WHERE created_at BETWEEN ? AND ?");
 $stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
-$appStats = [];
-while ($row = $stmt->fetch()) $appStats[$row['status']] = $row['cnt'];
-$totalApps = array_sum($appStats);
+$totalChecks = (int) $stmt->fetchColumn();
+
+$stmt = $db->prepare("SELECT COUNT(DISTINCT a.user_id) FROM applications a WHERE a.created_at BETWEEN ? AND ?");
+$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
+$uniqueStudents = (int) $stmt->fetchColumn();
+
+$stmt = $db->prepare("SELECT COUNT(DISTINCT er.application_id) FROM eligibility_results er JOIN applications a ON er.application_id = a.id WHERE er.eligible = 1 AND er.fit_percentage >= 75 AND a.created_at BETWEEN ? AND ?");
+$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
+$highFitChecks = (int) $stmt->fetchColumn();
+
+$stmt = $db->prepare("SELECT ROUND(AVG(er.fit_percentage), 1) FROM eligibility_results er JOIN applications a ON er.application_id = a.id WHERE er.eligible = 1 AND a.created_at BETWEEN ? AND ?");
+$stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
+$avgFit = (float) ($stmt->fetchColumn() ?: 0);
 
 // Pagination for programme stats
 $page = max(1, (int)($_GET['page'] ?? 1));
@@ -39,25 +49,21 @@ $totalProgPages = (int) ceil($totalProgRecords / $perPage);
 
 $stmt = $db->prepare("
     SELECT p.name, p.category,
-           (SELECT COUNT(a2.id) FROM applications a2 WHERE (a2.programme_id_1 = p.id OR a2.programme_id_2 = p.id OR a2.programme_id_3 = p.id) AND a2.created_at BETWEEN ? AND ?) as applied_count,
            SUM(CASE WHEN er.eligible = 1 THEN 1 ELSE 0 END) as eligible_count,
-           COUNT(er.id) as total_students,
+           COUNT(er.id) as total_checked,
            ROUND(AVG(er.fit_percentage), 1) as avg_fit
     FROM eligibility_results er
     JOIN programmes p ON er.programme_id = p.id
     JOIN applications a ON er.application_id = a.id
     WHERE a.created_at BETWEEN ? AND ?
     GROUP BY p.id
-    ORDER BY applied_count DESC, eligible_count DESC
+    ORDER BY eligible_count DESC, avg_fit DESC
     LIMIT ? OFFSET ?
 ");
-$stmtParams = [$dateFrom, $dateTo . ' 23:59:59', $dateFrom, $dateTo . ' 23:59:59'];
-$paramIdx = 1;
-foreach ($stmtParams as $p) {
-    $stmt->bindValue($paramIdx++, $p);
-}
-$stmt->bindValue($paramIdx++, $perPage, PDO::PARAM_INT);
-$stmt->bindValue($paramIdx, $offset, PDO::PARAM_INT);
+$stmt->bindValue(1, $dateFrom);
+$stmt->bindValue(2, $dateTo . ' 23:59:59');
+$stmt->bindValue(3, $perPage, PDO::PARAM_INT);
+$stmt->bindValue(4, $offset, PDO::PARAM_INT);
 $stmt->execute();
 $progStats = $stmt->fetchAll();
 
@@ -103,6 +109,9 @@ $stmt = $db->prepare("
 $stmt->execute([$dateFrom, $dateTo . ' 23:59:59']);
 $monthlyTrend = $stmt->fetchAll();
 
+// Keep backward compat for AI insights data shape
+$totalApps = $totalChecks;
+
 // Handle AI Insights Generation
 $aiInsights = null;
 $aiError = null;
@@ -110,9 +119,11 @@ if (isset($_GET['generate_insights']) && $_GET['generate_insights'] === '1') {
     try {
         $generator = new \UTP\Services\ProposalGenerator($db);
         $reportData = [
-            'total_applications' => $totalApps,
-            'application_stats' => $appStats,
-            'programme_stats' => array_slice($progStats, 0, 10), // Limit to top 10 to fit context window
+            'total_checks' => $totalChecks,
+            'unique_students' => $uniqueStudents,
+            'high_fit_checks' => $highFitChecks,
+            'avg_fit' => $avgFit,
+            'programme_stats' => array_slice($progStats, 0, 10),
             'scholarship_distribution' => $schDist,
             'monthly_trend' => $monthlyTrend
         ];
@@ -140,26 +151,24 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fputcsv($out, ['REPORT SUMMARY', "Period: $dateFrom to $dateTo"]);
     fputcsv($out, []);
     
-    // 1. Application Stats
-    fputcsv($out, ['APPLICATION STATISTICS']);
-    fputcsv($out, ['Status', 'Count']);
-    fputcsv($out, ['Total Applications', $totalApps]);
-    fputcsv($out, ['Approved', $appStats['approved'] ?? 0]);
-    fputcsv($out, ['Processing', $appStats['processing'] ?? 0]);
-    fputcsv($out, ['Submitted', $appStats['submitted'] ?? 0]);
-    fputcsv($out, ['Rejected', $appStats['rejected'] ?? 0]);
+    // 1. Eligibility Check Stats
+    fputcsv($out, ['ELIGIBILITY CHECK STATISTICS']);
+    fputcsv($out, ['Metric', 'Value']);
+    fputcsv($out, ['Total Eligibility Checks', $totalChecks]);
+    fputcsv($out, ['Unique Students', $uniqueStudents]);
+    fputcsv($out, ['High-Fit Checks (>=75%)', $highFitChecks]);
+    fputcsv($out, ['Average Fit %', $avgFit . '%']);
     fputcsv($out, []);
     
     // 2. Programme Statistics
     fputcsv($out, ['PROGRAMME STATISTICS']);
-    fputcsv($out, ['Programme Name', 'Category', 'Applied Students', 'Eligible Students', 'Total Students', 'Average AI Fit %']);
+    fputcsv($out, ['Programme Name', 'Category', 'Eligible Students', 'Total Checked', 'Average Fit %']);
     foreach ($progStats as $ps) {
         fputcsv($out, [
             $ps['name'], 
             $ps['category'], 
-            $ps['applied_count'], 
             $ps['eligible_count'], 
-            $ps['total_students'], 
+            $ps['total_checked'], 
             $ps['avg_fit'] . '%'
         ]);
     }
@@ -192,7 +201,7 @@ require_once __DIR__ . '/admin_header.php';
 <div class="flex-between mb-6 no-print">
     <div class="page-header" style="margin-bottom:0;">
         <h1>Performance Reports</h1>
-        <p>Structured reports on applications, programmes, and scholarships.</p>
+        <p>Structured reports on eligibility checks, programmes, and scholarships.</p>
     </div>
     <div class="flex gap-2">
         <a href="?from=<?= urlencode($dateFrom) ?>&to=<?= urlencode($dateTo) ?>&generate_insights=1" class="btn btn-outline btn-sm">
@@ -221,7 +230,7 @@ require_once __DIR__ . '/admin_header.php';
 
 <!-- Report Header (for print) -->
 <div class="print-only" style="text-align:center; margin-bottom:24px;">
-    <h2 style="font-size:1.3rem;">UTP System - Performance Report</h2>
+    <h2 style="font-size:1.3rem;">UTP Eligibility Checker - Performance Report</h2>
     <p style="color:var(--text-muted);">Period: <?= date('d M Y', strtotime($dateFrom)) ?> to <?= date('d M Y', strtotime($dateTo)) ?></p>
     <p style="color:var(--text-muted);">Generated: <?= date('d F Y, h:i A') ?></p>
 </div>
@@ -244,27 +253,26 @@ require_once __DIR__ . '/admin_header.php';
     </div>
 <?php endif; ?>
 
-<!-- Application Statistics -->
+<!-- Eligibility Check Statistics -->
 <div class="card mb-6">
-    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Application Statistics</h3>
+    <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:16px;">Eligibility Check Statistics</h3>
     <div class="stats-grid">
         <div class="stat-card purple">
-            <div class="stat-label">Total Applications</div>
-            <div class="stat-value"><?= $totalApps ?></div>
-        </div>
-        <div class="stat-card green">
-            <div class="stat-label">Approved</div>
-            <div class="stat-value"><?= $appStats['approved'] ?? 0 ?></div>
-            <div class="stat-detail"><?= $totalApps ? round((($appStats['approved'] ?? 0)/$totalApps)*100, 1) : 0 ?>% rate</div>
-        </div>
-        <div class="stat-card orange">
-            <div class="stat-label">Pending</div>
-            <div class="stat-value"><?= ($appStats['submitted'] ?? 0) + ($appStats['processing'] ?? 0) ?></div>
+            <div class="stat-label">Total Checks</div>
+            <div class="stat-value"><?= $totalChecks ?></div>
         </div>
         <div class="stat-card blue">
-            <div class="stat-label">Rejected</div>
-            <div class="stat-value"><?= $appStats['rejected'] ?? 0 ?></div>
-            <div class="stat-detail"><?= $totalApps ? round((($appStats['rejected'] ?? 0)/$totalApps)*100, 1) : 0 ?>% rate</div>
+            <div class="stat-label">Unique Students</div>
+            <div class="stat-value"><?= $uniqueStudents ?></div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">High-Fit (≥75%)</div>
+            <div class="stat-value"><?= $highFitChecks ?></div>
+            <div class="stat-detail"><?= $totalChecks ? round(($highFitChecks/$totalChecks)*100, 1) : 0 ?>% of checks</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-label">Average Fit</div>
+            <div class="stat-value"><?= $avgFit ?>%</div>
         </div>
     </div>
 
@@ -272,7 +280,7 @@ require_once __DIR__ . '/admin_header.php';
     <h4 style="font-size:0.9rem; font-weight:600; margin-top:20px; margin-bottom:10px;">Monthly Trend</h4>
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Month</th><th>Applications</th><th>Trend</th></tr></thead>
+            <thead><tr><th>Month</th><th>Eligibility Checks</th><th>Trend</th></tr></thead>
             <tbody>
             <?php $maxMonthly = max(array_column($monthlyTrend, 'cnt')); ?>
             <?php foreach ($monthlyTrend as $m): ?>
@@ -302,9 +310,8 @@ require_once __DIR__ . '/admin_header.php';
                 <tr>
                     <th>Programme</th>
                     <th>Category</th>
-                    <th>Applied Students</th>
                     <th>Eligible Students</th>
-                    <th>Total Students</th>
+                    <th>Total Checked</th>
                     <th>Avg Fit</th>
                 </tr>
             </thead>
@@ -313,9 +320,8 @@ require_once __DIR__ . '/admin_header.php';
                 <tr>
                     <td><strong><?= htmlspecialchars($ps['name']) ?></strong></td>
                     <td><span class="badge badge-purple"><?= htmlspecialchars($ps['category']) ?></span></td>
-                    <td><?= $ps['applied_count'] ?></td>
                     <td><?= $ps['eligible_count'] ?></td>
-                    <td><?= $ps['total_students'] ?></td>
+                    <td><?= $ps['total_checked'] ?></td>
                     <td><?= $ps['avg_fit'] ?>%</td>
                 </tr>
             <?php endforeach; ?>

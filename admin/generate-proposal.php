@@ -24,22 +24,22 @@ function getRecipientsByAudience(\PDO $db, string $audience, int $scholarshipId)
             $stmt = $db->query("SELECT id, full_name, email FROM users WHERE role = 'student' AND email_verified = 1 ORDER BY full_name ASC");
             return $stmt->fetchAll();
 
-        case 'incomplete_applications':
+        case 'checked_eligibility':
             $stmt = $db->query("
                 SELECT DISTINCT u.id, u.full_name, u.email
                 FROM users u
                 JOIN applications a ON u.id = a.user_id
-                WHERE a.status = 'draft' AND u.email_verified = 1
+                WHERE u.role = 'student' AND u.email_verified = 1
                 ORDER BY u.full_name ASC
             ");
             return $stmt->fetchAll();
 
-        case 'submitted_pending':
+        case 'never_checked':
             $stmt = $db->query("
-                SELECT DISTINCT u.id, u.full_name, u.email
+                SELECT u.id, u.full_name, u.email
                 FROM users u
-                JOIN applications a ON u.id = a.user_id
-                WHERE a.status = 'submitted' AND u.email_verified = 1
+                WHERE u.role = 'student' AND u.email_verified = 1
+                AND u.id NOT IN (SELECT DISTINCT user_id FROM applications)
                 ORDER BY u.full_name ASC
             ");
             return $stmt->fetchAll();
@@ -55,16 +55,6 @@ function getRecipientsByAudience(\PDO $db, string $audience, int $scholarshipId)
             ");
             return $stmt->fetchAll();
 
-        case 'approved_students':
-            $stmt = $db->query("
-                SELECT DISTINCT u.id, u.full_name, u.email
-                FROM users u
-                JOIN applications a ON u.id = a.user_id
-                WHERE a.status = 'approved' AND u.email_verified = 1
-                ORDER BY u.full_name ASC
-            ");
-            return $stmt->fetchAll();
-
         default:
             return [];
     }
@@ -72,10 +62,9 @@ function getRecipientsByAudience(\PDO $db, string $audience, int $scholarshipId)
 
 $audienceLabels = [
     'all_registered' => 'All Registered Students',
-    'incomplete_applications' => 'Incomplete Applications',
-    'submitted_pending' => 'Submitted & Pending Review',
+    'checked_eligibility' => 'Students Who\'ve Checked Eligibility',
+    'never_checked' => 'Registered But Never Checked',
     'high_achievers' => 'High Achievers (90%+ Fit)',
-    'approved_students' => 'Approved Students',
 ];
 
 // ─── Handle: Step 1 — Generate Template ───────────────────────────
@@ -195,9 +184,8 @@ require_once __DIR__ . '/admin_header.php';
                     <label class="form-label">Content Type</label>
                     <select name="template_type" class="form-input admin-focus" required>
                         <option value="Scholarship Announcement Email">Scholarship Announcement</option>
-                        <option value="Application Deadline Reminder">Application Deadline Reminder</option>
-                        <option value="Application Completion Nudge">Application Completion Nudge</option>
-                        <option value="Congratulations & Next Steps">Congratulations & Next Steps</option>
+                        <option value="Eligibility Check Reminder">Eligibility Check Reminder</option>
+                        <option value="New Scholarship Alert">New Scholarship Alert</option>
                         <option value="Success Story Highlight">Success Story Highlight</option>
                     </select>
                 </div>

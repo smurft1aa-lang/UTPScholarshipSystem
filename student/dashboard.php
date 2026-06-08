@@ -185,7 +185,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </td>
                         <td><?= date('d M Y, h:i A', strtotime($app['created_at'])) ?></td>
                         <td>
-                            <a href="/student/results.php" class="btn btn-outline btn-sm">View Full Results</a>
+                            <a href="/student/results.php?app_id=<?= $app['id'] ?>" class="btn btn-outline btn-sm">View Full Results</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

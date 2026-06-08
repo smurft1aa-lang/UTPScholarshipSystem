@@ -2,8 +2,8 @@
 /**
  * Admin: Data Export & Analytics
  *
- * Provides downloadable CSV exports for students, applications,
- * scholarships, and monthly acceptance analytics.
+ * Provides downloadable CSV exports for students, eligibility checks,
+ * scholarships, and monthly eligibility analytics.
  */
 require_once __DIR__ . '/../includes/init.php';
 requireAdmin();
@@ -62,9 +62,9 @@ require_once __DIR__ . '/admin_header.php';
         <div class="stat-detail">Total registered</div>
     </div>
     <div class="stat-card orange">
-        <div class="stat-label">Applications</div>
+        <div class="stat-label">Eligibility Checks</div>
         <div class="stat-value"><?= $appCount ?></div>
-        <div class="stat-detail">Total submitted</div>
+        <div class="stat-detail">Total checks run</div>
     </div>
     <div class="stat-card green">
         <div class="stat-label">Scholarships</div>
@@ -94,11 +94,11 @@ require_once __DIR__ . '/admin_header.php';
     </div>
 </div>
 
-<!-- Applications Export with Date Filter -->
+<!-- Eligibility Checks Export with Date Filter -->
 <div class="card mb-6">
-    <h3 style="font-size:1rem; font-weight:600; margin-bottom:8px;">📝 Applications Export</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin-bottom:8px;">📝 Eligibility Checks Export</h3>
     <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
-        Export applications with student info, programme choices, and status. Optional date range filter.
+        Export eligibility checks with student info, programme matches, and fit scores. Optional date range filter.
     </p>
     <form method="GET" class="flex" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
         <input type="hidden" name="download" value="applications">
@@ -114,11 +114,11 @@ require_once __DIR__ . '/admin_header.php';
     </form>
 </div>
 
-<!-- Monthly Analytics -->
+<!-- Monthly Eligibility Analytics -->
 <div class="card">
-    <h3 style="font-size:1rem; font-weight:600; margin-bottom:8px;">📊 Monthly Acceptance Analytics</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin-bottom:8px;">📊 Monthly Eligibility Analytics</h3>
     <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
-        Monthly breakdown of applications, acceptances, rejections, and approval rates.
+        Monthly breakdown of eligibility checks, high-fit candidates, and average fit scores.
     </p>
     <form method="GET" class="flex" style="gap:12px; align-items:flex-end; flex-wrap:wrap;">
         <input type="hidden" name="download" value="analytics">

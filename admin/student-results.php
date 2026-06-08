@@ -99,13 +99,13 @@ require_once __DIR__ . '/admin_header.php';
     <div>
         <h1>Eligibility Report: <?= htmlspecialchars($application['full_name']) ?></h1>
         <p style="color:var(--text-secondary); margin-top:4px;">
-            Application #<?= $application['id'] ?> | 
+            Check #<?= $application['id'] ?> | 
             Qualification: <?= htmlspecialchars($application['qual_type']) ?> | 
             Checked: <?= date('d M Y', strtotime($application['created_at'])) ?>
         </p>
     </div>
     <div style="display:flex; gap:12px;">
-        <a href="/admin/applications.php" class="btn btn-outline btn-sm">← Back to Applications</a>
+        <a href="/admin/applications.php" class="btn btn-outline btn-sm">← Back to Eligibility Checks</a>
     </div>
 </div>
 

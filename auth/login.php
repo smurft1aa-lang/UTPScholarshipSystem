@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="login-container">
                 <h1>Welcome Back</h1>
-                <p class="subtitle">Log in to your UTP application account</p>
+                <p class="subtitle">Log in to your UTP eligibility-checker account</p>
 
                 <?php if ($error): ?>
                     <div class="alert"><?= htmlspecialchars($error) ?></div>

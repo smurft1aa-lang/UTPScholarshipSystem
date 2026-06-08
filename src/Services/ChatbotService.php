@@ -9,21 +9,61 @@ class ChatbotService
     private const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
     private string $apiKey;
     private string $model;
+    private ?\PDO $db;
 
-    public function __construct()
+    public function __construct(?\PDO $db = null)
     {
         $this->apiKey = getenv('GEMINI_API_KEY') ?: '';
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY environment variable is missing.');
         }
         $this->model = getenv('GEMINI_MODEL') ?: 'gemini-3.1-flash-lite';
+        $this->db = $db;
+    }
+
+    /**
+     * Build the live scholarships section from the database.
+     */
+    private function buildScholarshipKnowledge(): string
+    {
+        if (!$this->db) {
+            return "Students can browse verified scholarships on our \"Scholarships\" page. For the latest list, visit the Scholarships page on our website.";
+        }
+
+        try {
+            $stmt = $this->db->query(
+                "SELECT name, description, type FROM scholarships WHERE is_active = 1 ORDER BY name"
+            );
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (empty($rows)) {
+                return "No scholarships are currently listed as active. Please check back later or email admissions@utp.edu.my.";
+            }
+
+            $lines = array_map(
+                fn(array $s): string => sprintf(
+                    '- %s (%s): %s',
+                    $s['name'],
+                    ucfirst(str_replace('_', ' ', $s['type'])),
+                    $s['description'] ?? 'No description available.'
+                ),
+                $rows
+            );
+
+            return "Students can browse " . count($rows) . " verified scholarships on our \"Scholarships\" page:\n" . implode("\n", $lines);
+        } catch (\Throwable $e) {
+            return "Students can browse verified scholarships on our \"Scholarships\" page. For the latest list, visit the Scholarships page on our website.";
+        }
     }
 
     /**
      * Get the System Instructions mapping out the precise rules of the UTP Scholarship.
+     * The scholarships section is dynamically built from the database.
      */
     private function getSystemInstruction(): string
     {
+        $scholarshipKnowledge = $this->buildScholarshipKnowledge();
+
         return <<<PROMPT
 You are the official UTP (Universiti Teknologi PETRONAS) Scholarship Virtual Assistant. Your goal is to help students with their application process, eligibility requirements, and financial aid.
 Be polite, concise, and highly encouraging.
@@ -52,10 +92,7 @@ UTP SCHOLARSHIP KNOWLEDGE BASE:
 - Undergraduate (Bachelor's Degrees): We offer various degrees in Engineering (including our New! Bachelor of Integrated Engineering with Honours), Computing, Science, and Business. Entry requires a Foundation, Matriculation, STPM, or A-Level equivalent.
 
 [Scholarships & Financial Aid]
-Students can browse 15+ verified scholarships on our "Scholarships" page.
-- UTP Internal: Yayasan UTP (Undergrad, Postgrad, Grants, Bursaries) and TAZU (Zakat).
-- Government: JPA, MARA, and PTPTN.
-- Corporate / External: PETRONAS (PESP), Khazanah Watan, TNB, Sime Darby, Gamuda, Shell, and Velesto Energy.
+{$scholarshipKnowledge}
 Household income limits:
 - B40 (Bottom 40%): Under RM 4,850. Eligible for full scholarships.
 - M40 (Middle 40%): RM 4,851 - RM 10,959. Eligible for partial scholarships.

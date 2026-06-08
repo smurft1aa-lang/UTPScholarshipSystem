@@ -9,16 +9,30 @@ requireStudent();
 $db = getDB();
 $userId = $_SESSION['user_id'];
 
-// Get latest application with results
-$stmt = $db->prepare("
-    SELECT a.*, q.qual_type
-    FROM applications a
-    JOIN qualifications q ON a.qualification_id = q.id
-    WHERE a.user_id = ?
-    ORDER BY a.created_at DESC
-    LIMIT 1
-");
-$stmt->execute([$userId]);
+// Load a specific application if app_id is provided, otherwise fall back to latest
+$appId = filter_input(INPUT_GET, 'app_id', FILTER_VALIDATE_INT);
+
+if ($appId) {
+    // Load a specific application — enforce ownership via user_id check
+    $stmt = $db->prepare("
+        SELECT a.*, q.qual_type
+        FROM applications a
+        JOIN qualifications q ON a.qualification_id = q.id
+        WHERE a.id = ? AND a.user_id = ?
+    ");
+    $stmt->execute([$appId, $userId]);
+} else {
+    // Default: load the latest application
+    $stmt = $db->prepare("
+        SELECT a.*, q.qual_type
+        FROM applications a
+        JOIN qualifications q ON a.qualification_id = q.id
+        WHERE a.user_id = ?
+        ORDER BY a.created_at DESC
+        LIMIT 1
+    ");
+    $stmt->execute([$userId]);
+}
 $application = $stmt->fetch();
 
 $results = [];
@@ -104,7 +118,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <?php if ($application): ?>
             <div style="display:flex; gap:12px;">
-                <a href="/student/export-results.php" target="_blank" class="btn btn-outline btn-sm">📄 Download PDF</a>
+                <a href="/student/export-results.php?app_id=<?= $application['id'] ?>" target="_blank" class="btn btn-outline btn-sm">📄 Download PDF</a>
                 <a href="/student/my-proposal.php?id=<?= $application['id'] ?>" class="btn btn-orange btn-sm">View Proposal</a>
             </div>
         <?php endif; ?>
@@ -172,27 +186,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </details>
                 <?php endif; ?>
 
-                <?php
-                $progSchols = array_filter($scholarships, function($s) use ($r) {
-                    $pids = explode(',', $s['programme_ids'] ?? '');
-                    return in_array($r['programme_id'], $pids);
-                });
-                if (!empty($progSchols)):
-                ?>
-                <div class="mt-4" style="border-top:1px solid var(--border); padding-top:12px; margin-bottom:12px;">
-                    <strong style="font-size:0.85rem; color:var(--text-secondary);">Matching Scholarships:</strong>
-                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-                        <?php foreach (array_slice($progSchols, 0, 3) as $ps): ?>
-                            <span class="badge badge-outline" style="font-size:0.75rem;" title="<?= htmlspecialchars($ps['name']) ?>">
-                                <?= htmlspecialchars(strlen($ps['name']) > 25 ? substr($ps['name'], 0, 22).'...' : $ps['name']) ?>
-                            </span>
-                        <?php endforeach; ?>
-                        <?php if (count($progSchols) > 3): ?>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">+<?= count($progSchols)-3 ?> more</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
+
 
                 <div class="result-card-footer">
                     <span>Foundation: RM <?= number_format($r['foundation_fee']) ?></span>
@@ -231,7 +225,34 @@ require_once __DIR__ . '/../includes/header.php';
         </details>
         <?php endif; ?>
 
-        <!-- Scholarships section removed as they are now grouped under each programme -->
+        <!-- Potential Financial Aid / Scholarships -->
+        <?php if (!empty($scholarships)): ?>
+        <h2 style="font-size:1.3rem; font-weight:700; margin-top:40px; margin-bottom:8px;">Potential Financial Aid & Scholarships</h2>
+        <p style="color:var(--text-secondary); margin-bottom:24px; line-height:1.6; max-width:800px;">
+            Based on the academic fields you qualify for, you may want to explore the sponsorships below. 
+            <strong style="color:var(--orange);">Please Note:</strong> This is a guide only. UTP does not guarantee eligibility for external scholarships. You must visit the official sponsor's website to verify their specific academic, demographic, and household income requirements.
+        </p>
+
+        <div class="grid-auto mb-6" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            <?php foreach ($scholarships as $s): ?>
+            <div class="result-card" style="display:flex; flex-direction:column; padding:24px;">
+                <div style="display:flex; justify-content:flex-start; align-items:flex-start; margin-bottom:16px;">
+                    <span class="badge badge-outline" style="text-transform:capitalize; font-size:0.75rem; font-weight:600;"><?= htmlspecialchars(str_replace('_', ' ', $s['type'])) ?></span>
+                </div>
+                <h3 style="font-size:1.05rem; margin-bottom:10px; line-height:1.4; color:var(--text-main); flex-grow:1;"><?= htmlspecialchars($s['name']) ?></h3>
+                <?php if ($s['description']): ?>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
+                        <?= htmlspecialchars($s['description']) ?>
+                    </p>
+                <?php endif; ?>
+                
+                <div style="margin-top:auto; padding-top:16px; border-top:1px solid var(--border);">
+                    <a href="/scholarships.php" target="_blank" class="btn btn-outline btn-sm btn-block" style="text-align:center; padding:10px; font-weight:600;">View Official Requirements →</a>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
 
         <!-- Ready to Apply? Redirect to Official UTP Admission -->
         <div class="card mt-6" style="border:2px solid var(--orange); text-align:center; padding:40px;">
